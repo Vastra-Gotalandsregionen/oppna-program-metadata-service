@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="1.0">
+  <persistence-unit name="bookmarkPU" transaction-type="RESOURCE_LOCAL">
+  <class>se.vgregion.metaservice.keywordservice.entity.UserKeyword</class>
+  <class>se.vgregion.metaservice.keywordservice.entity.BlacklistedWord</class>
+  <!-- <class>se.vgregion.metaservice.keywordservice.entity.UserBookmarkPk</class> -->
+  <!-- <mapping-file>META-INF/orm.xml</mapping-file> -->
+  </persistence-unit>
+  </persistence>
