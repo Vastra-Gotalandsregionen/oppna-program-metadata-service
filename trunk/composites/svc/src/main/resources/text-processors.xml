@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx-2.5.xsd">
+
+	<bean id="normalizerProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorNormalizerImpl" />
+
+	<bean id="stopwordProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorStopWordImpl">
+		<property name="initDependencies">
+			<map>
+				<entry key="stopwordlist" value="/stop_words.txt" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="stemmingProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.stemming.TextProcessorStemmingSwedishImpl" />
+
+
+	<bean id="wordCounterProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorWordFrequencyCounterImpl">
+		<property name="initDependencies">
+			<map>
+				<entry key="docfreqlist" value="/document_frequency.txt" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="shortWordProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveShortWordsImpl">
+		<property name="initDependencies">
+			<map>
+				<entry key="minwordlength" value="3" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="blacklistedWordsProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveBlacklistedWords">
+		<property name="blacklistedWordDao" ref="blacklistedWordDao" />
+	</bean>
+
+	<bean id="wordRemoverProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveLowFrequencyWordsImpl">
+		<!--
+			<property name="initDependencies"> <map> <entry key="stopwordlist"
+			value="/Users/tobias/Documents/Projekt/VGR/stop_words.txt" /> </map>
+			</property>
+		-->
+	</bean>
+
+	<bean id="wordsSorterProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorSortWordsByFrequencyImpl" />
+</beans>
