@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Beskrivning av Metadatatjänsten
 
 = Introduction =
 
@@ -12,4 +12,3 @@ Nyckelordstjänsten (Keyword Service) är uppbyggd av fyra moduler, vilka kan se
 Den rena texten skickas sedan vidare i en kedja; Analsyis Service extraherar representativa ord från texten med hjälp av ett antal inre moduler. Analysis Service beskrivs i detalj i avsnittet Analysis Service. De extraherade orden används som indata till Taxonomy Service som gör en sökning i den medicinska taxonomin för varje ord. Resultatet blir en lista av medicinska termer som är kopplade till den inmatade texten. User Profile Service jämför de funna medicinska termerna mot användarens tidigare aktivitet. Om en medicinsk term använts som bokmärke, märks termen som “bokmärkt”. Om användaren tidigare har använt termen för att beskriva en artikel märks termen som “taggad”. Slutresultatet, en lista med märkta medicinska termer skickas tillbaka till användargränssnittet.
 
  
-Figur 1: Översiktsbild
