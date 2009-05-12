@@ -11,4 +11,93 @@ Nyckelordstjänsten (Keyword Service) är uppbyggd av fyra moduler, vilka kan se
 
 Den rena texten skickas sedan vidare i en kedja; Analsyis Service extraherar representativa ord från texten med hjälp av ett antal inre moduler. Analysis Service beskrivs i detalj i avsnittet Analysis Service. De extraherade orden används som indata till Taxonomy Service som gör en sökning i den medicinska taxonomin för varje ord. Resultatet blir en lista av medicinska termer som är kopplade till den inmatade texten. User Profile Service jämför de funna medicinska termerna mot användarens tidigare aktivitet. Om en medicinsk term använts som bokmärke, märks termen som “bokmärkt”. Om användaren tidigare har använt termen för att beskriva en artikel märks termen som “taggad”. Slutresultatet, en lista med märkta medicinska termer skickas tillbaka till användargränssnittet.
 
- 
+
+== Analysis Service ==
+
+=== Normalize ===
+
+Normaliserar texten genom att ta bort accenter, apostrofer, punkter, kommatecken osv.
+
+=== Remove stop words ===
+
+Tar bort stoppord, dvs små ord som inte betyder någonting. Denna modul baseras på en lista. Alla ord som finns med i listan tas bort från texten. Kan konfigureras för engelska och svenska stoppord.
+
+=== Stemming ===
+
+Reducerar orden i texten till dess grundform. Stöd för stemming av engelska och svenska ord finns.
+
+=== Remove short words ===
+
+Korta ord är sällan beskrivande. Detta steg tar bort korta ord som inte är definierade som stoppord. Gränsen för längden på ett kort ord kan ställas in.
+
+=== Count word frequency ===
+
+Räknar vikten på varje ordstam i texten. Vikten baseras på antalet förekomster av ordstammen i texten och antalet dokument som innehåller denna ordstam, d.sk. tfidf (term frequency, inverse document frequency). Vikten ligger som grund till vilka ord som ska returneras.
+
+=== Remove blacklisted words ===
+
+När indata ord resulterar i noll träffar i den medicinska taxonomin, sparar Taxonomy Service detta ord som “blacklisted”. Detta steg hämtar de svartlistade orden och tar bort dem från texten.
+
+=== Remove low frequency words ===
+
+Ord som förekommer få gånger i texten tas bort. Gränsen för antalet förekomster kan ställas in.
+
+=== Sort words by frequency ===
+
+Orden sorteras i fallande ordning baserat på dess frekvens i dokumentet.
+
+== Web Service == 
+
+=== GetKeywords ===
+
+GetKeywords är huvudoperationen, där man skickar in en artikel och får tillbaka en lista av nyckelord som passar in på artikeln. 
+
+*Inparametrar*
+
+|| Namn	 || Typ  	|| Förklaring ||
+|| title ||String	||Titel på dokumentet ||
+||content	||String	|| Dokumentets innehåll ||
+||userId        ||String	||Användarid för användaren som anropar metoden ||
+||format	||String	||Anger vilket format innehållet är på. I dagsläget är tillåtna värden “text” och “html” ||
+||sourceId	||String	||Anger i vilka kategorier ska man söka för nyckelord||
+
+*Returvärde*
+_GetKeywords returnerar en lista av MedicalNode objekt_
+
+=== GetNodeByInternalId ===
+
+GetNodeByInternalId används för att returnera en nod via dess interna id nummer.
+
+*Inparametrar*
+
+|| Namn	|| Typ	|| Förklaring ||
+|| internalId	|| String	|| Det interna id numret på en nod (MedicalNode)|| 
+
+*Returvärde*
+_En MedicalNode_
+
+=== AddBookmarkedKeywords ===
+
+AddBookmarkedKeywords används för att bokmärka nyckelord för en användare.
+
+*Inparametrar*
+
+|| Namn	|| Typ	|| Förklaring ||
+||userId ||	String	|| Användarid för användaren som lägger till bokmärket
+||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
+
+*Returvärde*
+_Inget_
+
+=== AddTaggedKeywords ===
+
+AddTaggedKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
+
+*Inparametrar*
+
+||Namn	||Typ	||Förklaring||
+||userId||String||Användarid för användaren som lägger in artikeln ||
+||keywordCodes	|| List<String>	|| En lista av koder för varje nyckelord som ska markeras som taggat.||
+
+*Returvärde*
+_Inget_
