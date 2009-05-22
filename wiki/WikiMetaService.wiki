@@ -18,7 +18,7 @@ Den rena texten skickas sedan vidare i en kedja; Analsyis Service extraherar rep
 == Analysis Service ==
 
 Figure 2:
-[[Image:modules.png]]
+http://oppna-program-metadata-service.googlecode.com/svn/wiki/images/modules.jpg
 
 === Normalize ===
 
