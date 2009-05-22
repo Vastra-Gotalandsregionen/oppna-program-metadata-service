@@ -17,6 +17,9 @@ Den rena texten skickas sedan vidare i en kedja; Analsyis Service extraherar rep
 
 == Analysis Service ==
 
+Figure 2:
+[[Image:modules.png]]
+
 === Normalize ===
 
 Normaliserar texten genom att ta bort accenter, apostrofer, punkter, kommatecken osv.
