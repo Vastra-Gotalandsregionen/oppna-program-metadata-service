@@ -1,0 +1,25 @@
+#summary Miscellaneous
+
+= Typer = 
+
+Under detta avsnitt presenteras de typer som tjänsten använder sig av
+
+== MedicalNode ==
+
+MedicalNode typen innehåller information om ett nyckelord. Denna typ har fält enligt nedanstående.
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| name	|| String || Namnet på noden. Presenteras i GUI:t
+|| namespaceId || String || Den unika identifieraren för namnrymden som noden tillhör i taxonomihanteraren ||
+|| internalId || String	|| Den unika identifieraren i taxonomihanteraren för noden.||
+|| sourceId || String || Den unika identifieraren i ursprungstaxonomin som noden representerar ||
+|| parents	|| List<MedicalNode> || En lista av denna nods föräldrar ett steg upp i hierarkin ||
+|| userStatus	|| List<UserStatus> ||	En lista av statusinformation. Läs mer om statusinformation nedan ||
+|| synonyms ||	List<String> ||	En lista med synonymer för denna nod ||
+|| hasChildren	|| Bool || Flagga som indikerar om noden har barn eller inte. Obs, alltid false i Nyckelordstjänsten ||
+
+== UserStatus ==
+
+UserStatus typen är en enumeration och används för att markera hur användaren har använt ett nyckelord. I dagsläget kan en användare välja att bokmärka ett nyckelord, och systemet kan märka ett nyckelord som taggat. Ett taggat nyckelord innebär att det har använts för att beskriva ett dokument av den aktuella användaren tidigare.
+
+Tillåtna värden på UserStatus är: bookmarked, taggged.
