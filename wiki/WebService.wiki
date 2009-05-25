@@ -1,0 +1,55 @@
+= Web Service =
+
+== GetKeywords ==
+
+GetKeywords är huvudoperationen, där man skickar in en artikel och får tillbaka en lista av nyckelord som passar in på artikeln. 
+
+*Inparametrar*
+
+|| Namn	 || Typ  	|| Förklaring ||
+|| title ||String	||Titel på dokumentet ||
+||content	||String	|| Dokumentets innehåll ||
+||userId        ||String	||Användarid för användaren som anropar metoden ||
+||format	||String	||Anger vilket format innehållet är på. I dagsläget är tillåtna värden “text” och “html” ||
+||sourceId	||String	||Anger i vilka kategorier ska man söka för nyckelord||
+
+*Returvärde*
+_GetKeywords returnerar en lista av MedicalNode objekt_
+
+== GetNodeByInternalId ==
+
+GetNodeByInternalId används för att returnera en nod via dess interna id nummer.
+
+*Inparametrar*
+
+|| Namn	|| Typ	|| Förklaring ||
+|| internalId	|| String	|| Det interna id numret på en nod (MedicalNode)|| 
+
+*Returvärde*
+_En MedicalNode_
+
+== AddBookmarkedKeywords ==
+
+AddBookmarkedKeywords används för att bokmärka nyckelord för en användare.
+
+*Inparametrar*
+
+|| Namn	|| Typ	|| Förklaring ||
+||userId ||	String	|| Användarid för användaren som lägger till bokmärket
+||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
+
+*Returvärde*
+_Inget_
+
+== AddTaggedKeywords ==
+
+AddTaggedKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
+
+*Inparametrar*
+
+||Namn	||Typ	||Förklaring||
+||userId||String||Användarid för användaren som lägger in artikeln ||
+||keywordCodes	|| List<String>	|| En lista av koder för varje nyckelord som ska markeras som taggat.||
+
+*Returvärde*
+_Inget_
