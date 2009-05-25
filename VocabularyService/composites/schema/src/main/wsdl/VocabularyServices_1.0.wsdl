@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+	xmlns:tns="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
+	name="VocabularyServices_1.0"
+	targetNamespace="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1">
+	<wsdl:types>
+		<xsd:schema
+			targetNamespace="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1">
+			<xsd:import schemaLocation="MedicalNode_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
+			<!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
+			<xsd:element name="GetVocabularyRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="path" type="xsd:string"
+							minOccurs="1" maxOccurs="1" />
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="GetVocabularyResponse"
+				type="mn:MedicalNodeListType" />
+		</xsd:schema>
+	</wsdl:types>
+
+	<wsdl:message name="GetVocabularyRequest"> 
+		<wsdl:part name="parameters" element="tns:GetVocabularyRequest">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="GetVocabularyResponse">
+		<wsdl:part element="tns:GetVocabularyResponse" name="parameters" />
+	</wsdl:message>
+	
+	<wsdl:portType name="VocabularyService">
+		<wsdl:operation name="GetVocabulary">
+			<wsdl:input message="tns:GetVocabularyRequest" />
+			<wsdl:output message="tns:GetVocabularyResponse" />
+		</wsdl:operation>
+	</wsdl:portType>
+
+	<wsdl:binding name="VocabularyServiceSoapHttp"
+		type="tns:VocabularyService">
+		<soap:binding style="document"
+			transport="http://schemas.xmlsoap.org/soap/http" />
+
+		<wsdl:operation name="GetVocabulary">
+			<soap:operation />
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+	</wsdl:binding>
+</wsdl:definitions>

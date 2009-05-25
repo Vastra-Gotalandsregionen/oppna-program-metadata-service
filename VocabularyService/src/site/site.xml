@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="MetaService - VocabularyService">
+  <bannerLeft>
+    <name>VGR</name>
+    <src>http://www.vgregion.se/VGRimages/VGR_liten.gif</src>
+    <href>http://www.vgregion.se/</href>
+  </bannerLeft>
+  <!--
+  <bannerRight>
+    <src>http://maven.apache.org/images/maven-small.gif</src>
+  </bannerRight>
+  -->
+  <body>
+    <links>
+      <item name="IT-Centrum" href="http://www.vgregion.se/vgrtemplates/Start____41381.aspx" />
+      <item name="IT-arkitektur" href="http://www.vgregion.se/vgrtemplates/Start____41381.aspx"/>
+    </links>
+
+    <menu name="VocabularyService">
+      <item name="Beskrivning" href="index.html"/>
+    </menu>
+
+    <menu ref="parent" />
+    
+    <menu ref="modules" />
+    
+    <menu ref="reports" />
+
+  </body>
+</project>
