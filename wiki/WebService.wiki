@@ -1,6 +1,6 @@
-#summary In- och ut- parametrar i Nyckelordtjänsten
+#summary In- och ut- parametrar i Nyckelord- och Vokabulär- tjänsten
 
-= Web Service =
+= Web Service Nyckelordtjänst =
 
 == GetKeywords ==
 
@@ -10,7 +10,7 @@ GetKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 
 || Namn	 || Typ  	|| Förklaring ||
 || title ||String	||Titel på dokumentet ||
-||content	||String	|| Dokumentets innehåll ||
+||content	||String	||Dokumentets innehåll ||
 ||userId        ||String	||Användarid för användaren som anropar metoden ||
 ||format	||String	||Anger vilket format innehållet är på. I dagsläget är tillåtna värden “text” och “html” ||
 ||sourceId	||String	||Anger i vilka kategorier ska man söka för nyckelord||
@@ -24,8 +24,8 @@ GetNodeByInternalId används för att returnera en nod via dess interna id numme
 
 *Inparametrar*
 
-|| Namn	|| Typ	|| Förklaring ||
-|| internalId	|| String	|| Det interna id numret på en nod (MedicalNode)|| 
+|| Namn	|| Typ	|| Förklaring ||
+|| internalId	|| String	|| Det interna id numret på en nod (MedicalNode)|| 
 
 *Returvärde*
 _En MedicalNode_
@@ -36,8 +36,8 @@ AddBookmarkedKeywords används för att bokmärka nyckelord för en användare.
 
 *Inparametrar*
 
-|| Namn	|| Typ	|| Förklaring ||
-||userId ||	String	|| Användarid för användaren som lägger till bokmärket
+|| Namn	|| Typ	|| Förklaring ||
+||userId ||	String	|| Användarid för användaren som lägger till bokmärket
 ||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
 
 *Returvärde*
@@ -55,3 +55,20 @@ AddTaggedKeywords används för att markera ett nyckelord som taggat. Det inneb�
 
 *Returvärde*
 _Inget_
+
+= Web Service Vokabulärtjänst =
+
+Vokabulärtjänsten exponeras i dagsläget som en Web Service. Nedan beskrivs den operation som är exponerad. De egenutvecklade typerna som används är definierade i avsnittet Typer.
+
+== GetVocabulary ==
+
+GetVocabulary returnerar alla direkt underliggande noder till en nod. 
+
+*Inparametrar*
+
+|| Namn	|| Typ	  || Förklaring ||
+|| path	|| String || Sökvägen till noden ||
+
+*Returvärde*
+_En lista med MedicalNode objekt_
+
