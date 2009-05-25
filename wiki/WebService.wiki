@@ -8,7 +8,7 @@ GetKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 
 *Inparametrar*
 
-|| Namn	 || Typ  	|| Förklaring ||
+|| *Namn*	 || *Typ*  	|| *Förklaring* ||
 || title ||String	||Titel på dokumentet ||
 ||content	||String	||Dokumentets innehåll ||
 ||userId        ||String	||Användarid för användaren som anropar metoden ||
@@ -24,7 +24,7 @@ GetNodeByInternalId används för att returnera en nod via dess interna id numme
 
 *Inparametrar*
 
-|| Namn	|| Typ	|| Förklaring ||
+|| *Namn*	|| *Typ*	|| *Förklaring* ||
 || internalId	|| String	|| Det interna id numret på en nod (MedicalNode)|| 
 
 *Returvärde*
@@ -36,8 +36,8 @@ AddBookmarkedKeywords används för att bokmärka nyckelord för en användare.
 
 *Inparametrar*
 
-|| Namn	|| Typ	|| Förklaring ||
-||userId ||	String	|| Användarid för användaren som lägger till bokmärket
+|| *Namn*	|| *Typ*	|| *Förklaring* ||
+||userId ||	String	|| Användarid för användaren som lägger till bokmärket ||
 ||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
 
 *Returvärde*
@@ -49,7 +49,7 @@ AddTaggedKeywords används för att markera ett nyckelord som taggat. Det inneb�
 
 *Inparametrar*
 
-||Namn	||Typ	||Förklaring||
+|| *Namn* || *Typ*	|| *Förklaring* ||
 ||userId||String||Användarid för användaren som lägger in artikeln ||
 ||keywordCodes	|| List<String>	|| En lista av koder för varje nyckelord som ska markeras som taggat.||
 
@@ -66,7 +66,7 @@ GetVocabulary returnerar alla direkt underliggande noder till en nod.
 
 *Inparametrar*
 
-|| Namn	|| Typ	  || Förklaring ||
+|| *Namn* || *Typ* || *Förklaring* ||
 || path	|| String || Sökvägen till noden ||
 
 *Returvärde*
