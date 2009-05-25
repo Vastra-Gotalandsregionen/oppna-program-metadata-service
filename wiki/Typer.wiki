@@ -9,7 +9,7 @@ Under detta avsnitt presenteras de typer som tjänsten använder sig av
 MedicalNode typen innehåller information om ett nyckelord. Denna typ har fält enligt nedanstående.
 
 || *Namn* || *Typ* || *Förklaring* ||
-|| name	|| String || Namnet på noden. Presenteras i GUI:t
+|| name	|| String || Namnet på noden. Presenteras i GUI:t ||
 || namespaceId || String || Den unika identifieraren för namnrymden som noden tillhör i taxonomihanteraren ||
 || internalId || String	|| Den unika identifieraren i taxonomihanteraren för noden.||
 || sourceId || String || Den unika identifieraren i ursprungstaxonomin som noden representerar ||
