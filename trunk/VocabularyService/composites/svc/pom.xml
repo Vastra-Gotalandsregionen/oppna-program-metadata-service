@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!--
+	This is the Integration Service (Webservice, Messaging, ...) Maven POM.
+	
+	
+	Template version: 1.0-SNAPSHOT
+	Generation time : 2008-11-18 15:44:51 CET
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<!--<groupId> groupId IS DEFINED BY PARENT </groupId>-->
+	<artifactId>MetaService-VocabularyService-composite-svc</artifactId>
+	<packaging>jar</packaging>
+	<name>MetaService-VocabularyService-composite-svc</name>
+	<!--<version> version IS DEFINED BY PARENT </version>-->
+
+	<parent>
+		<groupId>MetaService</groupId>
+		<artifactId>MetaService-VocabularyService</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>MetaService</groupId>
+			<artifactId>
+				MetaService-KeywordService-composite-svc
+			</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>MetaService</groupId>
+			<artifactId>
+				MetaService-KeywordService-composite-types
+			</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>2.5.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+			<version>2.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+
+</project>
