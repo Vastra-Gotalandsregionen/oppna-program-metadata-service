@@ -1,12 +1,0 @@
-#summary Beskrivning av Vokabulärtjänsten
-
-= Vokabulärtjänst =
-
-Vokabulärtjänsten (Vocabulary Service) används för att hämta information om en namnrymd lagrad i den underliggande taxonominhanteraren. Tjänsten tar in en sökväg till en nod i taxonomin och returnerar alla direkt underliggande noder. Användningsområdet är att t.ex kunna lista alla dokumenttyper i VGR:s vokabulär. Varje dokumenttyp är då en egen nod med den gemensamma föräldranoden ”Dokumenttyper”.
-
-== Web Service ==
-
-Vokabulärtjänsten exponeras i dagsläget som en Web Service. Nedan beskrivs den operation som är exponerad. De egenutvecklade typerna som används är definierade i avsnittet Typer.
-
-=== GetVocabulary ===
-GetVocabulary returnerar alla direkt underliggande noder till en nod.  Inparametrar|| Namn	|| Typ	  || Förklaring |||| path	|| String || Sökvägen till noden ||ReturvärdeEn lista med MedicalNode objekt
