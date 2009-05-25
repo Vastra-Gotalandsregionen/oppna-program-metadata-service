@@ -1,3 +1,5 @@
+#summary In- och ut- parametrar i Nyckelordtjänsten
+
 = Web Service =
 
 == GetKeywords ==
