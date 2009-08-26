@@ -13,7 +13,8 @@ GetKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 ||content	||String	||Dokumentets innehåll ||
 ||userId        ||String	||Användarid för användaren som anropar metoden ||
 ||format	||String	||Anger vilket format innehållet är på. I dagsläget är tillåtna värden “text” och “html” ||
-||sourceId	||String	||Anger i vilka kategorier ska man söka för nyckelord||
+||extractedWordsLimit || Integer || Anger antall MedicalNodes som ska returneras ||
+||includeSourceIds	||String	||Anger i vilka kategorier ska man söka för nyckelord||
 
 *Returvärde*
 _GetKeywords returnerar en lista av MedicalNode objekt_
@@ -71,4 +72,3 @@ GetVocabulary returnerar alla direkt underliggande noder till en nod.
 
 *Returvärde*
 _En lista med MedicalNode objekt_
-
