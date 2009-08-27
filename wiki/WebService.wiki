@@ -14,7 +14,7 @@ GetKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 ||userId        ||String	||Användarid för användaren som anropar metoden ||
 ||format	||String	||Anger vilket format innehållet är på. I dagsläget är tillåtna värden “text” och “html” ||
 ||extractedWordsLimit || Integer || Anger antall MedicalNodes som ska returneras ||
-||includeSourceIds	||String	||Anger i vilka kategorier ska man söka för nyckelord||
+||includeSourceIds	||String	||Anger i vilka kategorier ska man söka för nyckelord. Idn anges som en sträng separerade av mellanslag, t.ex "A C D"||
 
 *Returvärde*
 _GetKeywords returnerar en lista av MedicalNode objekt_
