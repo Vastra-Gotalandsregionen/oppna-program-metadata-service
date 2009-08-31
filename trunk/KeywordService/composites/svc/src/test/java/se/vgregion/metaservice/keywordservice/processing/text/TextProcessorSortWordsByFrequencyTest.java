@@ -35,9 +35,9 @@ public class TextProcessorSortWordsByFrequencyTest extends
 
 		assertEquals("frekvent", words[0]);
 		assertEquals("tvåa", words[1]);
-		assertEquals("delad", words[2]);
-		assertEquals("trea", words[3]);
-		assertEquals("sist", words[4]);
+		assertEquals("trea", words[2]);
+		assertEquals("delad", words[3]);
+        assertEquals("sist", words[4]);
 
 	}
 }

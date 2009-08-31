@@ -7,10 +7,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.openoffice.odf.doc.OdfDocument;
-import org.openoffice.odf.doc.OdfFileDom;
-import org.openoffice.odf.dom.OdfNamespace;
-import org.openoffice.odf.dom.element.OdfElement;
 
 
 
@@ -22,10 +18,8 @@ import org.openoffice.odf.dom.element.OdfElement;
 
 public class FormatProcessorOdf implements FormatProcessor {
 
-	public String process (File f) {
-		
-		String formattedString = "";
-
+	public String process (String formattedString) {
+		/*
 		try {
 			OdfDocument odfDoc = OdfDocument.loadDocument(f);
 			OdfFileDom odfContent = odfDoc.getContentDom();
@@ -57,7 +51,7 @@ public class FormatProcessorOdf implements FormatProcessor {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-				
+				*/
 		return formattedString;
 	}
 }

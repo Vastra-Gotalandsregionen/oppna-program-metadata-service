@@ -1,5 +1,6 @@
 package se.vgregion.metaservice.keywordservice.processing.format;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class FormatProcessorDoc implements FormatProcessor {
 
 		POIFSFileSystem fileSystem = null;
 		try {
-			fileSystem = new POIFSFileSystem(new FileInputStream(file));
+            fileSystem = new POIFSFileSystem(new ByteArrayInputStream(formattedString.getBytes()));
 		} catch (IOException ex) {
 
 			System.out.println("Error");
@@ -64,6 +65,5 @@ public class FormatProcessorDoc implements FormatProcessor {
 		System.out.println("DOC: --> " + title);
 
 		return outputStream.toString();
-		return formattedString;
 	}
 }
