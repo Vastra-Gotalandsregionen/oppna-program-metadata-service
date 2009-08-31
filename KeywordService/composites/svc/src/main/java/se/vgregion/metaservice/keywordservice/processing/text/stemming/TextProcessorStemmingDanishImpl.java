@@ -22,16 +22,9 @@ public class TextProcessorStemmingDanishImpl extends
 
 		createSuffixes3Replace();
 
-		setVowels(new HashSet<Character>(Arrays.asList('a', 'e', 'i', 'o', 'u',
-				'y', 'å', 'æ', 'ø')));
-		setSuffixes1(new String[] { "erendes", "erende", "hedens", "ethed",
-				"erede", "heden", "heder", "endes", "ernes", "erens", "erets",
-				"ered", "ende", "erne", "eren", "erer", "heds", "enes", "eres",
-				"eret", "hed", "ene", "ere", "ens", "ers", "ets", "en", "er",
-				"es", "et", "e"});
-		setEndings(new HashSet<Character>(Arrays.asList('a', 'b', 'c', 'd',
-				'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 't',
-				'v', 'y', 'z', 'å')));
+		setVowels(new HashSet<Character>(Arrays.asList('a', 'e', 'i', 'o', 'u','y', 'å', 'æ', 'ø')));
+		setSuffixes1(new String[] { "erendes", "erende", "hedens", "ethed","erede", "heden", "heder", "endes", "ernes", "erens", "erets","ered", "ende", "erne", "eren", "erer", "heds", "enes", "eres","eret", "hed", "ene", "ere", "ens", "ers", "ets", "en", "er","es", "et", "e"});
+		setEndings(new HashSet<Character>(Arrays.asList('a', 'b', 'c', 'd','f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 't','v', 'y', 'z', 'å')));
 		setSuffixes2(new String[] {"gd","dt","gt","kt"});
 		setSuffixes3(new String[] { "elig", "lig", "els", "ig"});
 	}

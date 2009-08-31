@@ -25,6 +25,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 	public Map<String, List<MedicalNode>> findKeywords(String[] words, String[] sourceIds) {
 		Map<String, List<MedicalNode>> keywords = new HashMap<String, List<MedicalNode>>();
 		MedicalNode node = new MedicalNode("kalle","1234");
+        node.setSourceId("A");
 		for(String word : words) {
 			List<MedicalNode> nodes = new ArrayList<MedicalNode>(3);
 			if(!Arrays.asList(noHitWords).contains(word)) {

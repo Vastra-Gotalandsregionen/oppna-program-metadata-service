@@ -1,5 +1,6 @@
 package se.vgregion.metaservice.keywordservice.processing.format;
 
+import java.io.ByteArrayInputStream;
 import org.pdfbox.cos.COSDocument;
 import org.pdfbox.pdfparser.PDFParser;
 import org.pdfbox.pdmodel.PDDocument;
@@ -22,7 +23,7 @@ public class FormatProcessorPdf implements FormatProcessor {
 		PDDocument doc = null;
 		
 		try {
-			PDFParser parser = new PDFParser(f);
+            PDFParser parser = new PDFParser(new ByteArrayInputStream(formattedString.getBytes()));
 			parser.parse();
 			cosDoc = parser.getDocument();
 			PDFTextStripper ps = new PDFTextStripper();
@@ -34,9 +35,7 @@ public class FormatProcessorPdf implements FormatProcessor {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		cosDoc.close();
-		doc.close();
-		return parsedText; 
+		 
 		return formattedString;
 	}
 }
