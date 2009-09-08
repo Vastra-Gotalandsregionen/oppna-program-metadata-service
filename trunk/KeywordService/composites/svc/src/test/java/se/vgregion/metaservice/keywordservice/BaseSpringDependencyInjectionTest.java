@@ -10,6 +10,6 @@ public abstract class BaseSpringDependencyInjectionTest extends
 	protected String[] getConfigLocations() {
 		// TODO Auto-generated method stub
 		//return super.getConfigLocations();
-		return new String[]{"services-test-config.xml","text-processors.xml","format-processors.xml"};
+		return new String[]{"services-test-config.xml"};
 	}
 }

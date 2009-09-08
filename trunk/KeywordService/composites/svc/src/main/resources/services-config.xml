@@ -10,6 +10,65 @@
 	http://www.springframework.org/schema/jee
 	http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
 
+    <!-- TEXT PROCESSORS -->
+    <bean id="normalizerProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorNormalizerImpl" />
+
+	<bean id="stopwordProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorStopWordImpl">
+		<property name="initDependencies">
+			<map>
+				<entry key="stopwordlist" value="/stop_words.txt" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="stemmingProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.stemming.TextProcessorStemmingSwedishImpl" />
+
+
+	<bean id="wordCounterProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorWordFrequencyCounterImpl">
+		<property name="initDependencies">
+			<map>
+				<entry key="docfreqlist" value="/document_frequency.txt" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="shortWordProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveShortWordsImpl">
+		<property name="initDependencies">
+			<map>
+				<entry key="minwordlength" value="3" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="blacklistedWordsProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveBlacklistedWords">
+		<property name="blacklistedWordDao" ref="blacklistedWordDao" />
+	</bean>
+
+	<bean id="wordRemoverProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveLowFrequencyWordsImpl">
+		<!--
+			<property name="initDependencies"> <map> <entry key="stopwordlist"
+			value="/Users/tobias/Documents/Projekt/VGR/stop_words.txt" /> </map>
+			</property>
+		-->
+	</bean>
+
+	<bean id="wordsSorterProcessor"
+		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorSortWordsByFrequencyImpl" />
+
+    <!-- FORMAT PROCESSORS -->
+    <bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
+	<bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
+    <bean id="formatProcessorPdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorPdf" />
+    <bean id="formatProcessorOdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorOdf" />
+    <bean id="formatProcessorDoc" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorDoc" />
+
 	<!--  SERVICE DEFINITIONS -->
 
 	<bean id="metaservice.analysisService"
@@ -34,10 +93,10 @@
 	<bean id="metaservice.medicalTaxonomyService"
 		class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
 		init-method="initConnection">
-		<property name="host" value="localhost" />
-		<property name="port" value="6666" />
-		<property name="username" value="dts" />
-		<property name="password" value="dts" />
+		<property name="host" value="${taxonomyservice.host}" />
+		<property name="port" value="${taxonomyservice.port}" />
+		<property name="username" value="${taxonomyservice.username}" />
+		<property name="password" value="${taxonomyservice.password}" />
 		<property name="namespaceName" value="SweMESH" />
 		<property name="resultKeywordsLimit" value="10" />
 		<property name="sourceIdPropertyKey" value="MN" />
@@ -91,52 +150,7 @@
 		<property name="jndiName" value="/jdbc/MetaServiceDB" />
 		<property name="resourceRef" value="true" />
 	</bean>
-	<!-- MYSQL
-		<bean id="dataSource"
-		class="org.apache.commons.dbcp.BasicDataSource">
-		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
-		<property name="url"
-		value="jdbc:mysql://localhost:3306/metaservice" />
-		<property name="username" value="metaservice" />
-		<property name="password" value="metaservice" />
-		<property name="initialSize" value="5" />
-		<property name="maxActive" value="10" />
-		</bean>
-	-->
-
-	<!-- DERBY -->
-	<!--  <bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"
-			value="org.apache.derby.jdbc.ClientDriver" />
-		<property name="url"
-			value="jdbc:derby://localhost:1527/metaservice;create=true" />
-		<property name="username" value="metaservice" />
-		<property name="password" value="metaservice" />
-	</bean>
-	 -->
-	<!-- ORACLE -->
-	<!-- <bean id="dataSource"
-		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"
-		value="${keywordservice.svc.db.driverclassname}"/>
-		<property name="url"
-		value="${keywordservice.svc.db.url}" />
-		<property name="username" value="${keywordservice.svc.db.username}" />
-		<property name="password" value="${keywordservice.svc.db.password}" />
-		</bean>
-	-->
-	<!-- <bean id="jpaTemplate"
-		class="org.springframework.orm.jpa.JpaTemplate">
-		<property name="entityManagerFactory"  ref="entityManagerFactory"/>
-		</bean> -->
-
-	<!-- <bean id="userkeyworddao"
-		class="se.vgregion.metaservice.keywordservice.dao.UserKeywordDaoImpl">
-		<property name="jpaTemplate" ref="jpaTemplate" />
-		</bean> -->
-
-
+	
 	<!-- DAO:S -->
 
 	<bean id="userKeywordDao"
@@ -170,28 +184,10 @@
 		</property>
 	</bean>
 
-	<!-- 
-		<bean id="entityManagerFactory"
-		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="datasource" />
-		<property name="persistenceUnitName" value="bookmarkPU"/>
-		<property name="jpaVendorAdapter">
-		<bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
-		<property name="showSql" value="true"/>
-		<property name="generateDdl" value="true" />
-		<property name="databasePlatform" value="org.hibernate.dialect.MySQL5Dialect"/>
-		<property name="database" value="MYSQL" />
-		</bean>
-		</property>
-		
-		<property name="persistenceProviderClass"
-		value="org.hibernate.ejb.HibernatePersistence" />
-		</bean>
-	-->
+
 	<!-- bean post-processor for JPA annotations -->
 	<bean
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
-	<!-- <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/> -->
 
 
 	<bean id="transactionManager"

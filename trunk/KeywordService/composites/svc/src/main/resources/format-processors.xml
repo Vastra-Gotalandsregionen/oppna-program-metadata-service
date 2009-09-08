@@ -3,9 +3,5 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx-2.5.xsd">
 
-	<bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
-	<bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
-    <bean id="formatProcessorPdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorPdf" />
-    <bean id="formatProcessorOdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorOdf" />
-    <bean id="formatProcessorDoc" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorDoc" />
+	
 </beans>
