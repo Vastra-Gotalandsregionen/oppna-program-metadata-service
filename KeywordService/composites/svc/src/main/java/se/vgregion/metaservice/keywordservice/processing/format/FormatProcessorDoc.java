@@ -6,10 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 
-import org.apache.poi.hpsf.SummaryInformation;
-import org.apache.poi.hwpf.HWPFDocument;
-import org.apache.poi.hwpf.extractor.WordExtractor;
-import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+
 
 
 
@@ -22,8 +19,8 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 public class FormatProcessorDoc implements FormatProcessor {
 
 	public String process (String formattedString) {
-		
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		return formattedString;
+		/*ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
 		OutputStreamWriter out = new OutputStreamWriter(outputStream);
 
@@ -64,6 +61,6 @@ public class FormatProcessorDoc implements FormatProcessor {
 		String title =  si.getTitle();
 		System.out.println("DOC: --> " + title);
 
-		return outputStream.toString();
+		return outputStream.toString();*/
 	}
 }
