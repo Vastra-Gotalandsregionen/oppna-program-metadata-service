@@ -4,10 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.apelon.dts.client.association.Synonym;
-import com.apelon.dts.client.attribute.DTSProperty;
-import com.apelon.dts.client.concept.DTSConcept;
-import com.apelon.dts.client.concept.OntylogConcept;
+
 
 /**
  * Represents a Node in a Medical Taxonomy Tree. 
