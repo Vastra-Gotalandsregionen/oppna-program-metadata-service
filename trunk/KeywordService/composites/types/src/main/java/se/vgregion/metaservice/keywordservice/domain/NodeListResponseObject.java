@@ -12,20 +12,22 @@ public class NodeListResponseObject extends ResponseObject{
 
     /**
      * Constructor for ok response
+     * @param the uniqe requestId
      * @param nodeList the list of nodes
      */
-    public NodeListResponseObject(List<MedicalNode> nodeList){
-        super();
+    public NodeListResponseObject(String requestId, List<MedicalNode> nodeList){
+        super(requestId);
         this.nodeList = nodeList;
     }
 
     /**
      * Constructor for an error response
+     * @param the uniqe requestId
      * @param statusCode the errorcode
      * @param errorMessage human-readable error message
      */
-    public NodeListResponseObject(StatusCode statusCode, String errorMessage){
-        super(statusCode,errorMessage);
+    public NodeListResponseObject(String requestId, StatusCode statusCode, String errorMessage){
+        super(requestId, statusCode, errorMessage);
     }
 
     /**

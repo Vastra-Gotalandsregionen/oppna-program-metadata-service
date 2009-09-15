@@ -10,12 +10,12 @@ import java.util.Map;
  * easy to use interface of a document. 
  */
 public class DocumentImpl implements Document {
-    InputStream inputStream;
-    String filename;
-    String encoding;
-    String textContent;
-    String title;
-    Map<String,Object> properties;
+    InputStream inputStream = null;
+    String filename = null;
+    String encoding = null;
+    String textContent = null;
+    String title = null;
+    Map<String,Object> properties = null;
 
     public String getEncoding() {
         return encoding;

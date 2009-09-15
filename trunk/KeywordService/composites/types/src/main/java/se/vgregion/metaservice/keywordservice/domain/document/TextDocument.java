@@ -1,5 +1,3 @@
-
-
 package se.vgregion.metaservice.keywordservice.domain.document;
 
 /**
@@ -8,7 +6,11 @@ package se.vgregion.metaservice.keywordservice.domain.document;
  * either raw text or text with markup (e.g., html). 
  */
 public class TextDocument implements Document {
+
     DocumentImpl document = new DocumentImpl();
+
+    public TextDocument(){
+    }
 
     public void setTitle(String title) {
         document.setTitle(title);
@@ -26,5 +28,11 @@ public class TextDocument implements Document {
         return document.getTextContent();
     }
 
+    public boolean hasTitle() {
+        return document.getTitle() != null;
+    }
 
+    public boolean hasTextContent() {
+        return document.getTextContent() != null;
+    }
 }
