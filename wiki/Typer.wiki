@@ -2,8 +2,9 @@
 
 = Typer = 
 
-Under detta avsnitt presenteras de typer som tjänsten använder sig av
+Under detta avsnitt presenteras de typer som tjänsten använder sig av.
 
+<br><br>
 == Node ==
 
 Node typen innehåller information om ett nyckelord. Denna typ har fält enligt nedanstående.
@@ -18,6 +19,8 @@ Node typen innehåller information om ett nyckelord. Denna typ har fält enligt 
 || synonyms ||	List<String> ||	En lista med synonymer för denna nod ||
 || hasChildren	|| Bool || Flagga som indikerar om noden har barn eller inte. Obs, alltid false i Nyckelordstjänsten ||
 
+
+<br><br>
 == UserStatus ==
 
 UserStatus typen är en enumeration och används för att markera hur användaren har använt ett nyckelord. I dagsläget kan en användare välja att bokmärka ett nyckelord, och systemet kan märka ett nyckelord som taggat. Ett taggat nyckelord innebär att det har använts för att beskriva ett dokument av den aktuella användaren tidigare.
@@ -25,6 +28,7 @@ UserStatus typen är en enumeration och används för att markera hur användare
 Tillåtna värden på UserStatus är: bookmarked, taggged.
 
 
+<br><br>
 == Identification ==
 
 Identification är ett object som identifierar användaren och en profil. 
@@ -35,6 +39,7 @@ Identification är ett object som identifierar användaren och en profil.
 
 
 
+<br><br>
 == Document == 
 
 Document är ett interface som används av tre klasser:
@@ -45,7 +50,7 @@ Document är ett interface som används av tre klasser:
 `DocumentImpl` innehåller fullständig information om ett document och är inte tänkt att användas för sig. Istället är det tänkt att `FileDocument` och `TextDocument` ska användas, vilka implementerar valda delar ur `DocumentImpl` klassen. 
 
 
-
+<br><br>
 === TextDocument ===
 
 TextDocument representerar ett dokument innehållande text eller HTML text. 
@@ -55,7 +60,7 @@ TextDocument representerar ett dokument innehållande text eller HTML text.
 || textContent || String || Dokumentets textinnehåll (utf-8 kodat) ||
 
 
-
+<br><br>
 === FileDocument ===
 
 FileDocument representerar en fil som t.ex. file.html, file.pdf, file.odt etc. 
@@ -66,6 +71,7 @@ FileDocument representerar en fil som t.ex. file.html, file.pdf, file.odt etc.
 || encoding|| String || Kodning av innehållet i strömmen, t.ex. utf-8 ||
 
 
+<br><br>
 === ResponseObject===
 
 ResponseObject används som standard svar till funktioner som vanligtvis inte har något resultat att ge. Objektet har endast en status kod och ett eventuellt felmeddelande.
@@ -75,6 +81,7 @@ ResponseObject används som standard svar till funktioner som vanligtvis inte ha
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
 
 
+<br><br>
 === NodeListResponseObject===
 
 || *Namn* || *Typ* || *Förklaring* ||
