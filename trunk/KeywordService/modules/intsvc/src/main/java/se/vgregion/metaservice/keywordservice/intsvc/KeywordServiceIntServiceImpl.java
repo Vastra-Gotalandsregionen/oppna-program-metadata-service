@@ -10,6 +10,10 @@ import org.apache.log4j.Logger;
 import se.vgregion.metaservice.keywordservice.KeyWordService;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.Metadata;
+import se.vgregion.metaservice.keywordservice.domain.Options;
+import se.vgregion.metaservice.keywordservice.domain.Identification;
+import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.document.TextDocument;
 import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatException;
 import se.vgregion.metaservice.keywordservice.schema.MedicalNodeSdoHelper;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeType;
@@ -18,6 +22,9 @@ import se.vgregion.metaservice.wsdl.keywordservices.AddBookmarkedKeywordsRequest
 import se.vgregion.metaservice.wsdl.keywordservices.AddTaggedKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetNodeByInternalIdRequest;
+
+
+//TODO: Fix all this according to api
 
 public class KeywordServiceIntServiceImpl implements
 		se.vgregion.metaservice.wsdl.keywordservices.KeywordService {
@@ -28,8 +35,15 @@ public class KeywordServiceIntServiceImpl implements
 
 		Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
 
+
 		List<MedicalNode> keywordResult = new ArrayList<MedicalNode>();
 
+                NodeListResponseObject res = keywordService.getKeywords(new Identification("x","x"),
+                        "x", new TextDocument(), new Options());
+
+                keywordResult = res.getNodeList();
+
+                /**
 		try {
 			keywordResult = keywordService.getKeywords(parameters.getContent(),
 					parameters.getTitle(), parameters.getUserId(), parameters
@@ -39,6 +53,10 @@ public class KeywordServiceIntServiceImpl implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+                 * */
+
+
+
 		List<MedicalNode> keywords = new ArrayList<MedicalNode>(keywordResult);
 
 		MedicalNodeListType retval = MedicalNodeSdoHelper
@@ -75,7 +93,7 @@ public class KeywordServiceIntServiceImpl implements
 	public void addTaggedKeywords(AddTaggedKeywordsRequest parameters) {
 		List<String> userCodes = parameters.getKeywordCodes().getKeywordCode();
 		String userId = parameters.getUserId();
-		keywordService.addTaggedKeywords(userId, userCodes);
+		keywordService.addTaggedKeywords(new Identification(userId,"x"),"x", userCodes);
 
 	}
 
@@ -83,7 +101,7 @@ public class KeywordServiceIntServiceImpl implements
 		System.out.println("Bookmarking keyword ");
 		List<String> userCodes = parameters.getKeywordCodes().getKeywordCode();
 		String userId = parameters.getUserId();
-		keywordService.addBookmarkedKeywords(userId, userCodes);
+		keywordService.addBookmarkedKeywords(new Identification(userId,"x"),"x", userCodes);
 		
 	}
 
