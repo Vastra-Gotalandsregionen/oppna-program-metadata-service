@@ -26,7 +26,7 @@ getNodeByInternalId används för att returnera en nod via dess interna id numme
 
 || *Namn*	|| *Typ*	|| *Förklaring* ||
 || id           || Identification || Användaridentifikation ||
-|| requestId    || String	        || Unik anropsidentifierare (för loggsyfte) ||
+|| requestId    || String	        || Unik anropsidentifierare (loggsyfte) ||
 || internalId	|| String	|| Det interna id numret på en nod|| 
 
 
