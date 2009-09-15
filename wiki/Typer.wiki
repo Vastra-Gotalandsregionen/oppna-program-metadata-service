@@ -4,9 +4,9 @@
 
 Under detta avsnitt presenteras de typer som tjänsten använder sig av
 
-== MedicalNode ==
+== Node ==
 
-MedicalNode typen innehåller information om ett nyckelord. Denna typ har fält enligt nedanstående.
+Node typen innehåller information om ett nyckelord. Denna typ har fält enligt nedanstående.
 
 || *Namn* || *Typ* || *Förklaring* ||
 || name	|| String || Namnet på noden. Presenteras i GUI:t ||
@@ -23,3 +23,61 @@ MedicalNode typen innehåller information om ett nyckelord. Denna typ har fält 
 UserStatus typen är en enumeration och används för att markera hur användaren har använt ett nyckelord. I dagsläget kan en användare välja att bokmärka ett nyckelord, och systemet kan märka ett nyckelord som taggat. Ett taggat nyckelord innebär att det har använts för att beskriva ett dokument av den aktuella användaren tidigare.
 
 Tillåtna värden på UserStatus är: bookmarked, taggged.
+
+
+== Identification ==
+
+Identification är ett object som identifierar användaren och en profil. 
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| userId || String || Identiferar användaren ||
+|| profileId || String || Identifierar en profil ||
+
+
+
+== Document == 
+
+Document är ett interface som används av tre klasser:
+ * DocumentImpl
+ * FileDocument
+ * TextDocument
+
+`DocumentImpl` innehåller fullständig information om ett document och är inte tänkt att användas för sig. Istället är det tänkt att `FileDocument` och `TextDocument` ska användas, vilka implementerar valda delar ur `DocumentImpl` klassen. 
+
+
+
+=== TextDocument ===
+
+TextDocument representerar ett dokument innehållande text eller HTML text. 
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| title|| String || Titel på dokumentet ||
+|| textContent || String || Dokumentets textinnehåll (utf-8 kodat) ||
+
+
+
+=== FileDocument ===
+
+FileDocument representerar en fil som t.ex. file.html, file.pdf, file.odt etc. 
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| filename || String || Fullständigt filnamn  ||
+|| inputStream || InputStream || En ström till filinnehållet  ||
+|| encoding|| String || Kodning av innehållet i strömmen, t.ex. utf-8 ||
+
+
+=== ResponseObject===
+
+ResponseObject används som standard svar till funktioner som vanligtvis inte har något resultat att ge. Objektet har endast en status kod och ett eventuellt felmeddelande.
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
+|| errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
+
+
+=== NodeListResponseObject===
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
+|| errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
+|| nodeList || List<Node> || En list av Node objekt ||
