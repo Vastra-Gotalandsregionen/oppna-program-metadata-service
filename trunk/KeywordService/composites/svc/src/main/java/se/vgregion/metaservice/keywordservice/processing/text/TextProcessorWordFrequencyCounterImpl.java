@@ -12,7 +12,7 @@ import java.util.regex.*;
 
 import org.apache.log4j.Logger;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorWordFrequencyCounterImpl extends TextProcessor {
 
@@ -29,13 +29,13 @@ public class TextProcessorWordFrequencyCounterImpl extends TextProcessor {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	public ProcessorStatus process(Document document) {
+	public ProcessorStatus process(AnalysisDocument document) {
 		HashMap<String, Integer> wordFreq = new HashMap<String, Integer>();
 		HashMap<String, Double> tfidfTable = new HashMap<String, Double>();
 
-		StringTokenizer tokenizer = new StringTokenizer(document.getContent(""));
+		StringTokenizer tokenizer = new StringTokenizer(document.getTextContent());
 		countFrequencies(tokenizer, wordFreq, 1);
-		tokenizer = new StringTokenizer(document.getTitle(""));
+		tokenizer = new StringTokenizer(document.getTitle());
 		countFrequencies(tokenizer, wordFreq, titleWeight);
 
 		int n = docfreqs.get("NUMBER_OF_FILES") + 1;

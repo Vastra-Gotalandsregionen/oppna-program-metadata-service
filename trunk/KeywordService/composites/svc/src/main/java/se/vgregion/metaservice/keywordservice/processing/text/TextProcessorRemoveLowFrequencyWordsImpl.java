@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorRemoveLowFrequencyWordsImpl extends TextProcessor {
 
@@ -20,7 +20,7 @@ public class TextProcessorRemoveLowFrequencyWordsImpl extends TextProcessor {
 
 	private Logger log = Logger.getLogger(this.getClass());
 
-	public ProcessorStatus process(Document document) {
+	public ProcessorStatus process(AnalysisDocument document) {
 		Map<String,Integer> wordFreq = (HashMap<String,Integer>) document.getPropertyObject("wordfrequency");
 		if(wordFreq == null) {
 			log.info("No word frequency information found for document. Returning...");
@@ -47,7 +47,7 @@ public class TextProcessorRemoveLowFrequencyWordsImpl extends TextProcessor {
 			processedString.append(" ");
 		}
 		
-		document.setContent(processedString.toString());
+		document.setTextContent(processedString.toString());
 		
 		return ProcessorStatus.OK;
 

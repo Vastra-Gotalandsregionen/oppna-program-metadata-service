@@ -11,7 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.dao.BlacklistedWordDao;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.Metadata;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
@@ -116,9 +116,9 @@ public class KeyWordService {
 
 		/** * Extract keywords ** */
 		log.debug("Getting keywords");
-		Document document = new Document();
+		AnalysisDocument document = new AnalysisDocument();
 		document.setTitle(cleanTitle);
-		document.setContent(cleanContent);
+		document.setTextContent(cleanContent);
 		String[] keywords = analysisService.extractWords(document,wordLimit);
 		/** ********************* */
 

@@ -6,7 +6,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 /**
  * Removes short words from a text. The minimum length for a word is specified
@@ -43,12 +43,12 @@ public class TextProcessorRemoveShortWordsImpl extends TextProcessor {
 	 * @param Document the document to process
 	 * 
 	 */
-	public ProcessorStatus process(Document document) {
-		StringTokenizer tokenizer = new StringTokenizer(document.getContent(""));
+	public ProcessorStatus process(AnalysisDocument document) {
+		StringTokenizer tokenizer = new StringTokenizer(document.getTextContent());
 		StringBuffer processedString = removeShortWords(tokenizer);
-		document.setContent(processedString.toString());
+		document.setTextContent(processedString.toString());
 
-		tokenizer = new StringTokenizer(document.getTitle(""));
+		tokenizer = new StringTokenizer(document.getTitle());
 		processedString = removeShortWords(tokenizer);
 		document.setTitle(processedString.toString());
 

@@ -13,14 +13,14 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorSortWordsByFrequencyImpl extends TextProcessor {
 
 	private static Logger log = Logger.getLogger(TextProcessorSortWordsByFrequencyImpl.class);
 	
 	@Override
-	public ProcessorStatus process(Document document) {
+	public ProcessorStatus process(AnalysisDocument document) {
 		Object wordFreqProp = document.getPropertyObject("wordfrequency");
 		if(wordFreqProp == null) {
 			log.info("No word frequency found. Returning...");
@@ -40,7 +40,7 @@ public class TextProcessorSortWordsByFrequencyImpl extends TextProcessor {
 			buf.append(" ");
 		}
 		
-		document.setContent(buf.toString());
+		document.setTextContent(buf.toString());
 		
 		return ProcessorStatus.OK;
 		

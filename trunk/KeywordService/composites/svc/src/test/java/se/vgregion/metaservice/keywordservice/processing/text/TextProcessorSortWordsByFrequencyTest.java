@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import se.vgregion.metaservice.keywordservice.BaseSpringDependencyInjectionTest;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorSortWordsByFrequencyTest extends
 		BaseSpringDependencyInjectionTest {
@@ -14,7 +14,7 @@ public class TextProcessorSortWordsByFrequencyTest extends
 	public void testSortWords() {
 		TextProcessor wordSorterProcessor = (TextProcessor) applicationContext
 				.getBean("wordsSorterProcessor");
-		Document document = new Document();
+		AnalysisDocument document = new AnalysisDocument();
 		Map<String, Integer> wordFreqs = new HashMap<String, Integer>();
 
 		wordFreqs.put("sist", 25);
@@ -27,7 +27,7 @@ public class TextProcessorSortWordsByFrequencyTest extends
 
 		wordSorterProcessor.process(document);
 
-		String content = document.getContent();
+		String content = document.getTextContent();
 		assertNotNull(content);
 
 		String[] words = content.split(" ");

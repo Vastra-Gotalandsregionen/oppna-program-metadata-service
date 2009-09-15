@@ -4,7 +4,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 /**
  * Normalizes the text in the title and content of a Document. Normalizing is performed by 
@@ -15,11 +15,11 @@ import se.vgregion.metaservice.keywordservice.domain.Document;
  */
 public class TextProcessorNormalizerImpl extends TextProcessor {
 	
-	public ProcessorStatus process(Document document) {
-		String content = document.getContent("");
+	public ProcessorStatus process(AnalysisDocument document) {
+		String content = document.getTextContent();
 		if(content != null)
 			content = content.toLowerCase();
-		String title = document.getTitle("");
+		String title = document.getTitle();
 		if(title != null)
 			title = title.toLowerCase();
 		
@@ -33,7 +33,7 @@ public class TextProcessorNormalizerImpl extends TextProcessor {
 		matcher = pattern.matcher(title);
 		String cleanTitle = matcher.replaceAll(replaceStr);
 		
-		document.setContent(cleanContent);
+		document.setTextContent(cleanContent);
 		document.setTitle(cleanTitle);
 		
 		return ProcessorStatus.OK;

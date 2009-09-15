@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.AnalysisService;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor.ProcessorStatus;
 
@@ -22,14 +22,14 @@ public class AnalysisServiceImpl extends AnalysisService {
 	 * by setResultLimit is returned. Returned keywords is taken from the content and title field in the Document.
 	 */
 	@Override
-	public String[] extractWords(Document document,int wordLimit) {
+	public String[] extractWords(AnalysisDocument document,int wordLimit) {
 		for(TextProcessor processor : processors) {
 			log.info(MessageFormat.format("Calling processor {0}",processor.getClass().getSimpleName()));
 			try {
 			ProcessorStatus status = processor.process(document);
 			log.debug(MessageFormat.format("### {0} ###",processor.getClass().getSimpleName()));
 			log.debug(MessageFormat.format("Title: {0} ",document.getTitle()));
-			log.debug(MessageFormat.format("Content: {0} ",document.getContent()));
+			log.debug(MessageFormat.format("Content: {0} ",document.getTextContent()));
 			
 			if(status.equals(ProcessorStatus.FAILED)) {
 				log.warn("Processing failed, aborting");
@@ -42,7 +42,7 @@ public class AnalysisServiceImpl extends AnalysisService {
 				//TODO: Catch and throw new exception that propagates up to response
 			}
 		}
-		String newContent = document.getContent()+document.getTitle();
+		String newContent = document.getTextContent()+document.getTitle();
 		
 		if(newContent.trim().equals(""))
 			return new String[0];

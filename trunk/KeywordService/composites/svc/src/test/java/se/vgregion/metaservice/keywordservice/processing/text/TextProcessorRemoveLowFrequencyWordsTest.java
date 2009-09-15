@@ -1,7 +1,7 @@
 package se.vgregion.metaservice.keywordservice.processing.text;
 
 import se.vgregion.metaservice.keywordservice.BaseSpringDependencyInjectionTest;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorRemoveLowFrequencyWordsTest extends
 		BaseSpringDependencyInjectionTest {
@@ -11,12 +11,12 @@ public class TextProcessorRemoveLowFrequencyWordsTest extends
 	
 	public void testRemoveLowFrequencyWords() {
 		TextProcessor wordRemoverProcessor = (TextProcessor) applicationContext.getBean("wordRemoverProcessor");
-		Document document = new Document();
-		document.setContent(TEXT_TO_PROCESS);
+		AnalysisDocument document = new AnalysisDocument();
+		document.setTextContent(TEXT_TO_PROCESS);
 		
 		wordRemoverProcessor.process(document);
 		
-		String content = document.getContent();
+		String content = document.getTextContent();
 		
 		assertNotNull(content);
 		
