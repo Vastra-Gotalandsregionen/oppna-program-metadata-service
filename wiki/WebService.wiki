@@ -97,6 +97,7 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 *Inparametrar*
 
 || *Namn* || *Typ* || *Förklaring* ||
+|| requestId || String || Unik anrops-identifierare ||
 || path	|| String || Sökvägen till noden ||
 
 *Returvärde*
