@@ -13,8 +13,10 @@ public class ResponseObject {
     public enum StatusCode {
 
         ok(200),
+
         unsupported_text_format(1001),
         error_formatting_content(1002),
+        no_content(1003),
         error_processing_content(2001),
         error_getting_keywords_from_taxonomy(3001),
         unknown_error(6001);
@@ -32,20 +34,23 @@ public class ResponseObject {
             return code;
         }
     }
+    private String requestId = null;
     private String errorMessage = null;
     private StatusCode statusCode = null;
 
     /**
-     * Empty constructor for ok message
+     * Constructor for ok message
      */
-    public ResponseObject() {
+    public ResponseObject(String requestId) {
+        this.requestId = requestId;
         statusCode = StatusCode.ok;
     }
 
     /**
      * Constructor for error-response
      */
-    public ResponseObject(StatusCode statusCode, String errorMessage) {
+    public ResponseObject(String requestId, StatusCode statusCode, String errorMessage) {
+        this.requestId = requestId;
         this.errorMessage = errorMessage;
         this.statusCode = statusCode;
     }
@@ -82,4 +87,14 @@ public class ResponseObject {
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
     }
+
+    /**
+     * Get the uniqe requestId that identifies the original request
+     * @return the id
+     */
+    public String getRequestId() {
+        return requestId;
+    }
+
+
 }
