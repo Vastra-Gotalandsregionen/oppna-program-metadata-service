@@ -44,7 +44,7 @@ bookmarkKeywords används för att bokmärka nyckelord för en användare.
 || *Namn*	|| *Typ*	|| *Förklaring* ||
 || id           || Identification || Användaridentifikation ||
 || requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
-||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
+||keywordIds	||List<String>	||En lista av ids för varje nyckelord som ska läggas till som bokmärke.||
 
 *Returvärde*
 _ResponseObject med statuskod och ev. felmeddelande_
@@ -60,7 +60,7 @@ tagKeywords används för att markera ett nyckelord som taggat. Det innebär att
 || *Namn* || *Typ*	|| *Förklaring* ||
 || id           || Identification || Användaridentifikation ||
 || requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
-|| keywordCodes	|| List<String>	|| En lista av koder för varje nyckelord som ska markeras som taggat.||
+|| keywordIds	|| List<String>	|| En lista av ids för varje nyckelord som ska markeras som taggat.||
 
 *Returvärde*
 _ResponseObject med statuskod och ev. felmeddelande_
