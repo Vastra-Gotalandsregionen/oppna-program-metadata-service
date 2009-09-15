@@ -17,7 +17,7 @@ GetKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 ||includeSourceIds	||String	||Anger i vilka kategorier ska man söka för nyckelord. Idn anges som en sträng separerade av mellanslag, t.ex "A C D"||
 
 *Returvärde*
-_GetKeywords returnerar en lista av MedicalNode objekt_
+_NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
 == GetNodeByInternalId ==
 
@@ -72,3 +72,18 @@ GetVocabulary returnerar alla direkt underliggande noder till en nod.
 
 *Returvärde*
 _En lista med MedicalNode objekt_
+
+== addNode ==
+
+Lägger till en ny vokabulärnod som undernod till en existerande nod. 
+
+*Inparametrar*
+|| *Namn* || *Typ* || *Förklaring* ||
+|| id || Identification || Objekt som identifierar användare och profil ||
+|| requestId || String || Unik anrops-identifierare ||
+|| node || Node || Ett nytt nod-objekt som innehåller en förälder relation ||
+
+*Returvärde*
+_Ett ResponeObject klass med statuskod och felmeddelande typ. _
+
+
