@@ -9,7 +9,7 @@ getKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 
 || *Namn*     || *Typ*          || *Förklaring* ||
 || id         || Identification || Användaridentifikation ||
-|| requestId  || String	        || Unik anropsidentifierare (för loggsyfte) ||
+|| requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
 || document   || Document       || Text- eller fildokument (TextDocument eller FileDocument) ||
 || options    || Options        || Valfria extra-parametrar ||
 
@@ -42,25 +42,43 @@ bookmarkKeywords används för att bokmärka nyckelord för en användare.
 
 || *Namn*	|| *Typ*	|| *Förklaring* ||
 || id           || Identification || Användaridentifikation ||
-|| requestId  || String	        || Unik anropsidentifierare (för loggsyfte) ||
+|| requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
 ||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
 
 *Returvärde*
-_ResponseObject statuskod och ev. felmeddelande_
+_ResponseObject med statuskod och ev. felmeddelande_
 
 
 == tagKeywords ==
 
-addTaggedKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
+tagKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
 
 *Inparametrar*
 
 || *Namn* || *Typ*	|| *Förklaring* ||
-||userId||String||Användarid för användaren som lägger in artikeln ||
-||keywordCodes	|| List<String>	|| En lista av koder för varje nyckelord som ska markeras som taggat.||
+|| id           || Identification || Användaridentifikation ||
+|| requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
+|| keywordCodes	|| List<String>	|| En lista av koder för varje nyckelord som ska markeras som taggat.||
 
 *Returvärde*
-_Inget_
+_ResponseObject med statuskod och ev. felmeddelande_
+
+
+== lookupWord ==
+
+lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`.
+
+*Inparametrar*
+
+|| *Namn* || *Typ*	|| *Förklaring* ||
+|| id           || Identification || Användaridentifikation ||
+|| word  || String	        || Ordet att leta efter i listorna ||
+
+
+
+*Returvärde*
+_ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`, `blacklist`, eller `none`. _
+
 
 
 = Web Service Vokabulärtjänst =
@@ -78,7 +96,8 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 || path	|| String || Sökvägen till noden ||
 
 *Returvärde*
-_En lista med MedicalNode objekt_
+_NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
+
 
 == addVocabularyNode ==
 
@@ -92,3 +111,48 @@ Lägger till en ny vokabulärnod som undernod till en existerande nod.
 
 *Returvärde*
 _ResponseObject statuskod och ev. felmeddelande_
+
+
+== moveVocabularyNode ==
+
+Flyttar en vokabulärnod från en nod till en annan. 
+
+*Inparametrar*
+|| *Namn* || *Typ* || *Förklaring* ||
+|| id || Identification || Objekt som identifierar användare och profil ||
+|| requestId || String || Unik anrops-identifierare ||
+|| nodeId || String || Id för den nod som ska flyttas ||
+|| destNodeId || String || Id till den nod som ska bli ny föräldernod, prefixat av namnutrymmet (namespace) ||
+
+*Returvärde*
+_ResponseObject statuskod och ev. felmeddelande_
+
+
+
+== updateVocabularyNode ==
+
+Uppdaterar innehållet i en vokabulärnod. 
+
+*Inparametrar*
+|| *Namn* || *Typ* || *Förklaring* ||
+|| id || Identification || Objekt som identifierar användare och profil ||
+|| requestId || String || Unik anrops-identifierare ||
+|| node || Node || Den uppdaterade noden (med oförändrat nodeId) ||
+
+*Returvärde*
+_ResponseObject statuskod och ev. felmeddelande_
+
+
+== dumpDbAsXML==
+
+todo
+
+*Inparametrar*
+
+todo
+
+
+*Returvärde*
+_ResponseObject statuskod och ev. felmeddelande_
+
+
