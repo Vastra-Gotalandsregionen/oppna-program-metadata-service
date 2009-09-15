@@ -1,52 +1,57 @@
 #summary In- och ut- parametrar i Nyckelord- och Vokabulär- tjänsten
-
 = Web Service Nyckelordtjänst =
+<hr>
+== getKeywords ==
 
-== GetKeywords ==
-
-GetKeywords är huvudoperationen, där man skickar in en artikel och får tillbaka en lista av nyckelord som passar in på artikeln. 
+getKeywords är huvudoperationen, där man skickar in en artikel och får tillbaka en lista av nyckelord som passar in på artikeln. 
 
 *Inparametrar*
 
-|| *Namn*	 || *Typ*  	|| *Förklaring* ||
-|| title ||String	||Titel på dokumentet ||
-||content	||String	||Dokumentets innehåll ||
-||userId        ||String	||Användarid för användaren som anropar metoden ||
-||format	||String	||Anger vilket format innehållet är på. I dagsläget är tillåtna värden “text” och “html” ||
-||extractedWordsLimit || Integer || Anger antall MedicalNodes som ska returneras ||
-||includeSourceIds	||String	||Anger i vilka kategorier ska man söka för nyckelord. Idn anges som en sträng separerade av mellanslag, t.ex "A C D"||
+|| *Namn*     || *Typ*          || *Förklaring* ||
+|| id         || Identification || Användaridentifikation ||
+|| requestId  || String	        || Unik anropsidentifierare (för loggsyfte) ||
+|| document   || Document       || Text- eller fildokument (TextDocument eller FileDocument) ||
+|| options    || Options        || Valfria extra-parametrar ||
+
 
 *Returvärde*
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
-== GetNodeByInternalId ==
 
-GetNodeByInternalId används för att returnera en nod via dess interna id nummer.
+== getNodeByInternalId ==
+
+getNodeByInternalId används för att returnera en nod via dess interna id nummer.
 
 *Inparametrar*
 
 || *Namn*	|| *Typ*	|| *Förklaring* ||
-|| internalId	|| String	|| Det interna id numret på en nod (MedicalNode)|| 
+|| id           || Identification || Användaridentifikation ||
+|| requestId    || String	        || Unik anropsidentifierare (för loggsyfte) ||
+|| internalId	|| String	|| Det interna id numret på en nod|| 
+
 
 *Returvärde*
-_En MedicalNode_
+_NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
-== AddBookmarkedKeywords ==
 
-AddBookmarkedKeywords används för att bokmärka nyckelord för en användare.
+== bookmarkKeywords ==
+
+bookmarkKeywords används för att bokmärka nyckelord för en användare.
 
 *Inparametrar*
 
 || *Namn*	|| *Typ*	|| *Förklaring* ||
-||userId ||	String	|| Användarid för användaren som lägger till bokmärket ||
+|| id           || Identification || Användaridentifikation ||
+|| requestId  || String	        || Unik anropsidentifierare (för loggsyfte) ||
 ||keywordCodes	||List<String>	||En lista av koder för varje nyckelord som ska läggas till som bokmärke.||
 
 *Returvärde*
-_Inget_
+_ResponseObject statuskod och ev. felmeddelande_
 
-== AddTaggedKeywords ==
 
-AddTaggedKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
+== tagKeywords ==
+
+addTaggedKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
 
 *Inparametrar*
 
@@ -57,13 +62,15 @@ AddTaggedKeywords används för att markera ett nyckelord som taggat. Det inneb�
 *Returvärde*
 _Inget_
 
-= Web Service Vokabulärtjänst =
 
+= Web Service Vokabulärtjänst =
+<hr>
 Vokabulärtjänsten exponeras i dagsläget som en Web Service. Nedan beskrivs den operation som är exponerad. De egenutvecklade typerna som används är definierade i avsnittet Typer.
+
 
 == GetVocabulary ==
 
-GetVocabulary returnerar alla direkt underliggande noder till en nod. 
+getVocabulary returnerar alla direkt underliggande noder till en nod. 
 
 *Inparametrar*
 
@@ -73,7 +80,7 @@ GetVocabulary returnerar alla direkt underliggande noder till en nod.
 *Returvärde*
 _En lista med MedicalNode objekt_
 
-== addNode ==
+== addVocabularyNode ==
 
 Lägger till en ny vokabulärnod som undernod till en existerande nod. 
 
@@ -84,6 +91,4 @@ Lägger till en ny vokabulärnod som undernod till en existerande nod.
 || node || Node || Ett nytt nod-objekt som innehåller en förälder relation ||
 
 *Returvärde*
-_Ett ResponeObject klass med statuskod och felmeddelande typ. _
-
-
+_ResponseObject statuskod och ev. felmeddelande_
