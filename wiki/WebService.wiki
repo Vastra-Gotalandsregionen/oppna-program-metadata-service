@@ -17,7 +17,7 @@ getKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 *Returvärde*
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
-
+<br><br>
 == getNodeByInternalId ==
 
 getNodeByInternalId används för att returnera en nod via dess interna id nummer.
@@ -34,6 +34,7 @@ getNodeByInternalId används för att returnera en nod via dess interna id numme
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
 
+<br><br>
 == bookmarkKeywords ==
 
 bookmarkKeywords används för att bokmärka nyckelord för en användare.
@@ -49,6 +50,7 @@ bookmarkKeywords används för att bokmärka nyckelord för en användare.
 _ResponseObject med statuskod och ev. felmeddelande_
 
 
+<br><br>
 == tagKeywords ==
 
 tagKeywords används för att markera ett nyckelord som taggat. Det innebär att nyckelordet har används för att beskriva ett dokument. Bör kallas automatiskt av klienten när användaren valt nyckelord för en artikel.
@@ -64,6 +66,7 @@ tagKeywords används för att markera ett nyckelord som taggat. Det innebär att
 _ResponseObject med statuskod och ev. felmeddelande_
 
 
+<br><br>
 == lookupWord ==
 
 lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`.
@@ -86,6 +89,7 @@ _ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`,
 Vokabulärtjänsten exponeras i dagsläget som en Web Service. Nedan beskrivs den operation som är exponerad. De egenutvecklade typerna som används är definierade i avsnittet Typer.
 
 
+<br><br>
 == GetVocabulary ==
 
 getVocabulary returnerar alla direkt underliggande noder till en nod. 
@@ -99,6 +103,7 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
 
+<br><br>
 == addVocabularyNode ==
 
 Lägger till en ny vokabulärnod som undernod till en existerande nod. 
@@ -113,6 +118,7 @@ Lägger till en ny vokabulärnod som undernod till en existerande nod.
 _ResponseObject statuskod och ev. felmeddelande_
 
 
+<br><br>
 == moveVocabularyNode ==
 
 Flyttar en vokabulärnod från en nod till en annan. 
@@ -128,7 +134,7 @@ Flyttar en vokabulärnod från en nod till en annan.
 _ResponseObject statuskod och ev. felmeddelande_
 
 
-
+<br><br>
 == updateVocabularyNode ==
 
 Uppdaterar innehållet i en vokabulärnod. 
@@ -143,6 +149,7 @@ Uppdaterar innehållet i en vokabulärnod.
 _ResponseObject statuskod och ev. felmeddelande_
 
 
+<br><br>
 == dumpDbAsXML==
 
 todo
@@ -154,5 +161,3 @@ todo
 
 *Returvärde*
 _ResponseObject statuskod och ev. felmeddelande_
-
-
