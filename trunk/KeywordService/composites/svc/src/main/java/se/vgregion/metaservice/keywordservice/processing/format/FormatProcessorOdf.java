@@ -6,6 +6,9 @@ import java.util.regex.Pattern;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
+import se.vgregion.metaservice.keywordservice.domain.document.Document;
+import se.vgregion.metaservice.keywordservice.exception.FormattingException;
 
 
 
@@ -17,6 +20,13 @@ import javax.xml.xpath.XPathFactory;
  */
 
 public class FormatProcessorOdf implements FormatProcessor {
+
+        public AnalysisDocument process(Document document) throws FormattingException {
+
+        //TODO: Implement this function!
+        return new AnalysisDocument();
+
+    }
 
 	public String process (String formattedString) {
 		/*
