@@ -5,62 +5,67 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-
-
-
-
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
+import se.vgregion.metaservice.keywordservice.domain.document.Document;
+import se.vgregion.metaservice.keywordservice.exception.FormattingException;
 
 /*
  * Format processor that handles word files text. Simply returns a clean representation of the 
  * input string.
  * @author svet
  */
-
 public class FormatProcessorDoc implements FormatProcessor {
 
-	public String process (String formattedString) {
-		return formattedString;
-		/*ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+    public AnalysisDocument process(Document document) throws FormattingException {
 
-		OutputStreamWriter out = new OutputStreamWriter(outputStream);
+        //TODO: Implement this function!
+        return new AnalysisDocument();
 
-		POIFSFileSystem fileSystem = null;
-		try {
-            fileSystem = new POIFSFileSystem(new ByteArrayInputStream(formattedString.getBytes()));
-		} catch (IOException ex) {
+    }
 
-			System.out.println("Error");
-		}
-		HWPFDocument document = null;
-		try {
-			document = new HWPFDocument(fileSystem);
-		} catch (IOException ex) {
-		}
+    public String process(String formattedString) {
+        return formattedString;
+        /*ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-		// Extract the text
+        OutputStreamWriter out = new OutputStreamWriter(outputStream);
 
-		WordExtractor wordExtractor = null;
-		try {
-			wordExtractor = new WordExtractor(document);
-		} catch (IOException ex) {
-			System.out.println("Error");
-		}
-		String[] paragraphs = wordExtractor.getParagraphText();
+        POIFSFileSystem fileSystem = null;
+        try {
+        fileSystem = new POIFSFileSystem(new ByteArrayInputStream(formattedString.getBytes()));
+        } catch (IOException ex) {
 
-		try {
-			for (int i = 0; i < paragraphs.length; i++) {
-				paragraphs[i] = WordExtractor.stripFields(paragraphs[i]);
-				out.write(paragraphs[i]);
-			}
-			out.close();
-		} catch (IOException ex) {
-			System.out.println("Error");
-		}
-		
-		SummaryInformation si = wordExtractor.getSummaryInformation();
-		String title =  si.getTitle();
-		System.out.println("DOC: --> " + title);
+        System.out.println("Error");
+        }
+        HWPFDocument document = null;
+        try {
+        document = new HWPFDocument(fileSystem);
+        } catch (IOException ex) {
+        }
 
-		return outputStream.toString();*/
-	}
+        // Extract the text
+
+        WordExtractor wordExtractor = null;
+        try {
+        wordExtractor = new WordExtractor(document);
+        } catch (IOException ex) {
+        System.out.println("Error");
+        }
+        String[] paragraphs = wordExtractor.getParagraphText();
+
+        try {
+        for (int i = 0; i < paragraphs.length; i++) {
+        paragraphs[i] = WordExtractor.stripFields(paragraphs[i]);
+        out.write(paragraphs[i]);
+        }
+        out.close();
+        } catch (IOException ex) {
+        System.out.println("Error");
+        }
+
+        SummaryInformation si = wordExtractor.getSummaryInformation();
+        String title =  si.getTitle();
+        System.out.println("DOC: --> " + title);
+
+        return outputStream.toString();*/
+    }
 }

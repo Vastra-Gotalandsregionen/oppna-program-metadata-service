@@ -1,6 +1,9 @@
 package se.vgregion.metaservice.keywordservice.processing.format;
 
 import java.io.ByteArrayInputStream;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
+import se.vgregion.metaservice.keywordservice.domain.document.Document;
+import se.vgregion.metaservice.keywordservice.exception.FormattingException;
 
 
 
@@ -12,6 +15,13 @@ import java.io.ByteArrayInputStream;
  */
 
 public class FormatProcessorPdf implements FormatProcessor {
+
+        public AnalysisDocument process(Document document) throws FormattingException {
+
+        //TODO: Implement this function!
+        return new AnalysisDocument();
+
+    }
 
 	public String process (String formattedString) {
 		return formattedString;

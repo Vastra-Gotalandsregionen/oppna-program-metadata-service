@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.AnalysisService;
 import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
+import se.vgregion.metaservice.keywordservice.exception.ProcessingException;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor.ProcessorStatus;
 
@@ -22,7 +23,11 @@ public class AnalysisServiceImpl extends AnalysisService {
 	 * by setResultLimit is returned. Returned keywords is taken from the content and title field in the Document.
 	 */
 	@Override
-	public String[] extractWords(AnalysisDocument document,int wordLimit) {
+	public String[] extractWords(AnalysisDocument document,int wordLimit) throws ProcessingException{
+
+            //TODO:Make this method throw ProcessingException
+
+
 		for(TextProcessor processor : processors) {
 			log.info(MessageFormat.format("Calling processor {0}",processor.getClass().getSimpleName()));
 			try {

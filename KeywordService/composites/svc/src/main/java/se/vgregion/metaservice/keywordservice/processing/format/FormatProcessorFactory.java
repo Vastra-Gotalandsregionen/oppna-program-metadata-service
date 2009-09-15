@@ -33,7 +33,7 @@ public class FormatProcessorFactory {
 		FormatProcessor processor = formatProcessors.get(format);
 		if(processor == null) {
 			
-			throw new UnsupportedFormatException();
+			throw new UnsupportedFormatException("The format is not supported");
 		}
 		
 		return processor;
