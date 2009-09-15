@@ -7,7 +7,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.dao.BlacklistedWordDao;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
 
 public class TextProcessorRemoveBlacklistedWords extends TextProcessor {
@@ -16,13 +16,13 @@ public class TextProcessorRemoveBlacklistedWords extends TextProcessor {
 	
 	private static Logger log = Logger.getLogger(TextProcessorRemoveBlacklistedWords.class);
 	
-	public ProcessorStatus process(Document document) {
+	public ProcessorStatus process(AnalysisDocument document) {
 		List<BlacklistedWord> blacklistedWords = blacklistedWordDao.getAllBlacklistedWords();
 		String title = removeBlacklistedWords(blacklistedWords, document.getTitle());
-		String content = removeBlacklistedWords(blacklistedWords, document.getContent());
+		String content = removeBlacklistedWords(blacklistedWords, document.getTextContent());
 		
 		document.setTitle(title);
-		document.setContent(content);
+		document.setTextContent(content);
 		
 		return ProcessorStatus.OK;
 

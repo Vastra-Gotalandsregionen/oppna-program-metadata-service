@@ -1,6 +1,6 @@
 package se.vgregion.metaservice.keywordservice;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 
 public class AnalysisServiceTest extends BaseOpenJpaTest {
@@ -18,8 +18,8 @@ public class AnalysisServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testExtractKeywords() {
-		Document doc = new Document();
-		doc.setContent(TEXT_TO_PROCESS);
+		AnalysisDocument doc = new AnalysisDocument();
+		doc.setTextContent(TEXT_TO_PROCESS);
 		String[] keywords = analysisService.extractWords(doc,10);
 		assertNotNull(keywords);
 		assertTrue(keywords.length > 0);
@@ -28,16 +28,16 @@ public class AnalysisServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testExtractZeroKeywords() {
-		Document doc = new Document();
-		doc.setContent("");
+		AnalysisDocument doc = new AnalysisDocument();
+		doc.setTextContent("");
 		String[] keywords = analysisService.extractWords(doc,10);
 		assertNotNull(keywords);
 		assertEquals(0,keywords.length);
 	}
 	
 	public void testReturnLimit() {
-		Document doc = new Document();
-		doc.setContent(TEXT_TO_PROCESS);
+		AnalysisDocument doc = new AnalysisDocument();
+		doc.setTextContent(TEXT_TO_PROCESS);
 		String[] keywords = analysisService.extractWords(doc, 10);
 		assertNotNull(keywords);
 		assertEquals(10,keywords.length);

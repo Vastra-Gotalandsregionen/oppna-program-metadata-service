@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import se.vgregion.metaservice.keywordservice.BaseSpringDependencyInjectionTest;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorStopWordTest extends BaseSpringDependencyInjectionTest {
 
@@ -15,9 +15,9 @@ public class TextProcessorStopWordTest extends BaseSpringDependencyInjectionTest
 	
 	public void testRemoveStopWords() {
 		TextProcessor stopWordProcessor = (TextProcessor)applicationContext.getBean("stopwordProcessor");
-		Document doc = createDocument(TEXT_TO_PROCESS);
+		AnalysisDocument doc = createDocument(TEXT_TO_PROCESS);
 		stopWordProcessor.process(doc);
-		String processedText = doc.getContent();
+		String processedText = doc.getTextContent();
 		assertEquals("dependency", processedText.trim());
 	}
 	
@@ -25,17 +25,17 @@ public class TextProcessorStopWordTest extends BaseSpringDependencyInjectionTest
 		TextProcessorStopWordImpl stopWordProcessor = (TextProcessorStopWordImpl)applicationContext.getBean("stopwordProcessor");
 		stopWordProcessor.setStopWordList(STOPWORD_FILENAME_SE);
 		
-		Document doc = createDocument(TEXT_TO_PROCESS_SE);
+		AnalysisDocument doc = createDocument(TEXT_TO_PROCESS_SE);
 		stopWordProcessor.process(doc);
-		String processedText = doc.getContent();
+		String processedText = doc.getTextContent();
 		assertEquals("stol", processedText.trim());
 		
 		
 	}
 	
-	private static Document createDocument(String content) {
-		Document doc = new Document();
-		doc.setContent(content);
+	private static AnalysisDocument createDocument(String content) {
+		AnalysisDocument doc = new AnalysisDocument();
+		doc.setTextContent(content);
 		
 		return doc;
 	}

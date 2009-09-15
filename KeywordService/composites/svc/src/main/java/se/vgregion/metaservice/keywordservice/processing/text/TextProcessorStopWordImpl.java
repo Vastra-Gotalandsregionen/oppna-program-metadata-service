@@ -15,7 +15,7 @@ import java.util.StringTokenizer;
 
 import org.apache.log4j.Logger;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.util.StringUtils;
 
 /**
@@ -41,12 +41,12 @@ public class TextProcessorStopWordImpl extends TextProcessor {
 	 * @param String content The string to check for stopwords in
 	 * @return String a String where all stopwords has been removed from the input string.
 	 */
-	public ProcessorStatus process(Document document) {
-		StringTokenizer tokenizer = new StringTokenizer(document.getContent(""));
+	public ProcessorStatus process(AnalysisDocument document) {
+		StringTokenizer tokenizer = new StringTokenizer(document.getTextContent());
 		StringBuffer processedString = removeStopWords(tokenizer);
-		document.setContent(processedString.toString());
+		document.setTextContent(processedString.toString());
 		
-		tokenizer = new StringTokenizer(document.getTitle(""));
+		tokenizer = new StringTokenizer(document.getTitle());
 		processedString = removeStopWords(tokenizer);
 		document.setTitle(processedString.toString());
 		

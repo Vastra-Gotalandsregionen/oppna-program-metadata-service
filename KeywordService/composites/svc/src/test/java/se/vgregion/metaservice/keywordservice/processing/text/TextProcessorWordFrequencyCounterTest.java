@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import se.vgregion.metaservice.keywordservice.BaseSpringDependencyInjectionTest;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 
 public class TextProcessorWordFrequencyCounterTest extends
 		BaseSpringDependencyInjectionTest {
@@ -15,8 +15,8 @@ public class TextProcessorWordFrequencyCounterTest extends
 	
 	public void testWordCount() {
 		TextProcessor wordCounterProcessor = (TextProcessor) applicationContext.getBean("wordCounterProcessor");
-		Document document = new Document();
-		document.setContent(TEXT_TO_PROCESS);
+		AnalysisDocument document = new AnalysisDocument();
+		document.setTextContent(TEXT_TO_PROCESS);
 		
 		wordCounterProcessor.process(document);
 		

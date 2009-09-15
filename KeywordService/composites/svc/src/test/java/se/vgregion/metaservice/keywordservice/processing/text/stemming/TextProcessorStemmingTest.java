@@ -1,7 +1,7 @@
 package se.vgregion.metaservice.keywordservice.processing.text.stemming;
 
 import se.vgregion.metaservice.keywordservice.BaseSpringDependencyInjectionTest;
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor;
 
 public class TextProcessorStemmingTest extends
@@ -12,10 +12,10 @@ public class TextProcessorStemmingTest extends
 	public void testStemWords() {
 		TextProcessor stemmingProcessor = (TextProcessor) applicationContext
 				.getBean("stemmingProcessor");
-		Document doc = new Document();
-		doc.setContent(WORDS_TO_STEM);
+		AnalysisDocument doc = new AnalysisDocument();
+		doc.setTextContent(WORDS_TO_STEM);
 		stemmingProcessor.process(doc);
-		String[] stemmedWords = doc.getContent().split(" ");
+		String[] stemmedWords = doc.getTextContent().split(" ");
 		String[] unStemmedWords = WORDS_TO_STEM.split(" ");
 		assertNotNull(stemmedWords);
 		assertTrue(stemmedWords.length == unStemmedWords.length);

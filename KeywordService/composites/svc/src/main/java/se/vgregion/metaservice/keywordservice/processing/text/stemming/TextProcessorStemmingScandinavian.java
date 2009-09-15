@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor;
 
 public abstract class TextProcessorStemmingScandinavian extends TextProcessor {
@@ -74,14 +74,14 @@ public abstract class TextProcessorStemmingScandinavian extends TextProcessor {
 	/**
 	 * Process document by stemming its title and content
 	 */
-	public ProcessorStatus process(Document document) {
-		StringTokenizer tokenizer = new StringTokenizer(document.getTitle(""));
+	public ProcessorStatus process(AnalysisDocument document) {
+		StringTokenizer tokenizer = new StringTokenizer(document.getTitle());
 		StringBuffer processedString = stemWords(tokenizer);
 		document.setTitle(processedString.toString());
 
-		tokenizer = new StringTokenizer(document.getContent(""));
+		tokenizer = new StringTokenizer(document.getTextContent());
 		processedString = stemWords(tokenizer);
-		document.setContent(processedString.toString());
+		document.setTextContent(processedString.toString());
 		
 		return ProcessorStatus.OK;
 

@@ -37,7 +37,7 @@ import java.util.StringTokenizer;
  * 
  */
 
-import se.vgregion.metaservice.keywordservice.domain.Document;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor;
 
 /**
@@ -570,9 +570,9 @@ public class TextProcessorStemmingEnglishImpl extends TextProcessor {
 		i = 0;
 	}
 
-	public ProcessorStatus process(Document document) {
+	public ProcessorStatus process(AnalysisDocument document) {
 		StringBuffer processedString = new StringBuffer();
-		StringTokenizer tokenizer = new StringTokenizer(document.getContent(""));
+		StringTokenizer tokenizer = new StringTokenizer(document.getTextContent());
 		String word;
 		while(tokenizer.hasMoreTokens()) {
 			word = tokenizer.nextToken();
@@ -581,7 +581,7 @@ public class TextProcessorStemmingEnglishImpl extends TextProcessor {
 			processedString.append(toString());
 			processedString.append(" ");	
 		}
-		document.setContent(processedString.toString());
+		document.setTextContent(processedString.toString());
 		
 		return ProcessorStatus.OK;
 	}
