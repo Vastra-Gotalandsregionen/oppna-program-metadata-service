@@ -8,7 +8,7 @@
         <sequence/>
     </complexType>
 
-    <complexType name="inputStream" abstract="true">
+    <complexType name="InputStreamType" abstract="true">
         <sequence/>
     </complexType>
 
@@ -18,13 +18,13 @@
                 <sequence>
                     <element name="encoding" type="string" minOccurs="0"/>
                     <element name="filename" type="string" minOccurs="0"/>
-                    <element name="inputStream" type="tns:inputStream" minOccurs="0"/>
+                    <element name="inputStream" type="tns:InputStreamType" minOccurs="0"/>
                 </sequence>
             </extension>
         </complexContent>
     </complexType>
 
-    <complexType name="TextDocument">
+    <complexType name="TextDocumentType">
         <complexContent>
             <extension base="tns:DocumentType">
                 <sequence>
