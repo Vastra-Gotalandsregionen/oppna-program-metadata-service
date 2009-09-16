@@ -13,7 +13,6 @@ public class ResponseObject {
     public enum StatusCode {
 
         ok(200),
-
         unsupported_text_format(1001),
         error_formatting_content(1002),
         no_content(1003),
@@ -37,6 +36,13 @@ public class ResponseObject {
     private String requestId = null;
     private String errorMessage = null;
     private StatusCode statusCode = null;
+
+
+    /**
+     * Empty Constructor
+     */
+    public ResponseObject(){
+    }
 
     /**
      * Constructor for ok message
@@ -67,8 +73,8 @@ public class ResponseObject {
      * Set the statusCode for this responseObject
      * @param statusCode the statusCode to set
      */
-    public void setErrorCode(StatusCode errorCode) {
-        this.statusCode = errorCode;
+    public void setStatusCode(StatusCode statusCode) {
+        this.statusCode = statusCode;
     }
 
     /**
@@ -96,5 +102,11 @@ public class ResponseObject {
         return requestId;
     }
 
-
+    /**
+     * Set the uniqe requestId for this responseObject
+     * @param requestId the id
+     */
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
 }

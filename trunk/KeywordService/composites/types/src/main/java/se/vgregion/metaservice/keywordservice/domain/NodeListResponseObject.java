@@ -10,6 +10,13 @@ public class NodeListResponseObject extends ResponseObject{
 
     List<MedicalNode> nodeList = null;
 
+     /**
+      * Empty Constructor
+      */
+     public NodeListResponseObject(){
+         super();
+     }
+
     /**
      * Constructor for ok response
      * @param the uniqe requestId
