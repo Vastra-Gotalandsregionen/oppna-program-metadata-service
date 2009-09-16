@@ -161,7 +161,7 @@ public class KeyWordService {
      * @param sourceIds the sourceIds of the concepts to be included
      * @return List of Medical Nodes that were found in the MedicalTaxonomyService. The nodes has been enhanced with userstatus data
      */
-    private List<MedicalNode> findMedicalNodes(String[] keywords, String userId, String[] sourceIds) throws KeywordsException{
+    private List<MedicalNode> findMedicalNodes(String[] keywords, String userId, Map<Integer,String[]> sourceIds) throws KeywordsException{
 
         //TODO:Make so this method actualy throws a KeywordsException!
 

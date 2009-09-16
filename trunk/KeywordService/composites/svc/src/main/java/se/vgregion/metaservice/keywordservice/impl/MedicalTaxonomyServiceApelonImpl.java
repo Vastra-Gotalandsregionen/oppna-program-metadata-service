@@ -35,6 +35,7 @@ import com.apelon.dts.client.concept.SearchQuery;
 import com.apelon.dts.client.match.MatchQuery;
 import com.apelon.dts.client.namespace.Namespace;
 import com.apelon.dts.client.namespace.NamespaceQuery;
+import java.lang.Integer;
 
 /**
  * Implementation of the abstract class MedicalTaxonomyService. This
@@ -121,7 +122,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 	/**
 	 * @see MedicalTaxonomyService
 	 */
-	public Map<String, List<MedicalNode>> findKeywords(String[] words, String[] sourceIds) {
+	public Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer,String[]> sourceIds) {
 		Map<String, List<MedicalNode>> allKeywords = new HashMap<String, List<MedicalNode>>();
 		if (namespace == null || ca == null)
 			return allKeywords;
@@ -158,6 +159,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 				// Translate each concept to MedicalNode
 				for (OntylogConcept concept : concepts) {
 					log.debug("Concept found: " + concept.getName());
+                    
 					if (shouldBeIncluded(concept, sourceIds)) {
 						MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), true);
 
@@ -359,9 +361,9 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 		
 	}
 	
-	private boolean shouldBeIncluded(OntylogConcept concept, String[] sourceIds) {
-		
-		for (String includeId : sourceIds) {
+	private boolean shouldBeIncluded(OntylogConcept concept, Map<Integer,String[]> sourceIds) {
+		String[] ids = sourceIds.get(123); //TODO: Fix mapping between current namespace and this sourceIds
+		for (String includeId : ids) {
 			for (DTSProperty property : concept.getFetchedProperties()) {	
 				if (property.getName().equals(getSourceIdPropertyKey())) {
 					if (property.getValue().startsWith(includeId)) {

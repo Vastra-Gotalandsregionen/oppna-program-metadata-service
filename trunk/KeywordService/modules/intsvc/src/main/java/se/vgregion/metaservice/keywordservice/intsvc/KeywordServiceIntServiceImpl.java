@@ -1,15 +1,12 @@
 package se.vgregion.metaservice.keywordservice.intsvc;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.KeyWordService;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
-import se.vgregion.metaservice.keywordservice.domain.Metadata;
 import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
@@ -18,8 +15,8 @@ import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatExcepti
 import se.vgregion.metaservice.keywordservice.schema.MedicalNodeSdoHelper;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeType;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeListType;
-import se.vgregion.metaservice.wsdl.keywordservices.AddBookmarkedKeywordsRequest;
-import se.vgregion.metaservice.wsdl.keywordservices.AddTaggedKeywordsRequest;
+import se.vgregion.metaservice.wsdl.keywordservices.BookmarkedKeywordsRequest;
+import se.vgregion.metaservice.wsdl.keywordservices.TaggedKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetNodeByInternalIdRequest;
 
@@ -90,14 +87,14 @@ public class KeywordServiceIntServiceImpl implements
 		return retval;
 	}
 	
-	public void addTaggedKeywords(AddTaggedKeywordsRequest parameters) {
+	public void taggedKeywords(TaggedKeywordsRequest parameters) {
 		List<String> userCodes = parameters.getKeywordCodes().getKeywordCode();
 		String userId = parameters.getUserId();
 		keywordService.addTaggedKeywords(new Identification(userId,"x"),"x", userCodes);
 
 	}
 
-	public void addBookmarkedKeywords(AddBookmarkedKeywordsRequest parameters) {
+	public void bookmarkedKeywords(BookmarkedKeywordsRequest parameters) {
 		System.out.println("Bookmarking keyword ");
 		List<String> userCodes = parameters.getKeywordCodes().getKeywordCode();
 		String userId = parameters.getUserId();

@@ -22,7 +22,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 	
 	public String[] sourceIds = new String[] {"A", "C"}; 
 	
-	public Map<String, List<MedicalNode>> findKeywords(String[] words, String[] sourceIds) {
+	public Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer,String[]> sourceIds) {
 		Map<String, List<MedicalNode>> keywords = new HashMap<String, List<MedicalNode>>();
 		MedicalNode node = new MedicalNode("kalle","1234");
         node.setSourceId("A");

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:se.vgregion.metaservice.schema.Identification.v1"
+	xmlns:tns="urn:se.vgregion.metaservice.schema.Identification.v1"
+    xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
+	elementFormDefault="qualified" version="1.0">
+    <xs:import schemaLocation="MedicalNode_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
+    <xs:complexType name="NodeListResponseObjectType">
+        <xs:complexContent>
+            <xs:extension base="tns:ResponseObjectType">
+                <xs:sequence>
+                    <xs:element name="nodeList" type="tns:medicalNode" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="ResponseObjectType">
+        <xs:sequence>
+            <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+</schema>
