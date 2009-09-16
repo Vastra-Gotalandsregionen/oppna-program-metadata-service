@@ -1,105 +1,89 @@
 package se.vgregion.metaservice.keywordservice.intsvc;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.KeyWordService;
-import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
-import se.vgregion.metaservice.keywordservice.domain.Options;
-import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
-import se.vgregion.metaservice.keywordservice.domain.document.TextDocument;
-import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatException;
-import se.vgregion.metaservice.keywordservice.schema.MedicalNodeSdoHelper;
+import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeType;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeListType;
-import se.vgregion.metaservice.wsdl.keywordservices.BookmarkedKeywordsRequest;
-import se.vgregion.metaservice.wsdl.keywordservices.TaggedKeywordsRequest;
+import se.vgregion.metaservice.wsdl.keywordservices.BookmarkKeywordsRequest;
+import se.vgregion.metaservice.wsdl.keywordservices.TagKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetNodeByInternalIdRequest;
 
 
-//TODO: Fix all this according to api
-
 public class KeywordServiceIntServiceImpl implements
-		se.vgregion.metaservice.wsdl.keywordservices.KeywordService {
+        se.vgregion.metaservice.wsdl.keywordservices.KeywordService {
 
-	KeyWordService keywordService;
-
-	public MedicalNodeListType getKeywords(GetKeywordsRequest parameters) {
-
-		Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
+    KeyWordService keywordService;
 
 
-		List<MedicalNode> keywordResult = new ArrayList<MedicalNode>();
+    //TODO: The wsdl must be updated in order for this to work!
 
-                NodeListResponseObject res = keywordService.getKeywords(new Identification("x","x"),
-                        "x", new TextDocument(), new Options());
+    /**
+     * Interface to the getKeywords method in KeyWordService
+     * @param parameters
+     * @return
+     */
+    public NodeListResponseObjectType getKeywords(GetKeywordsRequest parameters) {
 
-                keywordResult = res.getNodeList();
+        Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
+        NodeListResponseObject responseObject = keywordService.getKeywords(
+                parameters.getIdentification(),
+                parameters.getRequestId(),
+                parameters.getDocument(),
+                parameters.getOptions());
 
-                /**
-		try {
-			keywordResult = keywordService.getKeywords(parameters.getContent(),
-					parameters.getTitle(), parameters.getUserId(), parameters
-							.getFormat(), new Metadata[] {}, parameters
-							.getExtractedWordsLimit(), parameters.getIncludeSourceIds());
-		} catch (UnsupportedFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-                 * */
+        return ResponseObjectSdoHelper.toNodeListResponseObjectType(ResponseObject);
+    }
 
+    /**
+     * Interface to the getNodeByInternalId method in KeyWordService
+     * @param parameters
+     * @return
+     */
+    public NodeListResponseObjectType getNodeByInternalId(GetNodeByInternalIdRequest parameters) {
 
+        Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
+        NodeListResponseObject responseObject = keywordService.getNodeByInternalId(
+                parameters.getIdentification(),
+                parameters.getRequestId(),
+                parameters.getInternalId());
 
-		List<MedicalNode> keywords = new ArrayList<MedicalNode>(keywordResult);
+        return ResponseObjectSdoHelper.toNodeListResponseObjectType(responseObject);
+    }
 
-		MedicalNodeListType retval = MedicalNodeSdoHelper
-				.toMedicalNodeListType(keywords);
+    /**
+     * Interface to the tagKeywords method in KeyWordService
+     * @param parameters
+     */
+    public ResponseObjectType tagKeywords(TagKeywordsRequest parameters) {
 
+        ResponseObject responseObject = keywordService.tagKeywords(
+                parameters.getIdentification(),
+                parameters.getRequestId(),
+                parameters.getKeywordIds());
 
+        return ResponseObjectSdoHelper.toResponseObjectType(ResponseObject);
 
-		return retval;
-	}
+    }
 
-	public void setKeywordService(KeyWordService keywordService) {
-		this.keywordService = keywordService;
-	}
+    /**
+     * Interface to the bookmarkKeywords method in KeyWordService
+     * @param parameters
+     */
+    public ResponseObjectType bookmarkeKeywords(BookmarkKeywordsRequest parameters) {
 
-	public MedicalNodeType getNodeByInternalId(GetNodeByInternalIdRequest parameters) {
-		
-		Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
+        ResponseObject responseObject = keywordService.bookmarkKeywords(
+                parameters.getIdentification(),
+                parameters.getRequestId(),
+                parameters.getKeywordIds());
 
-		MedicalNode nodeResult = new MedicalNode();
+        return ResponseObjectSdoHelper.toResponseObjectType(ResponseObject);
+    }
 
-		try {
-			nodeResult = keywordService.findMedicalNodeByInternalId(parameters.getInternalId());
-		} catch (UnsupportedFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		MedicalNodeType retval = MedicalNodeSdoHelper
-				.toMedicalNodeType(nodeResult);
-
-		return retval;
-	}
-	
-	public void taggedKeywords(TaggedKeywordsRequest parameters) {
-		List<String> userCodes = parameters.getKeywordCodes().getKeywordCode();
-		String userId = parameters.getUserId();
-		keywordService.addTaggedKeywords(new Identification(userId,"x"),"x", userCodes);
-
-	}
-
-	public void bookmarkedKeywords(BookmarkedKeywordsRequest parameters) {
-		System.out.println("Bookmarking keyword ");
-		List<String> userCodes = parameters.getKeywordCodes().getKeywordCode();
-		String userId = parameters.getUserId();
-		keywordService.addBookmarkedKeywords(new Identification(userId,"x"),"x", userCodes);
-		
-	}
-
+    public void setKeywordService(KeyWordService keywordService) {
+        this.keywordService = keywordService;
+    }
 }
