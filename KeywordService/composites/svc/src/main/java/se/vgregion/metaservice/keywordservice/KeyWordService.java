@@ -19,6 +19,7 @@ import se.vgregion.metaservice.keywordservice.domain.Metadata;
 import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
 import se.vgregion.metaservice.keywordservice.domain.document.Document;
 import se.vgregion.metaservice.keywordservice.domain.document.FileDocument;
@@ -41,13 +42,14 @@ import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorF
  */
 public class KeyWordService {
 
+    //TODO: put this enum somewhere more apropriate?
+    public enum ListType {blackList,whiteList,none};
     private AnalysisService analysisService;
     private MedicalTaxonomyService medicalTaxonomyService;
     private UserProfileService userProfileService;
     private BlacklistedWordDao bwd;
     private int blacklistLimit = 20; // If an input word to apelon results in
-    // more
-    // hits than the blacklistLimit, the word should
+    // more hits than the blacklistLimit, the word should
     // be blacklisted. Defaults to 20
     private static Logger log = Logger.getLogger(KeyWordService.class);
 
@@ -55,8 +57,7 @@ public class KeyWordService {
      * Sets the medicalTaxonomyService that is used at the backend to retrieve
      * keywords
      *
-     * @param medicalTaxonomyService
-     *            the medicalTaxonomyService to use
+     * @param medicalTaxonomyService the medicalTaxonomyService to use
      */
     public void setMedicalTaxonomyService(
             MedicalTaxonomyService medicalTaxonomyService) {
@@ -84,21 +85,16 @@ public class KeyWordService {
      * used as input to the medicalTaxonomyService which returns the real
      * keywords for the provided text content.
      *
-     * @param id
-     *            Identification data, the identificationobject contains both
-     *            userId and profile. Used to personalize the responce
-     * @param requestId
-     *            The unique id that is to be associated with this request
-     * @param document
-     *            The content to classify
-     * @param options
-     *            Additional options
+     * @param id Identification data, the identificationobject contains both
+     * userId and profile. Used to personalize the responce
+     * @param requestId The unique id that is to be associated with this request
+     * @param document The content to classify
+     * @param options Additional options
      * @return A NodeListResponseObject that contains a list of MedicalNodes 
-     *         which are hits in the medicalTaxonomyService for the input content.
-     *         Check the responseObjects statusCode to see if the operation
-     *         was successful.
+     * which are hits in the medicalTaxonomyService for the input content.
+     * Check the responseObjects statusCode to see if the operation
+     * was successful.
      */
-
     public NodeListResponseObject getKeywords(Identification id, String requestId, Document document, Options options) {
 
         try {
@@ -116,39 +112,39 @@ public class KeyWordService {
                 format = "html_text";
             }
             /** * Strip formatting ** */
-            log.debug(requestId + ":Sending title and content to formatProcessor");
+            log.debug(MessageFormat.format("{0}:Sending title and content to formatProcessor",requestId));
             FormatProcessor formatProcessor = FormatProcessorFactory.getFormatProcessor(format);
             AnalysisDocument analysisDocument = formatProcessor.process(document);
 
             /** * Extract keywords ** */
-            log.debug(requestId + ":Getting keywords");
+            log.debug(MessageFormat.format("{0}:Getting keywords",requestId));
             String[] keywords = analysisService.extractWords(analysisDocument, options.getWordLimit());
 
             /** * Find medical keywords ** */
-            log.debug(requestId + ":Translating keywords to medicalNodes");
+            log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
             List<MedicalNode> nodes = findMedicalNodes(keywords, id.getUserId(), options.getSourceIds());
 
             /** * Return an NodeListResponseObject with statusCode ok (200) * **/
             return new NodeListResponseObject(requestId, nodes);
 
         } catch (UnsupportedFormatException ex) {
-            log.error(requestId + ":" + StatusCode.unsupported_text_format.code() +
-                    ":The supplied textformat or fileType is not supported");
+            log.error(MessageFormat.format("{0}:{1}:The supplied textformat or fileType is not supported",
+                    requestId,StatusCode.unsupported_text_format.code()),ex);
             return new NodeListResponseObject(requestId, StatusCode.unsupported_text_format,
                     "The supplied textformat or fileType is not supported");
         } catch (FormattingException ex) {
-            log.error(requestId + ":" + StatusCode.error_formatting_content.code() +
-                    ":The formatting of the file or text failed", ex);
+            log.error(MessageFormat.format("{0}:{1}:The formatting of the file or text failed",
+                    requestId,StatusCode.error_formatting_content.code()),ex);
             return new NodeListResponseObject(requestId, StatusCode.error_formatting_content,
                     "The formatting of the file or text failed");
         } catch (ProcessingException ex) {
-            log.error(requestId + ":" + StatusCode.error_processing_content.code() +
-                    ":The processing (generation of keywords) of the file or text failed", ex);
+            log.error(MessageFormat.format("{0}:{1}:The processing (generation of keywords) of the file or text failed",
+                    requestId, StatusCode.error_processing_content.code()),ex);
             return new NodeListResponseObject(requestId, StatusCode.error_processing_content,
                     "The processing (generation of keywords) of the file or text failed");
         } catch (KeywordsException ex) {
-            log.error(requestId + ":" + StatusCode.error_getting_keywords_from_taxonomy.code() +
-                    ":The translation of keywords for the file or text failed", ex);
+            log.error(MessageFormat.format("{0}:{1}:The translation of keywords for the file or text failed",
+                    requestId + ":" + StatusCode.error_getting_keywords_from_taxonomy.code()),ex);
             return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy,
                     "The translation of keywords for the file or text failed");
         }
@@ -161,10 +157,9 @@ public class KeyWordService {
      * @param sourceIds the sourceIds of the concepts to be included
      * @return List of Medical Nodes that were found in the MedicalTaxonomyService. The nodes has been enhanced with userstatus data
      */
-    private List<MedicalNode> findMedicalNodes(String[] keywords, String userId, Map<Integer,String[]> sourceIds) throws KeywordsException{
+    private List<MedicalNode> findMedicalNodes(String[] keywords, String userId, Map<Integer, String[]> sourceIds) throws KeywordsException {
 
         //TODO:Make so this method actualy throws a KeywordsException!
-
 
         Map<String, List<MedicalNode>> nodes = medicalTaxonomyService.findKeywords(keywords, sourceIds);
         log.debug(MessageFormat.format(
@@ -212,25 +207,36 @@ public class KeyWordService {
 
     /**
      * Finds a specific medical node in MedicalTaxonomyService given its internal id
+     * @param id  The identification of the person who looks for the node
+     * @param requestId The unique id that is to be associated with this request
      * @param internalId The internalId of a node from the Medical Taxonomy
-     * @return a Medical Node that was found in the MedicalTaxonomyService.
-     *         The node has been enhanced with user status data
-     *
-     * @author svetoslav
+     * @return A NodeListResponseObject that contains a list of MedicalNodes
+     * containing the requested node
+     * Check the responseObjects statusCode to see if the operation
+     * was successful.
      */
-    public MedicalNode findMedicalNodeByInternalId(
+    public NodeListResponseObject getNodeByInternalId(
+            Identification id,
+            String requestId,
             String internalId)
             throws UnsupportedFormatException {
         if (internalId == null) {
-            // TODO: Log error message and return error to user
-            return new MedicalNode();
+            log.error(MessageFormat.format("{0}:{1}:No interalId supplied"
+                    ,requestId,StatusCode.error_getting_keywords_from_taxonomy.code()));
+            return new NodeListResponseObject(requestId,
+                    StatusCode.error_getting_keywords_from_taxonomy,
+                    "No internalId supplied");
         }
-
+        //TODO: make this method handle errors and set statusCodes
         MedicalNode node = medicalTaxonomyService.getNodeByInternalId(internalId);
-        log.debug(MessageFormat.format(
-                "InternalId provided by the user: {0}. The node name from TaxonomyService: {1}",
-                internalId, node.getName()));
-        return node;
+        List<MedicalNode> list = new ArrayList<MedicalNode>();
+        list.add(node);
+        log.debug(MessageFormat.format("{0}:{1}:InternalId provided by the user: {2}. The node name from TaxonomyService: {3}",
+                requestId,
+                StatusCode.ok.code(),
+                internalId,
+                node.getName()));
+        return new NodeListResponseObject(requestId, list);
     }
 
     /**
@@ -238,38 +244,54 @@ public class KeyWordService {
      * the service that keywords suggested by getKeywords has been used to tag
      * the document.
      *
-     * @param id
-     *            The identification of the person who tags the document
-     * @param requestId
-     *            The unique id that is to be associated with this request
-     * @param keywordIds
-     *            a list of ids that uniquely represents each keyword in the
-     *            taxonomy.
+     * @param id  The identification of the person who tags the document
+     * @param requestId The unique id that is to be associated with this request
+     * @param keywordIds a list of ids that uniquely represents each keyword in the
+     * taxonomy.
+     * @return a responseobject containg statuscodes that tells if the operation
+     * was sucessfull or not
      */
-    public void addTaggedKeywords(Identification id, String requestId, List<String> keywordIds) {
+    public ResponseObject tagKeywords(Identification id, String requestId, List<String> keywordIds) {
         userProfileService.addTaggedKeywords(id.getUserId(), keywordIds);
+        //TODO: make this responseobject reflect the success or failiure of the operation
+        return new ResponseObject(requestId);
     }
 
     /**
      * Adds a list of keywords as bookmarked.
      *
-     * @param id
-     *            The identification of the person who tags the document
-     * @param requestId
-     *            The unique id that is to be associated with this request
-     * @param keywordIds
-     *            a list of ids that uniquely represents each keyword in the
-     *            taxonomy.
+     * @param id The identification of the person who tags the document
+     * @param requestId The unique id that is to be associated with this request
+     * @param keywordIds a list of ids that uniquely represents each keyword in the
+     * taxonomy.
+     * @return a responseobject containg statuscodes that tells if the operation
+     * was sucessfull or not
      */
-    public void addBookmarkedKeywords(Identification id, String requestId, List<String> keywordIds) {
+    public ResponseObject bookmarkKeywords(Identification id, String requestId, List<String> keywordIds) {
         userProfileService.addBookmarkedKeywords(id.getUserId(), keywordIds);
+        //TODO: make this responseobject reflect the success or failiure of the operation
+        return new ResponseObject(requestId);
+    }
+
+    /**
+     * Check if a word is present in the whitelist or blacklist
+     * @param id The identification of the person who looks up the word
+     * @param requestId The unique id that is to be associated with this request
+     * @param word the word to look up
+     * @return whiteList, blackList or none depending on where the word was found
+     */
+    public ListType lookupWord(Identification id, String requestId, String word) {
+        //TODO: add functionality for whitelist
+        if (bwd.getBlacklistedWordByWord(word) != null){
+            return ListType.blackList;
+        }
+        return ListType.none;
+
     }
 
     /**
      * Sets the blacklistedWordDao
-     *
-     * @param bwd
-     *            the blacklistedWordDao
+     * @param bwd the blacklistedWordDao
      */
     public void setBlacklistedWordDao(BlacklistedWordDao bwd) {
         this.bwd = bwd;
@@ -281,8 +303,7 @@ public class KeyWordService {
      * hits in the taxonomy than the limit specifies, the word is considered
      * ambiguous and is blacklisted. Default limit is 20.
      *
-     * @param limit
-     *            the limit
+     * @param limit  the limit
      */
     public void setBlacklistLimit(int limit) {
         this.blacklistLimit = limit;
@@ -291,8 +312,7 @@ public class KeyWordService {
     /**
      * Sets the user profile to use in order to personalize the response.
      *
-     * @param userProfileService
-     *            the userProfileService
+     * @param userProfileService the userProfileService
      */
     public void setUserProfileService(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
