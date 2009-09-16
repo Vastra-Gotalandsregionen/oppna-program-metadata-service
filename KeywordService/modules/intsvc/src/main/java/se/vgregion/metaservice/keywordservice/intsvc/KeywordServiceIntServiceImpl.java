@@ -5,8 +5,14 @@ import org.apache.log4j.Logger;
 import se.vgregion.metaservice.keywordservice.KeyWordService;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
+import se.vgregion.metaservice.keywordservice.schema.DocumentSdoHelper;
+import se.vgregion.metaservice.keywordservice.schema.ResponseObjectSdoHelper;
+import se.vgregion.metaservice.keywordservice.schema.IdentificationSdoHelper;
+import se.vgregion.metaservice.keywordservice.schema.OptionsSdoHelper;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeType;
 import se.vgregion.metaservice.schema.medicalnode.MedicalNodeListType;
+import se.vgregion.metaservice.schema.domain.ResponseObjectType;
+import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
 import se.vgregion.metaservice.wsdl.keywordservices.BookmarkKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.TagKeywordsRequest;
 import se.vgregion.metaservice.wsdl.keywordservices.GetKeywordsRequest;
@@ -30,12 +36,12 @@ public class KeywordServiceIntServiceImpl implements
 
         Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
         NodeListResponseObject responseObject = keywordService.getKeywords(
-                parameters.getIdentification(),
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getDocument(),
-                parameters.getOptions());
+                DocumentSdoHelper.fromDocumentType(parameters.getDocument()),
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
 
-        return ResponseObjectSdoHelper.toNodeListResponseObjectType(ResponseObject);
+        return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(responseObject);
     }
 
     /**
@@ -47,11 +53,11 @@ public class KeywordServiceIntServiceImpl implements
 
         Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
         NodeListResponseObject responseObject = keywordService.getNodeByInternalId(
-                parameters.getIdentification(),
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
                 parameters.getInternalId());
 
-        return ResponseObjectSdoHelper.toNodeListResponseObjectType(responseObject);
+        return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(responseObject);
     }
 
     /**
@@ -61,11 +67,11 @@ public class KeywordServiceIntServiceImpl implements
     public ResponseObjectType tagKeywords(TagKeywordsRequest parameters) {
 
         ResponseObject responseObject = keywordService.tagKeywords(
-                parameters.getIdentification(),
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getKeywordIds());
+                parameters.getKeywordIds().getKeywordId());
 
-        return ResponseObjectSdoHelper.toResponseObjectType(ResponseObject);
+        return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
 
     }
 
@@ -73,14 +79,14 @@ public class KeywordServiceIntServiceImpl implements
      * Interface to the bookmarkKeywords method in KeyWordService
      * @param parameters
      */
-    public ResponseObjectType bookmarkeKeywords(BookmarkKeywordsRequest parameters) {
+    public ResponseObjectType bookmarkKeywords(BookmarkKeywordsRequest parameters) {
 
         ResponseObject responseObject = keywordService.bookmarkKeywords(
-                parameters.getIdentification(),
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getKeywordIds());
+                parameters.getKeywordIds().getKeywordIds());
 
-        return ResponseObjectSdoHelper.toResponseObjectType(ResponseObject);
+        return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
 
     public void setKeywordService(KeyWordService keywordService) {

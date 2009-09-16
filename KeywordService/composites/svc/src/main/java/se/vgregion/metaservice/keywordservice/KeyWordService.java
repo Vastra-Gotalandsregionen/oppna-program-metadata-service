@@ -219,7 +219,7 @@ public class KeyWordService {
             Identification id,
             String requestId,
             String internalId)
-            throws UnsupportedFormatException {
+            {
         if (internalId == null) {
             log.error(MessageFormat.format("{0}:{1}:No interalId supplied"
                     ,requestId,StatusCode.error_getting_keywords_from_taxonomy.code()));

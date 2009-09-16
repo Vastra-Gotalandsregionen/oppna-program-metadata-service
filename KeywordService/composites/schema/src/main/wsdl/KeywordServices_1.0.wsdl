@@ -6,150 +6,171 @@
 	xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
 	xmlns:dc="urn:se.vgregion.metaservice.schema.Document.v1"
     xmlns:id="urn:se.vgregion.metaservice.schema.Identification.v1"
+    xmlns:op="urn:se.vgregion.metaservice.schema.Options.v1"
+    xmlns:rsp="urn:se.vgregion.metaservice.schema.Response.v1"
     name="KeywordServices_1.0"
 	targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
-	<wsdl:types>
-		<xsd:schema
+    <wsdl:types>
+        <xsd:schema
 			targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
-			<xsd:import schemaLocation="MedicalNode_1.0.xsd"
+            <xsd:import schemaLocation="MedicalNode_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
             <xsd:import schemaLocation="Document_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.Document.v1" />
             <xsd:import schemaLocation="Identification_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.Identification.v1" />
-			<!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
-			<xsd:element name="GetKeywordsRequest">
-				<xsd:complexType>
-					<xsd:sequence>
+            <xsd:import schemaLocation="Options_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Options.v1" />
+            <xsd:import schemaLocation="Response_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Response.v1" />
+
+            <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
+            <xsd:element name="GetKeywordsRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
                         <xsd:element name="identification" type="id:IdentificationType" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="document" type="dc:DocumentType" minOccurs="1" maxOccurs="1" />
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="GetKeywordsResponse"
-				type="mn:MedicalNodeListType" />
-			<xsd:element name="GetNodeByInternalIdRequest">
-				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="internalId" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="GetNodeByInternalIdResponse"
-				type="mn:MedicalNodeType" />
-			<xsd:element name="TaggedKeywordsRequest">
-				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="userId" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="keywordCodes">
-							<xsd:complexType>
-								<xsd:sequence>
-									<xsd:element name="keywordCode"
+                        <xsd:element name="options" type="op:OptionsType" minOccurs="0" maxOccurs="1" />;
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetKeywordsResponse"
+				type="rsp:NodeListResponseObjectType" />
+            <xsd:element name="GetNodeByInternalIdRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="internalId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetNodeByInternalIdResponse"
+				type="rsp:NodeListResponseObjectType" />
+            <xsd:element name="TagKeywordsRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="userId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="keywordIds">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="keywordId"
 										type="xsd:string" maxOccurs="unbounded" />
-								</xsd:sequence>
-							</xsd:complexType>
-						</xsd:element>
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="BookmarkedKeywordsRequest">
-				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="userId" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="keywordCodes">
-							<xsd:complexType>
-								<xsd:sequence>
-									<xsd:element name="keywordCode"
-										type="xsd:string" maxOccurs="unbounded" />
-								</xsd:sequence>
-							</xsd:complexType>
-						</xsd:element>
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-		</xsd:schema>
-	</wsdl:types>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="TagKeywordsResponse" type="rsp:ResponseObjectType" />
+            <xsd:element name="BookmarkKeywordsRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="userId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="keywordIds">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="keywordIds" type="xsd:string" maxOccurs="unbounded" />
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="BookmarkKeywordsResponse" type="rsp:ResponseObjectType" />
+        </xsd:schema>
+    </wsdl:types>
 
-	<wsdl:message name="GetKeywordsRequest">
-		<wsdl:part name="parameters" element="tns:GetKeywordsRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="GeKeywordsResponse">
-		<wsdl:part element="tns:GetKeywordsResponse" name="parameters" />
-	</wsdl:message>
-	<wsdl:message name="GetNodeByInternalIdRequest">
-		<wsdl:part name="parameters" element="tns:GetNodeByInternalIdRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="GetNodeByInternalIdResponse">
-		<wsdl:part element="tns:GetNodeByInternalIdResponse" name="parameters">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="TaggedKeywordsRequest">
-		<wsdl:part name="parameters"
-			element="tns:TaggedKeywordsRequest" />
-	</wsdl:message>
-	
-	<wsdl:message name="BookmarkedKeywordsRequest">
-		<wsdl:part name="parameters"
-			element="tns:BookmarkedKeywordsRequest" />
-	</wsdl:message>
+    <wsdl:message name="GetKeywordsRequest">
+        <wsdl:part name="parameters" element="tns:GetKeywordsRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GeKeywordsResponse">
+        <wsdl:part element="tns:GetKeywordsResponse" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="GetNodeByInternalIdRequest">
+        <wsdl:part name="parameters" element="tns:GetNodeByInternalIdRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetNodeByInternalIdResponse">
+        <wsdl:part element="tns:GetNodeByInternalIdResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="TagKeywordsRequest">
+        <wsdl:part name="parameters"
+			element="tns:TagKeywordsRequest" />
+    </wsdl:message>
+	<wsdl:message name="TagKeywordsResponse">
+        <wsdl:part name="parameters"
+			element="tns:TagKeywordsResponse" />
+    </wsdl:message>
+    <wsdl:message name="BookmarkKeywordsRequest">
+        <wsdl:part name="parameters"
+			element="tns:BookmarkKeywordsRequest" />
+    </wsdl:message>
+    <wsdl:message name="BookmarkKeywordsResponse">
+        <wsdl:part name="parameters"
+			element="tns:BookmarkKeywordsResponse" />
+    </wsdl:message>
 
-	<wsdl:portType name="KeywordService">
-		<wsdl:operation name="GetKeywords">
-			<wsdl:input message="tns:GetKeywordsRequest" />
-			<wsdl:output message="tns:GeKeywordsResponse" />
-		</wsdl:operation>
-		<wsdl:operation name="GetNodeByInternalId">
-			<wsdl:input message="tns:GetNodeByInternalIdRequest" />
-			<wsdl:output message="tns:GetNodeByInternalIdResponse" />
-		</wsdl:operation>
-		<wsdl:operation name="TaggedKeywords">
-			<wsdl:input message="tns:TaggedKeywordsRequest" />
-		</wsdl:operation>
-		<wsdl:operation name="BookmarkedKeywords">
-			<wsdl:input message="tns:BookmarkedKeywordsRequest" />
-		</wsdl:operation>
-	</wsdl:portType>
+    <wsdl:portType name="KeywordService">
+        <wsdl:operation name="GetKeywords">
+            <wsdl:input message="tns:GetKeywordsRequest" />
+            <wsdl:output message="tns:GeKeywordsResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="GetNodeByInternalId">
+            <wsdl:input message="tns:GetNodeByInternalIdRequest" />
+            <wsdl:output message="tns:GetNodeByInternalIdResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="TagKeywords">
+            <wsdl:input message="tns:TagKeywordsRequest" />
+            <wsdl:output message="tns:TagKeywordsResponse" />"
+        </wsdl:operation>
+        <wsdl:operation name="BookmarkKeywords">
+            <wsdl:input message="tns:BookmarkKeywordsRequest" />
+            <wsdl:output message="tns:BookmarkKeywordsResponse" />
+        </wsdl:operation>
+    </wsdl:portType>
 
-	<wsdl:binding name="KeywordsServiceSoapHttp"
+    <wsdl:binding name="KeywordsServiceSoapHttp"
 		type="tns:KeywordService">
-		<soap:binding style="document"
+        <soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 
-		<wsdl:operation name="GetKeywords">
-			<soap:operation />
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-		<wsdl:operation name="GetNodeByInternalId">
-			<soap:operation/>
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-		<wsdl:operation name="TaggedKeywords">
-			<soap:operation />
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-		</wsdl:operation>
-		<wsdl:operation name="BookmarkedKeywords">
-			<soap:operation />
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-		</wsdl:operation>
-	</wsdl:binding>
+        <wsdl:operation name="GetKeywords">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="GetNodeByInternalId">
+            <soap:operation/>
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="TagKeywords">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+        <wsdl:operation name="BookmarkKeywords">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+        </wsdl:operation>
+    </wsdl:binding>
 </wsdl:definitions>
