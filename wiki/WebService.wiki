@@ -75,6 +75,7 @@ lookupWord används för att se om ett ord existerar i någon av de fördefinier
 
 || *Namn* || *Typ*	|| *Förklaring* ||
 || id           || Identification || Användaridentifikation ||
+|| requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
 || word  || String	        || Ordet att leta efter i listorna ||
 
 
