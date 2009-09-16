@@ -43,7 +43,7 @@ public abstract class MedicalTaxonomyService {
 	 * @param words an array of words to search for in the Medical Taxonomy
 	 * @return a Map where each word in the input array is mapped to a List of {@link}MedicalNode with the result
 	 */
-	public abstract Map<String, List<MedicalNode>> findKeywords(String[] words, String[] sourceIds);
+	public abstract Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer,String[]> sourceIds);
 	
 	public abstract ConceptChild[] getNamespaceRoots(int namespaceId);
 	

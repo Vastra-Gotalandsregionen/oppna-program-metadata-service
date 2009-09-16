@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:se.vgregion.metaservice.schema.Identification.v1"
+	xmlns:tns="urn:se.vgregion.metaservice.schema.Identification.v1"
+	elementFormDefault="qualified" version="1.0">
+
+  <xs:complexType name="stringArray" final="#all">
+    <xs:sequence>
+      <xs:element name="item" type="xs:string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+
+   <xs:complexType name="OptionsType">
+    <xs:sequence>
+      <xs:element name="sourceIds">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="entry" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="key" minOccurs="0" type="xs:int"/>
+                  <xs:element name="value" minOccurs="0" type="stringArray"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="wordLimit" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+</schema>

@@ -4,29 +4,26 @@
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
 	xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
-	name="KeywordServices_1.0"
+	xmlns:dc="urn:se.vgregion.metaservice.schema.Document.v1"
+    xmlns:id="urn:se.vgregion.metaservice.schema.Identification.v1"
+    name="KeywordServices_1.0"
 	targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
 	<wsdl:types>
 		<xsd:schema
 			targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
 			<xsd:import schemaLocation="MedicalNode_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
+            <xsd:import schemaLocation="Document_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Document.v1" />
+            <xsd:import schemaLocation="Identification_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Identification.v1" />
 			<!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
 			<xsd:element name="GetKeywordsRequest">
 				<xsd:complexType>
 					<xsd:sequence>
-						<xsd:element name="title" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="content" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="userId" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="format" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="extractedWordsLimit" type="xsd:int"
-							minOccurs="1" maxOccurs="1" />
-						<xsd:element name="includeSourceIds" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />	
+                        <xsd:element name="identification" type="id:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="document" type="dc:DocumentType" minOccurs="1" maxOccurs="1" />
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>
@@ -42,7 +39,7 @@
 			</xsd:element>
 			<xsd:element name="GetNodeByInternalIdResponse"
 				type="mn:MedicalNodeType" />
-			<xsd:element name="AddTaggedKeywordsRequest">
+			<xsd:element name="TaggedKeywordsRequest">
 				<xsd:complexType>
 					<xsd:sequence>
 						<xsd:element name="userId" type="xsd:string"
@@ -58,7 +55,7 @@
 					</xsd:sequence>
 				</xsd:complexType>
 			</xsd:element>
-			<xsd:element name="AddBookmarkedKeywordsRequest">
+			<xsd:element name="BookmarkedKeywordsRequest">
 				<xsd:complexType>
 					<xsd:sequence>
 						<xsd:element name="userId" type="xsd:string"
@@ -92,14 +89,14 @@
 		<wsdl:part element="tns:GetNodeByInternalIdResponse" name="parameters">
 		</wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="AddTaggedKeywordsRequest">
+	<wsdl:message name="TaggedKeywordsRequest">
 		<wsdl:part name="parameters"
-			element="tns:AddTaggedKeywordsRequest" />
+			element="tns:TaggedKeywordsRequest" />
 	</wsdl:message>
 	
-	<wsdl:message name="AddBookmarkedKeywordsRequest">
+	<wsdl:message name="BookmarkedKeywordsRequest">
 		<wsdl:part name="parameters"
-			element="tns:AddBookmarkedKeywordsRequest" />
+			element="tns:BookmarkedKeywordsRequest" />
 	</wsdl:message>
 
 	<wsdl:portType name="KeywordService">
@@ -111,11 +108,11 @@
 			<wsdl:input message="tns:GetNodeByInternalIdRequest" />
 			<wsdl:output message="tns:GetNodeByInternalIdResponse" />
 		</wsdl:operation>
-		<wsdl:operation name="AddTaggedKeywords">
-			<wsdl:input message="tns:AddTaggedKeywordsRequest" />
+		<wsdl:operation name="TaggedKeywords">
+			<wsdl:input message="tns:TaggedKeywordsRequest" />
 		</wsdl:operation>
-		<wsdl:operation name="AddBookmarkedKeywords">
-			<wsdl:input message="tns:AddBookmarkedKeywordsRequest" />
+		<wsdl:operation name="BookmarkedKeywords">
+			<wsdl:input message="tns:BookmarkedKeywordsRequest" />
 		</wsdl:operation>
 	</wsdl:portType>
 
@@ -142,13 +139,13 @@
 				<soap:body use="literal" />
 			</wsdl:output>
 		</wsdl:operation>
-		<wsdl:operation name="AddTaggedKeywords">
+		<wsdl:operation name="TaggedKeywords">
 			<soap:operation />
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>
 		</wsdl:operation>
-		<wsdl:operation name="AddBookmarkedKeywords">
+		<wsdl:operation name="BookmarkedKeywords">
 			<soap:operation />
 			<wsdl:input>
 				<soap:body use="literal" />
