@@ -79,7 +79,7 @@ Options är ett object som anger valbara parametrar för en request.
 
 || *Namn* || *Typ* || *Förklaring* ||
 || wordLimit || int || Antal ord som ska returneras. Default värde är 10 ||
-|| includeSourceIds || Används för att begränsa sökresultatet till en delmängd av ett namespace. Map<Integer,List<String>> || En map med namespaceId som nyckel och en lista av sourceIds som sökningen ska begränsas till för det angivna namespaceId:t
+|| includeSourceIds || Map<Integer,List<String>> || Används för att begränsa sökresultatet till en delmängd av ett namespace.  En map med namespaceId som nyckel och en lista av sourceIds som sökningen ska begränsas till för det angivna namespaceId:t
 
 <br><br>
 
