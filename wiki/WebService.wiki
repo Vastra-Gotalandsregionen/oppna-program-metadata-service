@@ -67,24 +67,7 @@ _ResponseObject med statuskod och ev. felmeddelande_
 
 
 <br><br>
-== lookupWord ==
 
-lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`.
-
-*Inparametrar*
-
-|| *Namn* || *Typ*	|| *Förklaring* ||
-|| id           || Identification || Användaridentifikation ||
-|| requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
-|| word  || String	        || Ordet att leta efter i listorna ||
-
-
-
-*Returvärde*
-_ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`, `blacklist`, eller `none`. _
-
-
-<br><br>
 = Web Service Vokabulärtjänst =
 <hr>
 Vokabulärtjänsten exponeras i dagsläget som en Web Service. Nedan beskrivs den operation som är exponerad. De egenutvecklade typerna som används är definierade i avsnittet Typer.
@@ -104,6 +87,24 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 *Returvärde*
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
+== lookupWord ==
+
+lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`.
+
+*Inparametrar*
+
+|| *Namn* || *Typ*	|| *Förklaring* ||
+|| id           || Identification || Användaridentifikation ||
+|| requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
+|| word  || String	        || Ordet att leta efter i listorna ||
+
+
+
+*Returvärde*
+_ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`, `blacklist`, eller `none`. _
+
+
+<br><br>
 
 <br><br>
 == addVocabularyNode ==
