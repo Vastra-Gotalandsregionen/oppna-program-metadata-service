@@ -131,7 +131,7 @@ Flyttar en vokabulärnod från en nod till en annan.
 || id || Identification || Objekt som identifierar användare och profil ||
 || requestId || String || Unik anrops-identifierare ||
 || nodeId || String || Id för den nod som ska flyttas ||
-|| destNodeId || String || Id till den nod som ska bli ny föräldernod, prefixat av namnutrymmet (namespace) ||
+|| destParentNodeId || String || Id till den nod som ska bli ny föräldernod, prefixat av namnutrymmet (namespace) ||
 
 *Returvärde*
 _ResponseObject statuskod och ev. felmeddelande_
