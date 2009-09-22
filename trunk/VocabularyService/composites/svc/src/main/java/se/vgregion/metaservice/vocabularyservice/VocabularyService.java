@@ -7,6 +7,7 @@ import java.util.List;
 
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
+import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
@@ -20,6 +21,36 @@ import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 public class VocabularyService {
 
     private MedicalTaxonomyService medicalTaxonomyService;
+    private String whitelistName = "Whitelist"; //TODO: Move to profile configuration?
+    private String blacklistName = "Blacklist"; //TODO: Move to profile configuration?
+
+    /**
+     * Look up a word in whitelist or blacklist
+     * @param id the identification of the user that lookup the node
+     * @param requestId the unique request id
+     * @param word the word to lookup
+     * @return
+     */
+    public LookupResponseObject lookupWord(Identification identification, String requestId, String word) {
+
+        List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, true);
+        LookupResponseObject response = null;
+        MedicalNode node = nodes.get(0);
+        response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
+
+        for (MedicalNode parent : node.getParents()) {
+            if (parent.getName().equals(blacklistName)) {
+                response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
+                continue;
+            }
+            if (parent.getName().equals(whitelistName)) {
+                response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
+            }
+        }
+
+
+        return response;
+    }
 
     /**
      * Return all the childrens of a node
@@ -99,8 +130,7 @@ public class VocabularyService {
     /**
      * Dump the entire appelon database as xml, awaiting specification.
      */
-
-    public void dumpDbAsXML(){
+    public void dumpDbAsXML() {
         //TODO: Write spec and implement this method;
     }
 

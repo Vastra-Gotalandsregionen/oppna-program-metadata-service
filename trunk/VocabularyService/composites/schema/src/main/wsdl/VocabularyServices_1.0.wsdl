@@ -3,56 +3,187 @@
 	xmlns:tns="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
+	xmlns:mn="urn:se.vgregion.metaservice.schema.Node.v1"
+    xmlns:id="urn:se.vgregion.metaservice.schema.Identification.v1"
+    xmlns:rsp="urn:se.vgregion.metaservice.schema.Response.v1"
 	name="VocabularyServices_1.0"
 	targetNamespace="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1">
-	<wsdl:types>
-		<xsd:schema
+    <wsdl:types>
+        <xsd:schema
 			targetNamespace="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1">
-			<xsd:import schemaLocation="MedicalNode_1.0.xsd"
-				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
-			<!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
-			<xsd:element name="GetVocabularyRequest">
-				<xsd:complexType>
-					<xsd:sequence>
-						<xsd:element name="path" type="xsd:string"
+            <xsd:import schemaLocation="Node_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Node.v1" />
+            <xsd:import schemaLocation="Identification_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Identification.v1" />
+            <xsd:import schemaLocation="Response_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Response.v1" />
+
+            <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
+            <xsd:element name="GetVocabularyRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="path" type="xsd:string"
 							minOccurs="1" maxOccurs="1" />
-					</xsd:sequence>
-				</xsd:complexType>
-			</xsd:element>
-			<xsd:element name="GetVocabularyResponse"
-				type="mn:MedicalNodeListType" />
-		</xsd:schema>
-	</wsdl:types>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetVocabularyResponse"
+				type="rsp:NodeListResponseObjectType" />
+        
+            <xsd:element name="LookupWordRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" />
+                        <xsd:element name="word" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="LookupWordResponse"
+				type="rsp:LookupResponseObjectType" />
+            <xsd:element name="AddVocabularyNodeRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" />
+                        <xsd:element name="node" type="mn:NodeType" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="AddVocabularyNodeResponse" type="rsp:ResponseObjectType" />
+            <xsd:element name="MoveVocabularyNodeRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" />
+                        <xsd:element name="nodeId" type="xsd:string" />
+                        <xsd:element name="destParentNodeId" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="MoveVocabularyNodeResponse" type="rsp:ResponseObjectType" />
+            <xsd:element name="UpdateVocabularyNodeRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="id:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" />
+                        <xsd:element name="node" type="mn:NodeType" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="UpdateVocabularyNodeResponse" type="rsp:ResponseObjectType" />
+        </xsd:schema>
+    </wsdl:types>
 
-	<wsdl:message name="GetVocabularyRequest"> 
-		<wsdl:part name="parameters" element="tns:GetVocabularyRequest">
-		</wsdl:part>
-	</wsdl:message>
-	<wsdl:message name="GetVocabularyResponse">
-		<wsdl:part element="tns:GetVocabularyResponse" name="parameters" />
-	</wsdl:message>
-	
-	<wsdl:portType name="VocabularyService">
-		<wsdl:operation name="GetVocabulary">
-			<wsdl:input message="tns:GetVocabularyRequest" />
-			<wsdl:output message="tns:GetVocabularyResponse" />
-		</wsdl:operation>
-	</wsdl:portType>
+    <wsdl:message name="GetVocabularyRequest">
+        <wsdl:part name="parameters" element="tns:GetVocabularyRequest">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetVocabularyResponse">
+        <wsdl:part element="tns:GetVocabularyResponse" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="LookupWordRequest">
+        <wsdl:part element="tns:LookupWordRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="LookupWordResponse">
+        <wsdl:part element="tns:LookupWordResponse" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="AddVocabularyNodeRequest">
+        <wsdl:part element="tns:AddVocabularyNodeRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="AddVocabularyNodeResponse">
+        <wsdl:part element="tns:AddVocabularyNodeResponse" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="MoveVocabularyNodeRequest">
+        <wsdl:part element="tns:MoveVocabularyNodeRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="MoveVocabularyNodeResponse">
+        <wsdl:part element="tns:MoveVocabularyNodeResponse" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="UpdateVocabularyNodeRequest">
+        <wsdl:part element="tns:UpdateVocabularyNodeRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="UpdateVocabularyNodeResponse">
+        <wsdl:part element="tns:UpdateVocabularyNodeResponse" name="parameters" />
+    </wsdl:message>
+    <wsdl:portType name="VocabularyService">
+        <wsdl:operation name="GetVocabulary">
+            <wsdl:input message="tns:GetVocabularyRequest" />
+            <wsdl:output message="tns:GetVocabularyResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="LookupWord">
+            <wsdl:input message="tns:LookupWordRequest" />
+            <wsdl:output message="tns:LookupWordResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="AddVocabularyNode">
+            <wsdl:input message="tns:AddVocabularyNodeRequest" />
+            <wsdl:output message="tns:AddVocabularyNodeResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="MoveVocabularyNode">
+            <wsdl:input message="tns:MoveVocabularyNodeRequest" />
+            <wsdl:output message="tns:MoveVocabularyNodeResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="UpdateVocabularyNode">
+            <wsdl:input message="tns:UpdateVocabularyNodeRequest" />
+            <wsdl:output message="tns:UpdateVocabularyNodeResponse" />
+        </wsdl:operation>
 
-	<wsdl:binding name="VocabularyServiceSoapHttp"
+    </wsdl:portType>
+
+    <wsdl:binding name="VocabularyServiceSoapHttp"
 		type="tns:VocabularyService">
-		<soap:binding style="document"
+        <soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 
-		<wsdl:operation name="GetVocabulary">
-			<soap:operation />
-			<wsdl:input>
-				<soap:body use="literal" />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use="literal" />
-			</wsdl:output>
-		</wsdl:operation>
-	</wsdl:binding>
+        <wsdl:operation name="GetVocabulary">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="LookupWord">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="AddVocabularyNode">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="MoveVocabularyNode">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+        <wsdl:operation name="UpdateVocabularyNode">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
+    </wsdl:binding>
 </wsdl:definitions>

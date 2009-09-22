@@ -10,6 +10,13 @@
 	http://www.springframework.org/schema/jee
 	http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
 
+	<!--  Property file reader -->
+	<bean id="propertyPlaceholder"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location"
+			value="classpath:keywordservice-svc.properties" />
+	</bean>
+
 	<!--  SERVICE DEFINITIONS -->
 
 	<bean id="metaservice.vocabularyService" class="se.vgregion.metaservice.vocabularyservice.VocabularyService">
@@ -22,17 +29,13 @@
 	<bean id="metaservice.medicalTaxonomyService"
 		class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
 		init-method="initConnection">
-		<property name="host" value="localhost" />
-		<property name="port" value="6666" />
-		<property name="username" value="dts" />
-		<property name="password" value="dts" />
-		<property name="namespaceName" value="MeSH R" />
+		<property name="host" value="${taxonomyservice.host}" />
+		<property name="port" value="${taxonomyservice.port}" />
+		<property name="username" value="${taxonomyservice.username}" />
+		<property name="password" value="${taxonomyservice.password}" />
+		<property name="namespaceName" value="VGR" />
 		<property name="resultKeywordsLimit" value="10" />
-		<property name="excludeSourceIds">
-			<list>
-				<value>C</value>
-			</list>
-		</property>
+		<property name="sourceIdPropertyKey" value="ID" />
 	</bean>
 	
 </beans>

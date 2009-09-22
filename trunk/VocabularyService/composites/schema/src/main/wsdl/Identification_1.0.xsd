@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:se.vgregion.metaservice.schema.Identification.v1"
+	xmlns:tns="urn:se.vgregion.metaservice.schema.Identification.v1"
+	elementFormDefault="qualified" version="1.0">
+    <complexType name="IdentificationType">
+            <sequence>
+                <element name="userId" type="string" minOccurs="1" maxOccurs="1"/>
+                <element name="profileId" type="string" minOccurs="1" maxOccurs="1"/>
+            </sequence>
+    </complexType>
+</schema>

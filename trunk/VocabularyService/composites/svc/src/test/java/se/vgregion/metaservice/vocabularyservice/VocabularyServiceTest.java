@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import org.w3c.dom.NodeList;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
+import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 
 public class VocabularyServiceTest extends BaseSpringDependencyInjectionTest {
 
@@ -20,7 +22,8 @@ public class VocabularyServiceTest extends BaseSpringDependencyInjectionTest {
 
 	public void testGetVocabulary() {
 		String path = "Dokumenttyper/MIME/";
-		List<MedicalNode> nodes = vocabularyService.getVocabulary(path);
+		NodeListResponseObject response = vocabularyService.getVocabulary("m123",path);
+        List<MedicalNode> nodes = response.getNodeList();
 		// assertNotNull(nodes);
 		if (nodes != null) {
 			for (MedicalNode node : nodes) {
