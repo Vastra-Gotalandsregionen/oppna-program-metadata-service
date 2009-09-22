@@ -15,7 +15,7 @@ getKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 
 
 *Returvärde*
-_NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
+_NodeListResponseObject med requestId, statuskod, felmeddelande och en lista av Node objekt_
 
 <br><br>
 == getNodeByInternalId ==
