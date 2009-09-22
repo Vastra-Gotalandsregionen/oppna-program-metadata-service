@@ -62,7 +62,7 @@ Generation time : 2008-04-23 12:41:48 CEST
 						<phase>generate-sources</phase>
 						<configuration>
 							<sourceRoot>
-								${basedir}/target/generated/src/main/java
+								${basedir}/target/generated-sources/vocabularyservice
 							</sourceRoot>
 							<wsdlOptions>
 								<wsdlOption>
@@ -73,7 +73,15 @@ Generation time : 2008-04-23 12:41:48 CEST
 										</extraarg>
 										<extraarg>-p</extraarg>
 										<extraarg>
-											urn:se.vgregion.metaservice.schema.MedicalNode.v1=se.vgregion.metaservice.schema.medicalnode
+											urn:se.vgregion.metaservice.schema.Node.v1=se.vgregion.metaservice.schema.domain
+										</extraarg>
+                                        <extraarg>-p</extraarg>
+										<extraarg>
+											urn:se.vgregion.metaservice.schema.Identification.v1=se.vgregion.metaservice.schema.domain
+										</extraarg>
+                                        <extraarg>-p</extraarg>
+										<extraarg>
+											urn:se.vgregion.metaservice.schema.Response.v1=se.vgregion.metaservice.schema.domain
 										</extraarg>
 									</extraargs>
 									<wsdl>

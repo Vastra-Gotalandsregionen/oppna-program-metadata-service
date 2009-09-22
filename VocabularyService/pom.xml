@@ -24,6 +24,7 @@ Generation time : 2008-11-18 15:44:51 CET
   </parent>
   
   <modules>
+  	<module>composites/schema</module>
     <module>composites/svc</module>
     <module>composites/types</module>
     <module>modules/intsvc</module>

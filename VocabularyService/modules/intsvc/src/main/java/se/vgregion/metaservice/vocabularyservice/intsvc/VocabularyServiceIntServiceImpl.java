@@ -1,27 +1,35 @@
 package se.vgregion.metaservice.vocabularyservice.intsvc;
 
+import se.vgregion.metaservice.keywordservice.domain.Identification;
+import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
+import se.vgregion.metaservice.keywordservice.schema.IdentificationSdoHelper;
+import se.vgregion.metaservice.keywordservice.schema.NodeSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.ResponseObjectSdoHelper;
-import se.vgregion.metaservice.schema.medicalnode.MedicalNodeListType;
+import se.vgregion.metaservice.schema.domain.LookupResponseObjectType;
+import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
+import se.vgregion.metaservice.schema.domain.ResponseObjectType;
 import se.vgregion.metaservice.vocabularyservice.VocabularyService;
+import se.vgregion.metaservice.wsdl.vocabularyservices.AddVocabularyNodeRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.GetVocabularyRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.LookupWordRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.MoveVocabularyNodeRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.UpdateVocabularyNodeRequest;
+
 
 public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.wsdl.vocabularyservices.VocabularyService {
 
     private VocabularyService vocabularyService;
-
-    //TODO: The wsdl must be updated in order for this to work!
     /**
      * Interface to getVocabulary in vocabularyService
      * @param parameters
      * @return
      */
-    public MedicalNodeListType getVocabulary(GetVocabularyRequest parameters) {
-
+    public NodeListResponseObjectType getVocabulary(GetVocabularyRequest parameters) {
+    
         NodeListResponseObject nodeListResponseObject = vocabularyService.getVocabulary(parameters.getRequestId(), parameters.getPath());
-
-        return ResponseObjectSdoHelper.toNodeListResponseObjectType(nodeListResponseObject);
+        return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
     }
 
     /**
@@ -29,14 +37,14 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      * @param parameters
      * @return
      */
-    public ResponseObjectType addVocabularyNode(AddVocabularyRequest parameters) {
+    public ResponseObjectType addVocabularyNode(AddVocabularyNodeRequest parameters) {
 
         ResponseObject responseObject = vocabularyService.addVocabularyNode(
-                parameters.getIdentification(),
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getMedicalNode());
+                NodeSdoHelper.fromNodeType(parameters.getNode()));
 
-        return ResponseObjectSdoHelper.toResponseObjectType(responseObject);
+        return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
 
     /**
@@ -44,15 +52,15 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      * @param parameters
      * @return
      */
-    public ResponseObjectType moveVocabularyNode(MoveVocabularyRequest parameters) {
+    public ResponseObjectType moveVocabularyNode(MoveVocabularyNodeRequest parameters) {
 
         ResponseObject responseObject = vocabularyService.moveVocabularyNode(
-                parameters.getIdentification(),
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
                 parameters.getNodeId(),
-                parameters.getDestNodeId());
+                parameters.getDestParentNodeId());
 
-        return ResponseObjectSdoHelper.toResponseObjectType(responseObject);
+        return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
 
     /**
@@ -60,13 +68,13 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      * @param parameters
      * @return
      */
-    public ResponseObjectType updateVocabularyNode(UpdateVocabularyRequest parameters) {
-        i ResponseObject responseObject = vocabularyService.updateVocabularyNode(
-                parameters.getIdentification(),
+    public ResponseObjectType updateVocabularyNode(UpdateVocabularyNodeRequest parameters) {
+        ResponseObject responseObject = vocabularyService.updateVocabularyNode(
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getMedicalNode());
+                NodeSdoHelper.fromNodeType(parameters.getNode()));
 
-        return ResponseObjectSdoHelper.toResponseObjectType(responseObject);
+        return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
 
     public void dumpDbAsXML() {
@@ -79,5 +87,14 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      */
     public void setVocabularyService(VocabularyService vocabularyService) {
         this.vocabularyService = vocabularyService;
+    }
+
+    public LookupResponseObjectType lookupWord(LookupWordRequest parameters) {
+        LookupResponseObject responseObject = vocabularyService.lookupWord(
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
+                parameters.getRequestId(),
+                parameters.getWord());
+                
+        return ResponseObjectSdoHelper.toLookupRepsonseObjectType(responseObject);
     }
 }

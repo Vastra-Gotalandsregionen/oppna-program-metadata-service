@@ -21,11 +21,11 @@
 	<bean id="metaservice.medicalTaxonomyService"
 		class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
 		init-method="initConnection">
-		<property name="host" value="localhost" />
+		<property name="host" value="vm-apelon.corpl.findwise.net" />
 		<property name="port" value="6666" />
-		<property name="username" value="dts" />
-		<property name="password" value="dts" />
-		<property name="namespaceName" value="MeSH R" />
+		<property name="username" value="sa" />
+		<property name="password" value="apelon12Data" />
+		<property name="namespaceName" value="VGR" />
 		<property name="resultKeywordsLimit" value="10" />
 		<property name="excludeCodes">
 			<list>
