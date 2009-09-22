@@ -35,17 +35,19 @@ public class VocabularyService {
 
         List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, true);
         LookupResponseObject response = null;
-        MedicalNode node = nodes.get(0);
-        response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
-
-        for (MedicalNode parent : node.getParents()) {
-            if (parent.getName().equals(blacklistName)) {
-                response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
-                continue;
+        if (nodes.size() != 0) {
+            MedicalNode node = nodes.get(0);
+            for (MedicalNode parent : node.getParents()) {
+                if (parent.getName().equals(blacklistName)) {
+                    response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
+                    continue;
+                }
+                if (parent.getName().equals(whitelistName)) {
+                    response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
+                }
             }
-            if (parent.getName().equals(whitelistName)) {
-                response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
-            }
+        }else{
+            response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
         }
 
 
