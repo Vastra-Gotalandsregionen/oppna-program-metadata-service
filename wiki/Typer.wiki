@@ -85,9 +85,10 @@ Options är ett object som anger valbara parametrar för en request.
 
 === ResponseObject===
 
-ResponseObject används som standard svar till funktioner som vanligtvis inte har något resultat att ge. Objektet har endast en status kod och ett eventuellt felmeddelande.
+ResponseObject används som standard svar till funktioner som vanligtvis inte har något resultat att ge. Objektet har en status kod, ett eventuellt felmeddelande och requestId för den inkommande frågan om något sådant angavs.
 
 || *Namn* || *Typ* || *Förklaring* ||
+|| requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
 || statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
 
@@ -95,7 +96,10 @@ ResponseObject används som standard svar till funktioner som vanligtvis inte ha
 <br><br>
 === NodeListResponseObject===
 
+NodeListResponseObject är en utökning av ResponseObject. Utöver den information som ResponseObject ger så returneras även en lista av Noder
+
 || *Namn* || *Typ* || *Förklaring* ||
+|| requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
 || statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
 || nodeList || List<Node> || En list av Node objekt ||
