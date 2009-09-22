@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import se.vgregion.metaservice.keywordservice.domain.Options;
+import se.vgregion.metaservice.schema.domain.IncludeSourceIdsListType;
 import se.vgregion.metaservice.schema.domain.OptionsType;
-import se.vgregion.metaservice.schema.domain.OptionsType.SourceIds;
-import se.vgregion.metaservice.schema.domain.OptionsType.SourceIds.Entry;
-import se.vgregion.metaservice.schema.domain.StringArray;
+import se.vgregion.metaservice.schema.domain.OptionsType.IncludeSourceIds;
+import se.vgregion.metaservice.schema.domain.OptionsType.IncludeSourceIds.Entry;
 
 /**
  * HelperClass for conversion between SDO representation of Options and the
@@ -32,9 +32,10 @@ public class OptionsSdoHelper {
      */
     public static OptionsType toOptionsType(Options options) {
         OptionsType optionsType = new OptionsType();
-        optionsType.setSourceIds(toSourceIds(options.getSourceIds()));
-        optionsType.setWordLimit(options.getWordLimit());
-
+        if(options != null) {
+           optionsType.setIncludeSourceIds(toIncludeSourceIds(options.getIncludeSourceIds()));
+            optionsType.setWordLimit(options.getWordLimit());
+        }
         return optionsType;
     }
 
@@ -43,27 +44,27 @@ public class OptionsSdoHelper {
      * @param sourceIdsMap
      * @return
      */
-    private static SourceIds toSourceIds(Map<Integer, String[]> sourceIdsMap) {
-        SourceIds sourceIds = new SourceIds();
+    private static IncludeSourceIds toIncludeSourceIds(Map<Integer, String[]> sourceIdsMap) {
+        IncludeSourceIds sourceIds = new IncludeSourceIds();
         for (Integer namespaceId : sourceIdsMap.keySet()) {
-            SourceIds.Entry entry = new SourceIds.Entry();
+            IncludeSourceIds.Entry entry = new IncludeSourceIds.Entry();
             entry.setKey(namespaceId);
-            entry.setValue(toStringArray(sourceIdsMap.get(namespaceId)));
+            entry.setValue(toIncludeSourceIdsListType(sourceIdsMap.get(namespaceId)));
         }
         return sourceIds;
     }
 
     /**
-     * Builds an SDO StringArray from an array of strings
+     * Builds an SDO IncludeSourceIdsListType from an array of strings
      * @param array
      * @return
      */
-    private static StringArray toStringArray(String[] array) {
-        StringArray stringArray = new StringArray();
+    private static IncludeSourceIdsListType toIncludeSourceIdsListType(String[] array) {
+        IncludeSourceIdsListType sourceIdsListType = new IncludeSourceIdsListType();
         for (String item : array) {
-            stringArray.getItem().add(item);
+            sourceIdsListType.getIncludeSourceId().add(item);
         }
-        return stringArray;
+        return sourceIdsListType;
     }
 
     /**
@@ -73,31 +74,34 @@ public class OptionsSdoHelper {
      * @return Options
      */
     public static Options fromOptionsType(OptionsType optionsType) {
-        Options options = new Options(optionsType.getWordLimit(),fromSourceIds(optionsType.getSourceIds()));
+        Options options = new Options();
+        if(optionsType != null) {
+            options = new Options(optionsType.getWordLimit(),fromIncludeSourceIds(optionsType.getIncludeSourceIds()));
+        }
         return options;
     }
 
     /**
-     * Builds a Map of Integer String[] pairs from an SDO SourceIds
+     * Builds a Map of Integer String[] pairs from an SDO IncludeSourceIds
      * @param sourceIds
      * @return
      */
-    private static Map<Integer,String[]> fromSourceIds(SourceIds sourceIds) {
+    private static Map<Integer,String[]> fromIncludeSourceIds(IncludeSourceIds sourceIds) {
         List<Entry> entries = sourceIds.getEntry();
         Map<Integer,String[]> sourceIdsMap = new HashMap<Integer, String[]>(entries.size());
         for(Entry entry : entries) {
-            sourceIdsMap.put(entry.getKey(), fromStringArray(entry.getValue()));
+            sourceIdsMap.put(entry.getKey(), fromIncludeSourceIdsListType(entry.getValue()));
         }
         return sourceIdsMap;
     }
 
     /**
-     * Builds an array of String from an SDO StringArray
-     * @param stringArray
+     * Builds an array of String from an SDO IncludeSourceIdsListType
+     * @param IncludeSourceIdsListType
      * @return
      */
-    private static String[] fromStringArray(StringArray stringArray) {
-        String[] array = stringArray.getItem().toArray(new String[0]);
+    private static String[] fromIncludeSourceIdsListType(IncludeSourceIdsListType includeSourceIdsListType) {
+        String[] array = includeSourceIdsListType.getIncludeSourceId().toArray(new String[0]);
         return array;
     }
     

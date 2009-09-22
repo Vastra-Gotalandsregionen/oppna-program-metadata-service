@@ -3,19 +3,12 @@
 	targetNamespace="urn:se.vgregion.metaservice.schema.Response.v1"
 	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
     xmlns:tns="urn:se.vgregion.metaservice.schema.Response.v1"
-    xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
+    xmlns:mn="urn:se.vgregion.metaservice.schema.Node.v1"
 	elementFormDefault="qualified"
     jxb:version="1.0">
-    <import schemaLocation="MedicalNode_1.0.xsd"
-				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
-    <complexType name="NodeListResponseObjectType">
-        <complexContent>
-            <extension base="tns:ResponseObjectType">
-                <element name="nodeList" type="mn:MedicalNodeListType" minOccurs="1" maxOccurs="1"/>
-            </extension>
-        </complexContent>
-    </complexType>
-
+    <import schemaLocation="Node_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Node.v1" />
+   
     <complexType name="ResponseObjectType">
         <sequence>
             <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
@@ -23,6 +16,27 @@
             <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
         </sequence>
     </complexType>
+    <complexType name="NodeListResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="nodeList" type="mn:NodeListType" minOccurs="1" maxOccurs="1"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="LookupResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="listType" type="tns:ListTypeEnum" minOccurs="1" maxOccurs="1"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="ListTypeEnum">
+        <restriction base="string">
+            <enumeration value="WHITELIST" />
+            <enumeration value="BLACKLIST" />
+            <enumeration value="NONE" />
+        </restriction>
+    </simpleType>
     <simpleType name="StatusCodeEnum">
         <annotation>
             <appinfo>

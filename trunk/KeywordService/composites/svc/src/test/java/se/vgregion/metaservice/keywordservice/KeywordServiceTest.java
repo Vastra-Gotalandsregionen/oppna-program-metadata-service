@@ -6,7 +6,10 @@ import java.util.List;
 //import java.util.Set;
 
 import se.vgregion.metaservice.keywordservice.dao.BlacklistedWordDao;
+import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
+import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.document.TextDocument;
 import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
 import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatException;
 
@@ -16,6 +19,7 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	private static final String TEXT_TO_PROCESS = "Magnetisk resonanstomografi (MRT) eller Magnetic resonance imaging (MRI) är en medicinsk teknik för bildgivande diagnostik med en magnetkamera (MR-kamera). Tekniken används för att i undersökta patienter upptäcka, lägesbestämma och klassificera vissa sjukdomar och skador som är dolda eller svåra att se vid röntgen- eller datortomografiundersökning. Några exempel är tumörer, aneurysm, ögonsjukdomar, sjukdomar i hjärnans blodkärl, men också olika organ, mjukdelar och vid vissa skelettsjukdomar. MRT rekomenderas också som alternativ till röntgen, i de fallen så är möjligt, eftersom tekniken inte använder joniserande strålning [1]. MRT-undersökningar utförs vanligen på röntgenavdelningar. Bilderna granskas sedan av röntgenläkare som ställer diagnos.";
 	//private static final String DOCUMENT_TITLE = "Agoraphobia";
 	private static final String DOCUMENT_TITLE = "Magnetröntgen";
+    private static final String REQUEST_ID = "12m45";
 	private KeyWordService keywordService;
 
 	@Override
@@ -27,9 +31,14 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	
 	
 	public void testGetKeywords() throws UnsupportedFormatException{
-		List<MedicalNode> keywords = keywordService.getKeywords(TEXT_TO_PROCESS,
-				DOCUMENT_TITLE, null, "text", null,10,"A C");
-		
+        TextDocument doc = new TextDocument();
+        doc.setTitle(DOCUMENT_TITLE);
+        doc.setTextContent(TEXT_TO_PROCESS);
+
+        NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "456"),REQUEST_ID,doc,
+				null);
+
+        List<MedicalNode> keywords = response.getNodeList();
 		assertNotNull(keywords);
 		assertTrue(keywords.size() > 0);
 
@@ -54,14 +63,22 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testGetKeywordsWithNoContent() throws UnsupportedFormatException{
-		List<MedicalNode> keywords = keywordService.getKeywords(null, null, null, "text", null,10,"A C");
+        TextDocument doc = new TextDocument();
+        doc.setTitle(null);
+        doc.setTextContent(null);
+        NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "456"), REQUEST_ID, doc,null);
+		List<MedicalNode> keywords = response.getNodeList();
 		assertNotNull(keywords);
 		assertEquals(0, keywords.size());
 	}
 	
 	public void testGetKeywordsWithNoHits() throws UnsupportedFormatException{
-		String content = "abab bullulu mumumu";
-		List<MedicalNode> keywords = keywordService.getKeywords(content, "", null, "text", null,10, "A C");
+        String content = "abab bullulu mumumu";
+        TextDocument doc = new TextDocument();
+        doc.setTitle(null);
+        doc.setTextContent(content);
+		NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "456"), REQUEST_ID, doc,null);
+		List<MedicalNode> keywords = response.getNodeList();
 		assertEquals(0, keywords.size());
 		BlacklistedWordDao bwd = (BlacklistedWordDao) applicationContext.getBean("blacklistedWordDao");
 		List<BlacklistedWord> bwords = bwd.getAllBlacklistedWords();
@@ -72,8 +89,9 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testFindNodeByInternalId() throws UnsupportedFormatException {
-		MedicalNode node = keywordService.findMedicalNodeByInternalId("2149");
-		assertEquals("2149",node.getInternalId());
+        NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "456"), REQUEST_ID,"2149");
+		MedicalNode node = response.getNodeList().get(0);
+        assertEquals("2149",node.getInternalId());
 		assertNotNull(node);
 	}
 	

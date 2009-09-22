@@ -30,7 +30,7 @@ public class FormatProcessorFactory {
 	 * @throws UnsupportedFormatException if the given format does not map to a FormatProcessor
 	 */
 	public static FormatProcessor getFormatProcessor(String format) throws UnsupportedFormatException{
-		FormatProcessor processor = formatProcessors.get(format);
+		FormatProcessor processor = formatProcessors.get("html"); //TODO: Dynamic assertion
 		if(processor == null) {
 			
 			throw new UnsupportedFormatException("The format is not supported");

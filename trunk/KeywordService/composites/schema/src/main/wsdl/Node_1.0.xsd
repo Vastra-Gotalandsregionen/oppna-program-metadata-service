@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.w3.org/2001/XMLSchema"
-	targetNamespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
-	xmlns:tns="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
+	targetNamespace="urn:se.vgregion.metaservice.schema.Node.v1"
+	xmlns:tns="urn:se.vgregion.metaservice.schema.Node.v1"
 	elementFormDefault="qualified" version="1.0">
 
-	<complexType name="MedicalNodeType">
+	<complexType name="NodeType">
 		<sequence>
 			<element name="name" minOccurs="1" maxOccurs="1"
 				type="string" />
@@ -17,7 +17,7 @@
 			<element name="synonyms" minOccurs="0" maxOccurs="1"
 				type="tns:SynonymsListType" />
 			<element name="parents" minOccurs="0" maxOccurs="1"
-				type="tns:MedicalNodeListType" />
+				type="tns:NodeListType" />
 			<element name="userStatus" minOccurs="0" maxOccurs="1"
 				type="tns:UserStatusListType" />
 			<element name="hasChildren" minOccurs="1" maxOccurs="1"
@@ -39,10 +39,10 @@
 		</sequence>
 	</complexType>
 
-	<complexType name="MedicalNodeListType">
+	<complexType name="NodeListType">
 		<sequence>
-			<element name="MedicalNode" maxOccurs="unbounded"
-				type="tns:MedicalNodeType" />
+			<element name="Node" maxOccurs="unbounded"
+				type="tns:NodeType" />
 		</sequence>
 	</complexType>
 

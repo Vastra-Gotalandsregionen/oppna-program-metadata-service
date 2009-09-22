@@ -82,23 +82,11 @@
 		<property name="minWordLength" value="0" />
 	</bean>
 
-	<!--  Conection to apelon -->
-		<!--
-		<bean id="metaservice.medicalTaxonomyService"
-		class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
-		init-method="initConnection">
-		<property name="host" value="localhost" />
-		<property name="port" value="6666" />
-		<property name="username" value="dts" />
-		<property name="password" value="dts" />
-		<property name="namespaceName" value="SweMESH" />
-		<property name="resultKeywordsLimit" value="10" />
-		<property name="sourceIdPropertyKey" value="MN" />
-		</bean>
-	-->
+	
 
     <!--  Mock connection -->
-	 <bean id="metaservice.medicalTaxonomyService"
+	 
+     <bean id="metaservice.medicalTaxonomyService"
 		class="se.vgregion.metaservice.keywordservice.mock.MedicalTaxonomyServiceMock"
 		init-method="initConnection" />
  	 

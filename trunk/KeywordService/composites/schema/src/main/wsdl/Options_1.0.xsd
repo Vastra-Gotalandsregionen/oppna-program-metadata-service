@@ -12,14 +12,14 @@
 
    <complexType name="OptionsType">
     <sequence>
-      <element name="sourceIds">
+      <element name="includeSourceIds">
         <complexType>
           <sequence>
             <element name="entry" minOccurs="0" maxOccurs="unbounded">
               <complexType>
                 <sequence>
                   <element name="key" minOccurs="0" type="int"/>
-                  <element name="value" minOccurs="0" type="tns:stringArray"/>
+                  <element name="value" minOccurs="0" type="tns:IncludeSourceIdsListType"/>
                 </sequence>
               </complexType>
             </element>
@@ -29,4 +29,11 @@
       <element name="wordLimit" type="int"/>
     </sequence>
   </complexType>
+
+  <complexType name="IncludeSourceIdsListType">
+		<sequence>
+			<element name="includeSourceId" maxOccurs="unbounded"
+				type="string" />
+		</sequence>
+	</complexType>
 </schema>

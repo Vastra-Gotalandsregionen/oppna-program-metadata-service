@@ -11,37 +11,38 @@ public class Options {
 
     //Default values?
     private int wordLimit = 5;
-    private Map<Integer,String[]> sourceIds;
+    private Map<Integer,String[]> includeSourceIds;
 
     /**
      * Empty Constructor, uses the default values
-     * wordLimit = 5 sourceIds = {"A","C"}
+     * wordLimit = 5 includeSourceIds = {"A","C"}
      */
     public Options(){
         Map<Integer, String[]> defaultSourceIds = new HashMap<Integer,String[]>();
         defaultSourceIds.put(123, new String[]{"A","C"}); //TODO: Correct sweMesh id
+        setIncludeSourceIds(defaultSourceIds);
     }
 
     /**
      * Constructor
      * @param wordLimit the max number of keywords to return
-     * @param SourceIds a map of the sourceIds to include for each namespace
+     * @param SourceIds a map of the includeSourceIds to include for each namespace
      */
     public Options(int wordLimit, Map<Integer,String[]> sourceIds) {
         setWordLimit(wordLimit);
-        setSourceIds(sourceIds);
+        setIncludeSourceIds(sourceIds);
     }
 
-    private void setSourceIds(Map<Integer,String[]> sourceIds) {
-        this.sourceIds = sourceIds;
+    private void setIncludeSourceIds(Map<Integer,String[]> includeSourceIds) {
+        this.includeSourceIds = includeSourceIds;
     }
 
     private void setWordLimit(int wordLimit) {
         this.wordLimit = wordLimit;
     }
 
-    public Map<Integer,String[]> getSourceIds() {
-        return sourceIds;
+    public Map<Integer,String[]> getIncludeSourceIds() {
+        return this.includeSourceIds;
     }
 
     public int getWordLimit() {

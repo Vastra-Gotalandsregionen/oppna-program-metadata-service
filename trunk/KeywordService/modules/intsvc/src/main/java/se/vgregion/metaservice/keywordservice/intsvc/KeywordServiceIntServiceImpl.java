@@ -9,8 +9,6 @@ import se.vgregion.metaservice.keywordservice.schema.DocumentSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.ResponseObjectSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.IdentificationSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.OptionsSdoHelper;
-import se.vgregion.metaservice.schema.medicalnode.MedicalNodeType;
-import se.vgregion.metaservice.schema.medicalnode.MedicalNodeListType;
 import se.vgregion.metaservice.schema.domain.ResponseObjectType;
 import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
 import se.vgregion.metaservice.wsdl.keywordservices.BookmarkKeywordsRequest;
