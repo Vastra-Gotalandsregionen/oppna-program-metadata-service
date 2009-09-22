@@ -10,6 +10,8 @@ import com.apelon.dts.client.concept.ConceptChild;
 
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
+import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
  * Mock implementation of the MedicalTaxonomyService abstract class. Only used for testing
@@ -67,5 +69,10 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public List<MedicalNode> findNodesWithParents(String nodeName, boolean matchSynonyms) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 
 }

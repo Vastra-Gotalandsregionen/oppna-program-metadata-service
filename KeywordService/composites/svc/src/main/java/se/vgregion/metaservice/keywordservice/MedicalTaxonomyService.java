@@ -8,6 +8,8 @@ import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 
 import com.apelon.dts.client.concept.ConceptChild;
 import com.apelon.dts.client.concept.OntylogConcept;
+import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
  * Handles communication with a medical taxonomy. Implementing classes of this interface acts like fa�ades
@@ -56,11 +58,19 @@ public abstract class MedicalTaxonomyService {
 	 * @return a list of MedicalNodes with names that matches the nodeName pattern.
 	 */
 	public abstract List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms);
-		
+
+    /**
+	 * Find nodes based on input nodeName and fetch parents to node. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
+	 * @param nodeName - The name pattern for the nodes to find
+	 * @param matchSynonyms - If true, match against synonym name and concept name
+	 * @return a list of MedicalNodes with names that matches the nodeName pattern.
+	 */
+	public abstract List<MedicalNode> findNodesWithParents(String nodeName, boolean matchSynonyms);
+
 	public abstract MedicalNode getChildNode(MedicalNode node, String childName);
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
-	
+    
 	/**
 	 * Sets the username to use when connecting to the Medical Taxonomy backend
 	 * @param username the username

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
@@ -32,10 +33,13 @@ import com.apelon.dts.client.concept.NavChildContext;
 import com.apelon.dts.client.concept.NavQuery;
 import com.apelon.dts.client.concept.OntylogConcept;
 import com.apelon.dts.client.concept.SearchQuery;
-import com.apelon.dts.client.match.MatchQuery;
 import com.apelon.dts.client.namespace.Namespace;
 import com.apelon.dts.client.namespace.NamespaceQuery;
+import com.apelon.dts.client.subset.SubsetQuery;
+import com.apelon.dts.common.subset.Subset;
 import java.lang.Integer;
+import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
  * Implementation of the abstract class MedicalTaxonomyService. This
@@ -52,6 +56,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 	SearchQuery searchQuery;
 	AssociationQuery assocQuery;
 	NavQuery navQuery;
+    SubsetQuery subsetQuery;
 
 	BlacklistedWordDao blacklistedWordDao;
 	
@@ -86,6 +91,8 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
 			assocQuery = AssociationQuery.createInstance(serverConnection);
 			navQuery = NavQuery.createInstance(serverConnection);
+
+            subsetQuery = SubsetQuery.createInstance(serverConnection);
 
 			ca = new ConceptAttributeSetDescriptor("Defined View ASD",
 					resultKeywordsLimit);
@@ -212,7 +219,16 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 	
 
 	public List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms) {
-		List<MedicalNode> nodes = new ArrayList<MedicalNode>(100);
+		return findNodes(nodeName,matchSynonyms,false);
+		
+	}
+
+    public List<MedicalNode> findNodesWithParents(String nodeName, boolean matchSynonyms) {
+        return findNodes(nodeName,matchSynonyms,true);
+    }
+
+    private List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms, boolean fetchParents) {
+        List<MedicalNode> nodes = new ArrayList<MedicalNode>(100);
 		setFetchParents(ca, namespace.getId());
 		DTSSearchOptions options = new DTSSearchOptions(100,namespace.getId(), ca);
 		try {
@@ -220,17 +236,29 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 			OntylogConcept[] concepts = searchQuery.findConceptsWithNameMatching(nodeName, options, matchSynonyms);
 			log.debug(MessageFormat.format("Found {0} concepts",concepts.length));
 			for(OntylogConcept concept : concepts) {
-				MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), false);
+				MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), fetchParents);
 				nodes.add(node);
 			}
 		} catch (DTSException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return nodes;
-		
-	}
+    }
+    
+
+    private int getSubsetId(String subsetName) {
+        Subset subset = null;
+        try {
+            subset = subsetQuery.fetch(subsetName);
+        } catch (DTSException ex) {
+            java.util.logging.Logger.getLogger(MedicalTaxonomyServiceApelonImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        int subsetId = subset != null ? subset.getId() : 0;
+        return subsetId;
+    }
 	
 	public MedicalNode getChildNode(MedicalNode node, String childName) {
 		

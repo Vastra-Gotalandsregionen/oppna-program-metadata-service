@@ -1,17 +1,20 @@
 package se.vgregion.metaservice.keywordservice.schema;
 
+import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject.ListType;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
 import se.vgregion.metaservice.schema.domain.ResponseObjectType;
+import se.vgregion.metaservice.schema.domain.LookupResponseObjectType;
 import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
+import se.vgregion.metaservice.schema.domain.ListTypeEnum;
 import se.vgregion.metaservice.schema.domain.StatusCodeEnum;
-import se.vgregion.metaservice.schema.medicalnode.MedicalNodeListType;
+
 /**
  * This class is a helperclass that converts responseObjects between SDO and POJO
  * @author sture.svensson
  */
-
 public class ResponseObjectSdoHelper {
 
     ResponseObjectSdoHelper() {
@@ -46,7 +49,7 @@ public class ResponseObjectSdoHelper {
         nodeListResponseObjectType.setRequestId(
                 nodeListResponseObject.getRequestId());
         nodeListResponseObjectType.setNodeList(
-                MedicalNodeSdoHelper.toMedicalNodeListType(
+                NodeSdoHelper.toNodeListType(
                 nodeListResponseObject.getNodeList()));
         nodeListResponseObjectType.setErrorMessage(
                 nodeListResponseObject.getErrorMessage());
@@ -63,35 +66,90 @@ public class ResponseObjectSdoHelper {
         nodeListResponseObject.setRequestId(nodeListResponseObjectType.getRequestId());
         nodeListResponseObject.setErrorMessage(nodeListResponseObjectType.getErrorMessage());
         nodeListResponseObject.setStatusCode(fromStatusCodeEnum(nodeListResponseObjectType.getStatusCode()));
-        nodeListResponseObject.setNodeList(MedicalNodeSdoHelper.fromMedicalNodeListType(
+        nodeListResponseObject.setNodeList(NodeSdoHelper.fromNodeListType(
                 nodeListResponseObjectType.getNodeList()));
 
         return nodeListResponseObject;
     }
 
     /**
-	 * Creates status code from a StatusCodeEnum
-	 *
-	 * @param statusCodeEnum
-	 * @return 
-	 */
-	public static StatusCode fromStatusCodeEnum(StatusCodeEnum statusCodeEnum) {
-		if (statusCodeEnum == null)
-			return null;
+     * Creates status code from a StatusCodeEnum
+     *
+     * @param statusCodeEnum
+     * @return
+     */
+    public static StatusCode fromStatusCodeEnum(StatusCodeEnum statusCodeEnum) {
+        if (statusCodeEnum == null) {
+            return null;
+        }
         StatusCode statusCode = StatusCode.valueOf(statusCodeEnum.name());
-		return statusCode;
-	}
+        
+        return statusCode;
+    }
 
-	/**
-	 * Builds a StatusCodeEnum from a status code
-	 *
-	 * @param statusCode
-	 * @return
-	 */
-	public static StatusCodeEnum toStatusCodeEnum(StatusCode statusCode) {
-		if (statusCode == null)
-			return null;
-		StatusCodeEnum statusCodeEnum = StatusCodeEnum.fromValue(statusCode.code());
-		return statusCodeEnum;
-	}
+    /**
+     * Builds a StatusCodeEnum from a status code
+     *
+     * @param statusCode
+     * @return
+     */
+    public static StatusCodeEnum toStatusCodeEnum(StatusCode statusCode) {
+        if (statusCode == null) {
+            return null;
+        }
+        StatusCodeEnum statusCodeEnum = StatusCodeEnum.fromValue(statusCode.code());
+        return statusCodeEnum;
+    }
+
+    public static LookupResponseObjectType toLookupRepsonseObjectType(LookupResponseObject lookupResponseObject) {
+
+        LookupResponseObjectType lookupResponseObjectType = new LookupResponseObjectType();
+        lookupResponseObjectType.setRequestId(lookupResponseObject.getRequestId());
+        lookupResponseObjectType.setErrorMessage(lookupResponseObject.getErrorMessage());
+        lookupResponseObjectType.setStatusCode(toStatusCodeEnum(lookupResponseObject.getStatusCode()));
+        lookupResponseObjectType.setListType(toListTypeEnum(lookupResponseObject.getListType()));
+
+        return lookupResponseObjectType;
+    }
+
+    public static LookupResponseObject fromLookupRepsonseObjectType(LookupResponseObjectType lookupResponseObjectType) {
+
+        LookupResponseObject lookupResponseObject = new LookupResponseObject();
+
+        lookupResponseObject.setRequestId(lookupResponseObjectType.getRequestId());
+        lookupResponseObject.setErrorMessage(lookupResponseObjectType.getErrorMessage());
+        lookupResponseObject.setStatusCode(fromStatusCodeEnum(lookupResponseObjectType.getStatusCode()));
+        lookupResponseObject.setListType(fromListTypeEnum(
+                lookupResponseObjectType.getListType()));
+
+        return lookupResponseObject;
+    }
+
+    /**
+     * Creates status code from a StatusCodeEnum
+     *
+     * @param statusCodeEnum
+     * @return
+     */
+    public static ListType fromListTypeEnum(ListTypeEnum listTypeEnum) {
+        if (listTypeEnum == null) {
+            return null;
+        }
+        ListType listType = ListType.valueOf(listTypeEnum.name());
+        return listType;
+    }
+
+    /**
+     * Builds a ListTypeEnum from a list type
+     *
+     * @param listType
+     * @return
+     */
+    public static ListTypeEnum toListTypeEnum(ListType listType) {
+        if (listType == null) {
+            return null;
+        }
+        ListTypeEnum listTypeEnum = ListTypeEnum.fromValue(listType.name());
+        return listTypeEnum;
+    }
 }

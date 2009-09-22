@@ -122,7 +122,7 @@ public class KeyWordService {
 
             /** * Find medical keywords ** */
             log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
-            List<MedicalNode> nodes = findMedicalNodes(keywords, id.getUserId(), options.getSourceIds());
+            List<MedicalNode> nodes = findMedicalNodes(keywords, id.getUserId(), options.getIncludeSourceIds());
 
             /** * Return an NodeListResponseObject with statusCode ok (200) * **/
             return new NodeListResponseObject(requestId, nodes);

@@ -73,7 +73,7 @@ Generation time : 2008-04-23 12:41:48 CEST
 										</extraarg>
 										<extraarg>-p</extraarg>
 										<extraarg>
-											urn:se.vgregion.metaservice.schema.MedicalNode.v1=se.vgregion.metaservice.schema.medicalnode
+											urn:se.vgregion.metaservice.schema.Node.v1=se.vgregion.metaservice.schema.domain
 										</extraarg>
                                         <extraarg>-p</extraarg>
 										<extraarg>

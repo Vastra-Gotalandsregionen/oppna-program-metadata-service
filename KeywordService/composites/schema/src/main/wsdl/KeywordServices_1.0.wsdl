@@ -3,7 +3,7 @@
 	xmlns:tns="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:mn="urn:se.vgregion.metaservice.schema.MedicalNode.v1"
+	xmlns:mn="urn:se.vgregion.metaservice.schema.Node.v1"
 	xmlns:dc="urn:se.vgregion.metaservice.schema.Document.v1"
     xmlns:id="urn:se.vgregion.metaservice.schema.Identification.v1"
     xmlns:op="urn:se.vgregion.metaservice.schema.Options.v1"
@@ -13,8 +13,8 @@
     <wsdl:types>
         <xsd:schema
 			targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
-            <xsd:import schemaLocation="MedicalNode_1.0.xsd"
-				namespace="urn:se.vgregion.metaservice.schema.MedicalNode.v1" />
+            <xsd:import schemaLocation="Node_1.0.xsd"
+				namespace="urn:se.vgregion.metaservice.schema.Node.v1" />
             <xsd:import schemaLocation="Document_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.Document.v1" />
             <xsd:import schemaLocation="Identification_1.0.xsd"
