@@ -11,14 +11,15 @@ taxonomyservice.port=
 taxonomyservice.username=
 taxonomyservice.password=
 }}}
-
+Fyll den med dina login-uppgifter till Apelon.
 Skapa en likadan fil i VocabularyService-svc men döp den till vocabularyservice-svc.properties.
 
 Skapa en databas för UserProfileService. I det här exemplet har vi använt en Derby-databas som vi döpt till metaservice. Den kör på port 1527. Sätt upp den som en dataSource i Tomcat, genom att öppna conf/context.xml och lägg till följande:
+{{{
 <Resource name="jdbc/MetaServiceDB" auth="Container" type="javax.sql.DataSource"
                maxActive="100" maxIdle="30" maxWait="10000"
                username="username" password="password" driverClassName="org.apache.derby.jdbc.ClientDriver"
                url="jdbc:derby://localhost:1527/metaservice"/>
-
+}}}
 Ändra username,password,driverClassName och url för att passa din installation.
 Lägg till jdbc-drivrutinen för databasen i tomcats lib-katalog. För Derby används derbyclient.jar
