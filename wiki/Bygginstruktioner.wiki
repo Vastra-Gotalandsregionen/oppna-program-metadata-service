@@ -1,0 +1,6 @@
+#Instruktioner för att bygga
+
+= Bygginstruktioner =
+Checka ut källkoden
+
+I projektet KeywordService-svc, skapa filen keywordservices-svc.properties
