@@ -59,7 +59,16 @@ public abstract class MedicalTaxonomyService {
 	 */
 	public abstract List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms);
 
-    /**
+        /**
+         * Move a node to a new parent in the tree. WARNING, if the node has several parents, these will be deleted.
+         * After this operation, the node will only have one parent.
+         * @param nodeId the id of the node to move
+         * @param destinationParentNodeId the id of the node to move to
+         * @throws KeywordsException
+         */
+        public abstract void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException;
+
+        /**
 	 * Find nodes based on input nodeName and fetch parents to node. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
 	 * @param nodeName - The name pattern for the nodes to find
 	 * @param matchSynonyms - If true, match against synonym name and concept name
