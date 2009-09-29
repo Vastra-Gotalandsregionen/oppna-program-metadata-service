@@ -5,12 +5,15 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
+import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 
 /**
  * Class for handling queries for a vocabulary
@@ -108,8 +111,11 @@ public class VocabularyService {
      * if the operation was succesfull
      */
     public ResponseObject moveVocabularyNode(Identification id, String requestId, String nodeId, String destNodeId) {
-
-        //TODO: implement this method
+        try {
+            medicalTaxonomyService.moveNode(nodeId, destNodeId);
+        } catch (KeywordsException ex) {
+            Logger.getLogger(VocabularyService.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return new ResponseObject(requestId);
 
     }
