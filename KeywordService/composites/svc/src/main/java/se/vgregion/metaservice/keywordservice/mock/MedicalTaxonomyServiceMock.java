@@ -80,4 +80,14 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public MedicalNode createNewNode(String name, int nameSpaceId, String parentNodeId) throws KeywordsException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void updateNodeProperties(MedicalNode node) throws KeywordsException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

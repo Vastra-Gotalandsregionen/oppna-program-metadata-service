@@ -281,7 +281,7 @@ public class KeyWordService {
      * @return whiteList, blackList or none depending on where the word was found
      */
     public ListType lookupWord(Identification id, String requestId, String word) {
-        //TODO: add functionality for whitelist
+        //TODO: remove this, the real one is in vocabulary-service!
         if (bwd.getBlacklistedWordByWord(word) != null){
             return ListType.blackList;
         }

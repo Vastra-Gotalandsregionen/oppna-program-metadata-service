@@ -79,6 +79,10 @@ public abstract class MedicalTaxonomyService {
 	public abstract MedicalNode getChildNode(MedicalNode node, String childName);
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
+
+        public abstract MedicalNode createNewNode(String name, int nameSpaceId, String parentNodeId) throws KeywordsException;
+
+        public abstract void updateNodeProperties(MedicalNode node) throws KeywordsException;
     
 	/**
 	 * Sets the username to use when connecting to the Medical Taxonomy backend
