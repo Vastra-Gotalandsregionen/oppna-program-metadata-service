@@ -26,6 +26,7 @@ public class VocabularyService {
     private MedicalTaxonomyService medicalTaxonomyService;
     private String whitelistName = "Whitelist"; //TODO: Move to profile configuration?
     private String blacklistName = "Blacklist"; //TODO: Move to profile configuration?
+    private String reviewlistName = "Reviewlist"; //TODO: Move to profile configuration?
 
     /**
      * Look up a word in whitelist or blacklist
@@ -48,12 +49,44 @@ public class VocabularyService {
                 if (parent.getName().equals(whitelistName)) {
                     response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
                 }
+                if (parent.getName().equals(reviewlistName)) {
+                    node.addProperty("profileIds", identification.getProfileId());
+                    try {
+                        medicalTaxonomyService.updateNodeProperties(node);
+                        //TODO: add property urls
+                        //TODO: update node
+                    } catch (KeywordsException ex) {
+                        //TODO: new statuscode?
+                        response = new LookupResponseObject(requestId,
+                                ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
+                                "Could not add profileIds to keyword");
+
+                    }
+                }
             }
-        }else{
+        } else {
             response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
+
+            // create a new node and add to review-list
+            MedicalNode reviewNode = medicalTaxonomyService.findNodes(reviewlistName, false).get(0);
+
+            try {
+
+                MedicalNode node = medicalTaxonomyService.createNewNode(word, 33315, reviewNode.getInternalId());
+                node.addProperty("profileIds", identification.getProfileId());
+                medicalTaxonomyService.updateNodeProperties(node);
+                medicalTaxonomyService.updateNodeProperties(node);
+
+                //TODO: add property urls
+                //TODO: update node
+
+            } catch (KeywordsException ex) {
+                //TODO: new statuscode?
+                response = new LookupResponseObject(requestId,
+                        ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
+                        "Could not create the new keyword");
+            }
         }
-
-
         return response;
     }
 
