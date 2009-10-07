@@ -8,7 +8,11 @@ import org.apache.log4j.Logger;
 
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
+import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.schema.domain.NodeListType;
+import se.vgregion.metaservice.schema.domain.NodePropertyListType;
+import se.vgregion.metaservice.schema.domain.NodePropertyListType;
+import se.vgregion.metaservice.schema.domain.NodePropertyType;
 import se.vgregion.metaservice.schema.domain.NodeType;
 import se.vgregion.metaservice.schema.domain.SynonymsListType;
 import se.vgregion.metaservice.schema.domain.UserStatusEnum;
@@ -44,6 +48,7 @@ public abstract class NodeSdoHelper {
         nodeSDO.setNamespaceId(node.getNamespaceId());
         nodeSDO.setSourceId(node.getSourceId());
         nodeSDO.setSynonyms(toSynonymsListType(node.getSynonyms()));
+        nodeSDO.setNodeProperties(toNodePropertyListType(node.getProperties()));
         nodeSDO.setParents(toNodeListType(node.getParents()));
         nodeSDO.setUserStatus(toUserStatusListType(node.getUserStatus()));
         nodeSDO.setHasChildren(node.getHasChildren());
@@ -134,6 +139,56 @@ public abstract class NodeSdoHelper {
             returnType.getUserStatus().add(use);
         }
         return returnType;
+    }
+
+    /**
+     * Builds a NodePropertyListType from a list of NodeProperties
+     * @param list
+     * @return
+     */
+    public static NodePropertyListType toNodePropertyListType(
+            List<NodeProperty> list) {
+        NodePropertyListType returnType = new NodePropertyListType();
+        for (NodeProperty prop : list) {
+            returnType.getNodeProperty().add(toNodePropertyType(prop));
+        }
+        return returnType;
+    }
+
+    /**
+     * Builds a list of NodeProperties from a NodePropertyListType
+     * @param list
+     * @return
+     */
+    public static List<NodeProperty> fromNodePropertyListType(
+            NodePropertyListType list) {
+        List<NodeProperty> returnType = new ArrayList<NodeProperty>();
+        for (NodePropertyType prop : list.getNodeProperty()) {
+            returnType.add(new NodeProperty(prop.getName(), prop.getValue()));
+        }
+        return returnType;
+    }
+
+    /**
+     * Builds a NodeProperty from a NodePropertyType
+     * @param nodeProperty
+     * @return
+     */
+    public static NodePropertyType toNodePropertyType(NodeProperty nodeProperty) {
+        NodePropertyType nodePropertyType = new NodePropertyType();
+        nodePropertyType.setName(nodeProperty.getName());
+        nodePropertyType.setValue(nodeProperty.getValue());
+        return nodePropertyType;
+
+    }
+
+     /**
+     * Builds a NodePropertyType from a NodeProperty 
+     * @param nodeProperty
+     * @return
+     */
+    public static NodeProperty fromNodePropertyType(NodePropertyType nodePropertyType) {
+        return new NodeProperty(nodePropertyType.getName(), nodePropertyType.getValue());
     }
 
     /**
