@@ -27,6 +27,10 @@ public class VocabularyService {
     private String whitelistName = "Whitelist"; //TODO: Move to profile configuration?
     private String blacklistName = "Blacklist"; //TODO: Move to profile configuration?
     private String reviewlistName = "Reviewlist"; //TODO: Move to profile configuration?
+    //TODO: specify this elsewhere?
+    private String profileIdPropertyName = "profileId";
+    private String userIdPropertyName = "userId";
+    private String urlPropertyName = "url";
 
     /**
      * Look up a word in whitelist or blacklist
@@ -50,17 +54,18 @@ public class VocabularyService {
                     response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
                 }
                 if (parent.getName().equals(reviewlistName)) {
-                    node.addProperty("profileIds", identification.getProfileId());
+                    node.addProperty(profileIdPropertyName, identification.getProfileId());
+                    node.addProperty(userIdPropertyName, identification.getUserId());
+                    node.addProperty(urlPropertyName, "http://www.testurl.com/?userId=" + identification.getUserId());
                     try {
                         medicalTaxonomyService.updateNodeProperties(node);
-                        //TODO: add property urls
-                        //TODO: update node
+
+                        response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
                     } catch (KeywordsException ex) {
                         //TODO: new statuscode?
                         response = new LookupResponseObject(requestId,
                                 ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
                                 "Could not add profileIds to keyword");
-
                     }
                 }
             }
@@ -71,14 +76,13 @@ public class VocabularyService {
             MedicalNode reviewNode = medicalTaxonomyService.findNodes(reviewlistName, false).get(0);
 
             try {
-
-                MedicalNode node = medicalTaxonomyService.createNewNode(word, 33315, reviewNode.getInternalId());
-                node.addProperty("profileIds", identification.getProfileId());
-                medicalTaxonomyService.updateNodeProperties(node);
-                medicalTaxonomyService.updateNodeProperties(node);
-
-                //TODO: add property urls
-                //TODO: update node
+                MedicalNode node = new MedicalNode();
+                node.setName(word);
+                node.setNamespaceId("33315");
+                node.addProperty(profileIdPropertyName, identification.getProfileId());
+                node.addProperty(userIdPropertyName, identification.getUserId());
+                node.addProperty(urlPropertyName, "http://www.testurl.com/?userId=" + identification.getUserId());
+                medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
 
             } catch (KeywordsException ex) {
                 //TODO: new statuscode?
