@@ -80,7 +80,7 @@ public abstract class MedicalTaxonomyService {
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
 
-        public abstract MedicalNode createNewNode(String name, int nameSpaceId, String parentNodeId) throws KeywordsException;
+        public abstract MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException;
 
         public abstract void updateNodeProperties(MedicalNode node) throws KeywordsException;
     

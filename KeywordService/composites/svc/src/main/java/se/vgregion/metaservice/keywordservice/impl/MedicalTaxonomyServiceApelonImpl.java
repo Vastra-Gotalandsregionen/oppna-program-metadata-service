@@ -58,7 +58,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     AssociationQuery assocQuery;
     NavQuery navQuery;
     SubsetQuery subsetQuery;
-    OntylogExtConceptQuery ontylogExtConceptQuery;
     ThesaurusConceptQuery thesaurusConceptQuery;
     BlacklistedWordDao blacklistedWordDao;
     //private List<String> excludeSourceIds;
@@ -86,7 +85,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             nameQuery = NamespaceQuery.createInstance(serverConnection);
             namespace = nameQuery.findNamespaceByName(namespaceName);
 
-            ontylogExtConceptQuery = OntylogExtConceptQuery.createInstance(serverConnection);
             thesaurusConceptQuery = ThesaurusConceptQuery.createInstance(serverConnection);
 
             assocQuery = AssociationQuery.createInstance(serverConnection);
@@ -97,6 +95,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             ca = new ConceptAttributeSetDescriptor("Defined View ASD",
                     resultKeywordsLimit);
             ca.setAllSynonymTypes(true);
+            ca.setAllPropertyTypes(true);
 
             DTSConceptQuery conceptQuery = DTSConceptQuery.createInstance(serverConnection);
             DTSPropertyType propertyType = conceptQuery.findPropertyTypeByName(
@@ -253,25 +252,16 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         try {
             DTSConcept concept = getConceptByInternalId(node.getInternalId());
 
-            ArrayList<NodeProperty> list = new ArrayList<NodeProperty>();
-            for (DTSProperty prop : concept.getFetchedProperties()) {
-                list.add(new NodeProperty(prop.getName(), prop.getValue()));
-                log.info("old"+prop.getName() +" "+ prop.getValue());
-            }
-
             for (NodeProperty prop : node.getProperties()) {
-                log.info(prop.getName() +" "+ prop.getValue());
-                if (!list.contains(prop)) {
-                    thesaurusConceptQuery.addProperty(
-                            concept, new DTSProperty(
-                            thesaurusConceptQuery.findPropertyTypeByName(
-                            prop.getName(), Integer.parseInt(node.getNamespaceId())),
-                            prop.getValue()));
+                DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
+                DTSProperty property = new DTSProperty(pType, prop.getValue());
+                if (!concept.containsProperty(property)) {
+                    thesaurusConceptQuery.addProperty(concept, property);
                 }
             }
         } catch (DTSException ex) {
             log.error("Exception setting properties for keywords in taxonomy service ", ex);
-            throw new KeywordsException("Exception setting properties for keywords in taxonomy service");
+            throw new KeywordsException("Exception setting properties for keywords in taxonomy service" + ex);
         }
 
 
@@ -466,24 +456,39 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return false;
     }
 
-    public MedicalNode createNewNode(String name, int nameSpaceId, String parentNodeId) throws KeywordsException {
+    /**
+     * Create a new concept in apelon from a node, fix the last functionality
+     * when addWord webservice is implemented
+     * @param node
+     * @param name
+     * @param nameSpaceId
+     * @param parentNodeId
+     * @return
+     * @throws KeywordsException
+     */
+    public MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException {
         try {
             // Create the concept
-            DTSConcept concept = new DTSConcept(name, nameSpaceId);
+            DTSConcept concept = new DTSConcept(node.getName(), Integer.valueOf(node.getNamespaceId()));
 
             //add the concept
-            concept = ontylogExtConceptQuery.addConcept(concept);
+            concept = thesaurusConceptQuery.addConcept(concept);
 
             //create parent-realations
             if (parentNodeId != null) {
                 moveNode(String.valueOf(concept.getId()), parentNodeId);
             }
-            return createMedicalNode(concept, null, false);
+            //Create the properties
+            node.setInternalId(String.valueOf(concept.getId()));
+            updateNodeProperties(node);
+
+            //TODO: synonyms, children etc
+
+            return createMedicalNode(concept, node.getSourceId(), false);
         } catch (DTSException ex) {
             log.error("Exception creating new keyword in taxonomy service", ex);
             throw new KeywordsException("Exception creating new keyword in taxonomy service");
         }
-
     }
 
     protected MedicalNode createMedicalNode(DTSConcept concept,
@@ -494,16 +499,20 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         node.setSourceId(getSourceId(concept, sourceIdKey));
         node.setNamespaceId(String.valueOf(concept.getNamespaceId()));
 
-        for (DTSProperty prop : concept.getProperties()) {
-            node.addProperty(prop.getName(), prop.getValue());
-        }
-
         Synonym[] synonyms = concept.getFetchedSynonyms();
 
         // Add synonyms to MedicalNode
         for (Synonym synonym : synonyms) {
             node.addSynonym(synonym.getValue());
         }
+
+        DTSProperty[] properties = concept.getFetchedProperties();
+
+        // Add properties to MedicalNode
+        for (DTSProperty property : properties) {
+            node.addProperty(property.getName(),property.getValue());
+        }
+
 
         // get the children of a node
         ConceptAssociation[] children = concept.getFetchedConceptAssociations();
