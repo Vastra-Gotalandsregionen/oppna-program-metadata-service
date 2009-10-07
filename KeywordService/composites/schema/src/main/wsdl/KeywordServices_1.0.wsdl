@@ -11,7 +11,7 @@
     name="KeywordServices_1.0"
 	targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
     <wsdl:types>
-        <xsd:schema
+        <xsd:schema 
 			targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
             <xsd:import schemaLocation="Node_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.Node.v1" />
@@ -27,7 +27,7 @@
             <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
             <xsd:element name="GetKeywordsRequest">
                 <xsd:complexType>
-                    <xsd:sequence>
+                    <xsd:sequence> 
                         <xsd:element name="identification" type="id:IdentificationType" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="document" type="dc:DocumentType" minOccurs="1" maxOccurs="1" />
