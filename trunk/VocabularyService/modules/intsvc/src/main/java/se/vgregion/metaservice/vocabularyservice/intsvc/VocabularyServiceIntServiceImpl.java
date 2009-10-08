@@ -93,7 +93,8 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
         LookupResponseObject responseObject = vocabularyService.lookupWord(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getWord());
+                parameters.getWord(),
+                parameters.getUrl());
                 
         return ResponseObjectSdoHelper.toLookupRepsonseObjectType(responseObject);
     }

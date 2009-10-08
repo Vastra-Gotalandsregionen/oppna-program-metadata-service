@@ -39,7 +39,7 @@ public class VocabularyService {
      * @param word the word to lookup
      * @return
      */
-    public LookupResponseObject lookupWord(Identification identification, String requestId, String word) {
+    public LookupResponseObject lookupWord(Identification identification, String requestId, String word, String url) {
 
         List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, true);
         LookupResponseObject response = null;
@@ -56,7 +56,9 @@ public class VocabularyService {
                 if (parent.getName().equals(reviewlistName)) {
                     node.addProperty(profileIdPropertyName, identification.getProfileId());
                     node.addProperty(userIdPropertyName, identification.getUserId());
-                    node.addProperty(urlPropertyName, "http://www.testurl.com/?userId=" + identification.getUserId());
+                    if (url != null && !url.equals("")) {
+                        node.addProperty(urlPropertyName, url);
+                    }
                     try {
                         medicalTaxonomyService.updateNodeProperties(node);
 
@@ -65,7 +67,7 @@ public class VocabularyService {
                         //TODO: new statuscode?
                         response = new LookupResponseObject(requestId,
                                 ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
-                                "Could not add profileIds to keyword");
+                                "Could not add properties to keyword");
                     }
                 }
             }
@@ -81,7 +83,9 @@ public class VocabularyService {
                 node.setNamespaceId("33315");
                 node.addProperty(profileIdPropertyName, identification.getProfileId());
                 node.addProperty(userIdPropertyName, identification.getUserId());
-                node.addProperty(urlPropertyName, "http://www.testurl.com/?userId=" + identification.getUserId());
+                if (url != null && !url.equals("")) {
+                    node.addProperty(urlPropertyName, url);
+                }
                 medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
 
             } catch (KeywordsException ex) {
