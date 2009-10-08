@@ -37,6 +37,7 @@
                         <xsd:element name="identification" type="id:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="word" type="xsd:string" />
+                        <xsd:element name="url" type="xsd:string" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
