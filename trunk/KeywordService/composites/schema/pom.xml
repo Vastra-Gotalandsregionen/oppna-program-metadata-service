@@ -73,23 +73,7 @@ Generation time : 2008-04-23 12:41:48 CEST
 										</extraarg>
 										<extraarg>-p</extraarg>
 										<extraarg>
-											urn:se.vgregion.metaservice.schema.Node.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
-                                        <extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Document.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
-                                        <extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Identification.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
-                                        <extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Options.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
-                                        <extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Response.v1=se.vgregion.metaservice.schema.domain
+											urn:se.vgregion.metaservice.schema.Types.v1=se.vgregion.metaservice.schema.domain
 										</extraarg>
 									</extraargs>
 									<wsdl>

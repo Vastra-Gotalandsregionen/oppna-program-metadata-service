@@ -11,6 +11,7 @@ public class Options {
 
     //Default values?
     private int wordLimit = 5;
+    private String url;
     private Map<Integer,String[]> includeSourceIds;
 
     /**
@@ -47,5 +48,13 @@ public class Options {
 
     public int getWordLimit() {
         return wordLimit;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUrl() {
+        return url;
     }
 }

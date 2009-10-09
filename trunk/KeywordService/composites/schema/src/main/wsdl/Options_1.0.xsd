@@ -3,13 +3,6 @@
 	targetNamespace="urn:se.vgregion.metaservice.schema.Options.v1"
 	xmlns:tns="urn:se.vgregion.metaservice.schema.Options.v1"
 	elementFormDefault="qualified" version="1.0">
-
-  <complexType name="stringArray" final="#all">
-    <sequence>
-      <element name="item" type="string" minOccurs="0" maxOccurs="unbounded" nillable="true"/>
-    </sequence>
-  </complexType>
-
    <complexType name="OptionsType">
     <sequence>
       <element name="includeSourceIds">
@@ -27,6 +20,7 @@
         </complexType>
       </element>
       <element name="wordLimit" type="int"/>
+      <element name="url" type="string" />
     </sequence>
   </complexType>
 
