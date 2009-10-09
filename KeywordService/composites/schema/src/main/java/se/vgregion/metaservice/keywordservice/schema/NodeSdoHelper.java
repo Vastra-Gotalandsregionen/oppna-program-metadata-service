@@ -11,7 +11,6 @@ import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
 import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.schema.domain.NodeListType;
 import se.vgregion.metaservice.schema.domain.NodePropertyListType;
-import se.vgregion.metaservice.schema.domain.NodePropertyListType;
 import se.vgregion.metaservice.schema.domain.NodePropertyType;
 import se.vgregion.metaservice.schema.domain.NodeType;
 import se.vgregion.metaservice.schema.domain.SynonymsListType;

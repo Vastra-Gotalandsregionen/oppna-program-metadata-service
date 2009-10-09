@@ -35,6 +35,7 @@ public class OptionsSdoHelper {
         if(options != null) {
            optionsType.setIncludeSourceIds(toIncludeSourceIds(options.getIncludeSourceIds()));
             optionsType.setWordLimit(options.getWordLimit());
+            optionsType.setUrl(options.getUrl());
         }
         return optionsType;
     }
@@ -77,6 +78,7 @@ public class OptionsSdoHelper {
         Options options = new Options();
         if(optionsType != null) {
             options = new Options(optionsType.getWordLimit(),fromIncludeSourceIds(optionsType.getIncludeSourceIds()));
+            options.setUrl(optionsType.getUrl());
         }
         return options;
     }
