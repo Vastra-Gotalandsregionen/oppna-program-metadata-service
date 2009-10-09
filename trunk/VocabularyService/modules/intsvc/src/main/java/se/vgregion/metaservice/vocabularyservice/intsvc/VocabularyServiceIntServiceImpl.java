@@ -6,6 +6,7 @@ import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.schema.IdentificationSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.NodeSdoHelper;
+import se.vgregion.metaservice.keywordservice.schema.OptionsSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.ResponseObjectSdoHelper;
 import se.vgregion.metaservice.schema.domain.LookupResponseObjectType;
 import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
@@ -94,7 +95,7 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
                 parameters.getWord(),
-                parameters.getUrl());
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
                 
         return ResponseObjectSdoHelper.toLookupRepsonseObjectType(responseObject);
     }
