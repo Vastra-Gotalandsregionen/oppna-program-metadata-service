@@ -108,9 +108,9 @@ NodeListResponseObject är en utökning av ResponseObject. Utöver den informati
 ===StatusCode===
 En enumerationstyp för statuskoder. 
 || *Felkod* || || *Felmeddelande* || || *Förklaring* ||
-|| 1001 || Unsupported text format || Textformatet som angetts i format-parametern stöds inte av metadatatjänsten
-|| 1002 || Error formatting content || Ett fel uppstod när inkommande texten konverterades
-|| 2001 || Error processing content || Ett fel uppstod när indatan processerades
-|| 3001 || Error getting keywords from taxonomy || Ett fel uppstod när nyckelorden skulle hämtas från taxonomihanteraren
-|| 3002 || Error editing taxonomy: <detailed message> || Ett fel uppstod när användaren försökte ändra i taxonomin. Det specialiserade meddelandet ger mer info. Ex. Flytta nod, skapa nod.
-|| 6001 || Unknown error occured  || Ett oväntat fel uppstod, kolla loggen för detaljer
+|| 1001 || Unsupported text format || Textformatet som angetts i format-parametern stöds inte av metadatatjänsten ||
+|| 1002 || Error formatting content || Ett fel uppstod när inkommande texten konverterades ||
+|| 2001 || Error processing content || Ett fel uppstod när indatan processerades ||
+|| 3001 || Error getting keywords from taxonomy || Ett fel uppstod när nyckelorden skulle hämtas från taxonomihanteraren ||
+|| 3002 || Error editing taxonomy: <detailed message> || Ett fel uppstod när användaren försökte ändra i taxonomin. Det specialiserade meddelandet ger mer info. Ex. Flytta nod, skapa nod. ||
+|| 6001 || Unknown error occured  || Ett oväntat fel uppstod, kolla loggen för detaljer ||
