@@ -107,7 +107,7 @@ NodeListResponseObject är en utökning av ResponseObject. Utöver den informati
 
 ===StatusCode===
 En enumerationstyp för statuskoder. 
-|| *Felkod* || || *Felmeddelande* || || *Förklaring* ||
+|| *Felkod* || *Felmeddelande* || *Förklaring* ||
 || 1001 || Unsupported text format || Textformatet som angetts i format-parametern stöds inte av metadatatjänsten ||
 || 1002 || Error formatting content || Ett fel uppstod när inkommande texten konverterades ||
 || 2001 || Error processing content || Ett fel uppstod när indatan processerades ||
