@@ -89,7 +89,7 @@ _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt
 
 == lookupWord ==
 
-lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`.
+lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`. Om det inte existerar så läggs ordet till i en review lista. Ett options-objekt kan skickas med för att associera vissa egenskaper till ordet.
 
 *Inparametrar*
 
@@ -97,8 +97,10 @@ lookupWord används för att se om ett ord existerar i någon av de fördefinier
 || id           || Identification || Användaridentifikation ||
 || requestId  || String	        || Unik anropsidentifierare (loggsyfte) ||
 || word  || String	        || Ordet att leta efter i listorna ||
+|| options || Options	        || Alternativa parametrar att skicka med requesten ||
 
-
+*Förväntade options-värden*
+*url - Om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet.
 
 *Returvärde*
 _ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`, `blacklist`, eller `none`. _
