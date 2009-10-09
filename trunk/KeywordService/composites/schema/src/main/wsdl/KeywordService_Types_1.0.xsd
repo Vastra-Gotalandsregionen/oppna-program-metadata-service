@@ -180,6 +180,7 @@
                     <jxb:typesafeEnumMember name="no_content" value="1003" />
                     <jxb:typesafeEnumMember name="error_processing_content" value="2001" />
                     <jxb:typesafeEnumMember name="error_getting_keywords_from_taxonomy" value="3001" />
+                    <jxb:typesafeEnumMember name="error_editing_taxonomy" value="3002" />
                     <jxb:typesafeEnumMember name="unknown_error" value="6001" />
                 </jxb:typesafeEnumClass>
             </appinfo>
@@ -191,6 +192,7 @@
             <enumeration value="1003"/>
             <enumeration value="2001" />
             <enumeration value="3001" />
+            <enumeration value="3002" />
             <enumeration value="6001" />
         </restriction>
     </simpleType>

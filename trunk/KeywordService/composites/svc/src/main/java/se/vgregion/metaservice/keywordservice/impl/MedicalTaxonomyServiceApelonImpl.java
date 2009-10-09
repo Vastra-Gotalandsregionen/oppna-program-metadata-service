@@ -41,6 +41,7 @@ import com.apelon.dts.client.subset.SubsetQuery;
 import com.apelon.dts.common.subset.Subset;
 import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
  * Implementation of the abstract class MedicalTaxonomyService. This
@@ -67,6 +68,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * @see MedicalTaxonomyService
      */
     public boolean initConnection() {
+        log.info("Initiating connection to server "+host);
         boolean retval = true;
         try {
             ServerConnection serverConnection = new ServerConnectionSecureSocket(
@@ -267,11 +269,16 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     }
 
-    public void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException {
+    public void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException,NodeNotFoundException {
         try {
             DTSConcept concept = getConceptByInternalId(nodeId);
-
+            if(concept == null) {
+                throw new NodeNotFoundException("Node "+nodeId+" not found");
+            }
             DTSConcept parentConcept = getConceptByInternalId(destinationParentNodeId);
+            if(parentConcept == null) {
+                 throw new NodeNotFoundException("Destination parent node "+" not found");
+            }
             AssociationType parentRelation = getParentAssociation();
             ConceptAssociation oldParentAssociation = getParentAssociationForConcept(concept);
             ConceptAssociation newParentAssociation = new ConceptAssociation(parentConcept, parentRelation, concept);
@@ -486,8 +493,9 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
             return createMedicalNode(concept, node.getSourceId(), false);
         } catch (DTSException ex) {
-            log.error("Exception creating new keyword in taxonomy service", ex);
             throw new KeywordsException("Exception creating new keyword in taxonomy service");
+        } catch (NodeNotFoundException ex) {
+            throw new KeywordsException(ex);
         }
     }
 
