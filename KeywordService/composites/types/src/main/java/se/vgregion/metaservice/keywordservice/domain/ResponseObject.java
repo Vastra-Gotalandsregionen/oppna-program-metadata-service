@@ -18,6 +18,7 @@ public class ResponseObject {
         no_content(1003),
         error_processing_content(2001),
         error_getting_keywords_from_taxonomy(3001),
+        error_editing_taxonomy(3002),
         unknown_error(6001);
         private final int code;
 

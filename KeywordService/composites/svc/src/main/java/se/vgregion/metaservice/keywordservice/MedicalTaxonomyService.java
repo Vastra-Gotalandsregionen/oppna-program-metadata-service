@@ -66,7 +66,7 @@ public abstract class MedicalTaxonomyService {
          * @param destinationParentNodeId the id of the node to move to
          * @throws KeywordsException
          */
-        public abstract void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException;
+        public abstract void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException,NodeNotFoundException;
 
         /**
 	 * Find nodes based on input nodeName and fetch parents to node. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
