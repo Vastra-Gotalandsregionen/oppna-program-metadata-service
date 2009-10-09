@@ -71,18 +71,10 @@ Generation time : 2008-04-23 12:41:48 CEST
 										<extraarg>
 											urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1=se.vgregion.metaservice.wsdl.vocabularyservices
 										</extraarg>
-										<extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Node.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
-                                        <extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Identification.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
-                                        <extraarg>-p</extraarg>
-										<extraarg>
-											urn:se.vgregion.metaservice.schema.Response.v1=se.vgregion.metaservice.schema.domain
-										</extraarg>
+                                                                                <extraarg>-p</extraarg>
+                                                                                <extraarg>
+											urn:se.vgregion.metaservice.schema.Types.v1=se.vgregion.metaservice.schema.domain
+                                                                                </extraarg>
 									</extraargs>
 									<wsdl>
 										${basedir}/src/main/wsdl/VocabularyServices_1.0.wsdl

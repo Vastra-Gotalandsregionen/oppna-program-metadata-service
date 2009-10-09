@@ -12,6 +12,7 @@ import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 
@@ -39,7 +40,7 @@ public class VocabularyService {
      * @param word the word to lookup
      * @return
      */
-    public LookupResponseObject lookupWord(Identification identification, String requestId, String word, String url) {
+    public LookupResponseObject lookupWord(Identification identification, String requestId, String word, Options options) {
 
         List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, true);
         LookupResponseObject response = null;
@@ -54,11 +55,7 @@ public class VocabularyService {
                     response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
                 }
                 if (parent.getName().equals(reviewlistName)) {
-                    node.addProperty(profileIdPropertyName, identification.getProfileId());
-                    node.addProperty(userIdPropertyName, identification.getUserId());
-                    if (url != null && !url.equals("")) {
-                        node.addProperty(urlPropertyName, url);
-                    }
+                    node = addNodeProperties(node, identification, options);
                     try {
                         medicalTaxonomyService.updateNodeProperties(node);
 
@@ -81,11 +78,7 @@ public class VocabularyService {
                 MedicalNode node = new MedicalNode();
                 node.setName(word);
                 node.setNamespaceId("33315");
-                node.addProperty(profileIdPropertyName, identification.getProfileId());
-                node.addProperty(userIdPropertyName, identification.getUserId());
-                if (url != null && !url.equals("")) {
-                    node.addProperty(urlPropertyName, url);
-                }
+                node = addNodeProperties(node,identification,options);
                 medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
 
             } catch (KeywordsException ex) {
@@ -96,6 +89,16 @@ public class VocabularyService {
             }
         }
         return response;
+    }
+
+    private MedicalNode addNodeProperties(MedicalNode node, Identification identification, Options options) {
+        node.addProperty(profileIdPropertyName, identification.getProfileId());
+        node.addProperty(userIdPropertyName, identification.getUserId());
+        if (options.getUrl() != null) {
+            node.addProperty(urlPropertyName, options.getUrl());
+        }
+
+        return node;
     }
 
     /**
