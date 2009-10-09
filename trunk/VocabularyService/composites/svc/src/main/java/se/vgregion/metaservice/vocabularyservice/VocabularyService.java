@@ -1,12 +1,12 @@
 package se.vgregion.metaservice.vocabularyservice;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
@@ -14,7 +14,9 @@ import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
  * Class for handling queries for a vocabulary
@@ -24,6 +26,7 @@ import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
  */
 public class VocabularyService {
 
+    private static Logger log = Logger.getLogger(VocabularyService.class);
     private MedicalTaxonomyService medicalTaxonomyService;
     private String whitelistName = "Whitelist"; //TODO: Move to profile configuration?
     private String blacklistName = "Blacklist"; //TODO: Move to profile configuration?
@@ -78,7 +81,7 @@ public class VocabularyService {
                 MedicalNode node = new MedicalNode();
                 node.setName(word);
                 node.setNamespaceId("33315");
-                node = addNodeProperties(node,identification,options);
+                node = addNodeProperties(node, identification, options);
                 medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
 
             } catch (KeywordsException ex) {
@@ -145,8 +148,7 @@ public class VocabularyService {
     }
 
     /**
-     * Move a node in appelon, that is: change the parent of the node
-     * (Not implemented)
+     * Move a node in a vocabulary, that is: change the parent of the node
      * @param id the identification of the user that moves the node
      * @param requestId the unique request id
      * @param nodeId the id of the node to move
@@ -155,38 +157,51 @@ public class VocabularyService {
      * if the operation was succesfull
      */
     public ResponseObject moveVocabularyNode(Identification id, String requestId, String nodeId, String destNodeId) {
+        ResponseObject responseObject = new ResponseObject(requestId);
         try {
             medicalTaxonomyService.moveNode(nodeId, destNodeId);
         } catch (KeywordsException ex) {
-            Logger.getLogger(VocabularyService.class.getName()).log(Level.SEVERE, null, ex);
+            log.error(MessageFormat.format("{0}:{1}: Node ({2}) could not be moved to parent {{3}}",
+                    requestId, StatusCode.error_editing_taxonomy.code(), nodeId, destNodeId), ex);
+            responseObject.setStatusCode(StatusCode.error_editing_taxonomy);
+            responseObject.setErrorMessage("Error editing taxonomy: Node could not be moved");
+        } catch (NodeNotFoundException ex) {
+            log.error(MessageFormat.format("{0}:{1}:{2}",requestId,StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
+            responseObject.setStatusCode(StatusCode.error_editing_taxonomy);
+            responseObject.setErrorMessage("Error editing taxonomy: Node could not be found");
         }
-        return new ResponseObject(requestId);
-
+     return responseObject;
     }
 
-    /**
-     * Update the content of a node (not implemented yet)
-     * @param id the identification of the user that updates the node
-     * @param requestId the unique request id
-     * @param node the updated node, the id of the node must not be changed.
-     * @return a ResponseObject, check the statuscode in this object to see
-     * if the operation was succesfull
-     */
-    public ResponseObject updateVocabularyNode(Identification id, String requestId, MedicalNode node) {
+/**
+ * Update the content of a node (not implemented yet)
+ * @param id the identification of the user that updates the node
+ * @param requestId the unique request id
+ * @param node the updated node, the id of the node must not be changed.
+ * @return a ResponseObject, check the statuscode in this object to see
+ * if the operation was succesfull
+ */
+public ResponseObject updateVocabularyNode(
+
+Identification id, String requestId, MedicalNode node) {
 
         //TODO: implement this method
         return new ResponseObject(requestId);
 
     }
 
-    /**
-     * Dump the entire appelon database as xml, awaiting specification.
-     */
-    public void dumpDbAsXML() {
+/**
+ * Dump the entire appelon database as xml, awaiting specification.
+ */
+public void
+
+dumpDbAsXML() {
         //TODO: Write spec and implement this method;
     }
 
-    public void setMedicalTaxonomyService(
+    public void
+
+setMedicalTaxonomyService(
             MedicalTaxonomyService medicalTaxonomyService) {
         this.medicalTaxonomyService = medicalTaxonomyService;
     }
