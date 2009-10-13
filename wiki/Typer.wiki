@@ -125,6 +125,6 @@ XMLResponseObject används som standard svarstyp till funktioner som returnerar 
 
 || *Namn* || *Typ* || *Förklaring* ||
 || requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
-|| xml || String || Xml-svar ||
+|| xml || String || Svaret på frågan i XML-format ||
 || statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
