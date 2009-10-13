@@ -121,9 +121,7 @@ En enumerationstyp för statuskoder.
 <br><br>
 === XMLResponseObject===
 
-XMLResponseObject används som standard svarstyp till funktioner som returnerar välformaterad XML. Objektet har ett sträng fält där all XML finns lagrad, en statuskod och ett eventuellt felmeddenande. 
-
-som vanligtvis inte har något resultat att ge. Objektet har en status kod, ett eventuellt felmeddelande och requestId för den inkommande frågan om något sådant angavs.
+XMLResponseObject används som standard svarstyp till funktioner som returnerar välformaterad XML. Objektet har ett strängfält där all XML finns lagrad, en statuskod och ett eventuellt felmeddelande. RequestId skickas också med ifall det var angivet i den inkommande frågan.
 
 || *Namn* || *Typ* || *Förklaring* ||
 || requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
