@@ -105,6 +105,7 @@ NodeListResponseObject är en utökning av ResponseObject. Utöver den informati
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
 || nodeList || List<Node> || En list av Node objekt ||
 
+<br><br>
 ===StatusCode===
 En enumerationstyp för statuskoder. 
 || *Felkod* || *Felmeddelande* || *Förklaring* ||
@@ -114,3 +115,18 @@ En enumerationstyp för statuskoder.
 || 3001 || Error getting keywords from taxonomy || Ett fel uppstod när nyckelorden skulle hämtas från taxonomihanteraren ||
 || 3002 || Error editing taxonomy: <detailed message> || Ett fel uppstod när användaren försökte ändra i taxonomin. Det specialiserade meddelandet ger mer info. Ex. Flytta nod, skapa nod. ||
 || 6001 || Unknown error occured  || Ett oväntat fel uppstod, kolla loggen för detaljer ||
+
+
+
+<br><br>
+=== XMLResponseObject===
+
+XMLResponseObject används som standard svarstyp till funktioner som returnerar välformaterad XML. Objektet har ett sträng fält där all XML finns lagrad, en statuskod och ett eventuellt felmeddenande. 
+
+som vanligtvis inte har något resultat att ge. Objektet har en status kod, ett eventuellt felmeddelande och requestId för den inkommande frågan om något sådant angavs.
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
+|| xml || String || Xml-svar ||
+|| statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
+|| errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
