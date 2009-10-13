@@ -87,6 +87,8 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 *Returvärde*
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
 
+
+<br><br>
 == lookupWord ==
 
 lookupWord används för att se om ett ord existerar i någon av de fördefinierade listorna `whitelist` eller `blacklist`. Om det inte existerar så läggs ordet till i en review lista. Ett options-objekt kan skickas med för att associera vissa egenskaper till ordet.
@@ -155,14 +157,17 @@ _ResponseObject statuskod och ev. felmeddelande_
 
 
 <br><br>
-== dumpDbAsXML==
+== getSitemap ==
 
-todo
+Genererar en sitemap för en Apelon namnrymd enligt [http://www.sitemaps.org/protocol.php sitemaps.org]
 
 *Inparametrar*
 
-todo
+|| *Namn* || *Typ* || *Förklaring* ||
+|| id || Identification || Objekt som identifierar användare och profil ||
+|| requestId || String || Unik anrops-identifierare ||
+|| namespace || String || Identifierare för vilken namnrymd sitemap:en ska genereras för ||
 
 
 *Returvärde*
-_ResponseObject statuskod och ev. felmeddelande_
+_XMLResponseObject innehållande sitemap-XML, statuskod och ev. felmeddelande _
