@@ -21,6 +21,15 @@ Node typen innehåller information om ett nyckelord. Denna typ har fält enligt 
 
 
 <br><br>
+== NodeProperty ==
+
+En egenskap på en nod, används främst i reviewListan för lookupWord för att spara vem som lagt in noden och vilken url noden skall associeras med.
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| name	|| String || Namnet på egenskapen, tex profileId ||
+|| value || String || Värdet på egenskapen ||
+
+<br><br>
 == UserStatus ==
 
 UserStatus typen är en enumeration och används för att markera hur användaren har använt ett nyckelord. I dagsläget kan en användare välja att bokmärka ett nyckelord, och systemet kan märka ett nyckelord som taggat. Ett taggat nyckelord innebär att det har använts för att beskriva ett dokument av den aktuella användaren tidigare.
