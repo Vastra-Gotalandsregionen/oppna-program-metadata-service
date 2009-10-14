@@ -15,6 +15,7 @@ Node typen innehåller information om ett nyckelord. Denna typ har fält enligt 
 || internalId || String	|| Den unika identifieraren i taxonomihanteraren för noden.||
 || sourceId || String || Den unika identifieraren i ursprungstaxonomin som noden representerar ||
 || parents	|| List<Node> || En lista av denna nods föräldrar ett steg upp i hierarkin ||
+|| properties	|| List<NodeProperties> || En lista av denna nods egenskaper ||
 || userStatus	|| List<UserStatus> ||	En lista av statusinformation. Läs mer om statusinformation nedan ||
 || synonyms ||	List<String> ||	En lista med synonymer för denna nod ||
 || hasChildren	|| Bool || Flagga som indikerar om noden har barn eller inte. Obs, alltid false i Nyckelordstjänsten ||
