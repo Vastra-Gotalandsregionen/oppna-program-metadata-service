@@ -3,9 +3,12 @@ package se.vgregion.metaservice.vocabularyservice;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+
+import java.util.Set;
 import org.apache.log4j.Logger;
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
@@ -20,12 +23,8 @@ import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
  * Class for handling queries for a vocabulary
- * 
- * @author tobias
- * 
  */
 public class VocabularyService {
-
     private static Logger log = Logger.getLogger(VocabularyService.class);
     private MedicalTaxonomyService medicalTaxonomyService;
     private String whitelistName = "Whitelist"; //TODO: Move to profile configuration?
@@ -35,7 +34,9 @@ public class VocabularyService {
     private String profileIdPropertyName = "profileId";
     private String userIdPropertyName = "userId";
     private String urlPropertyName = "url";
+    private Set<String> allowedNamespaces = null;
 
+    
     /**
      * Look up a word in whitelist or blacklist
      * @param id the identification of the user that lookup the node
@@ -166,43 +167,59 @@ public class VocabularyService {
             responseObject.setStatusCode(StatusCode.error_editing_taxonomy);
             responseObject.setErrorMessage("Error editing taxonomy: Node could not be moved");
         } catch (NodeNotFoundException ex) {
-            log.error(MessageFormat.format("{0}:{1}:{2}",requestId,StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
+            log.error(MessageFormat.format("{0}:{1}:{2}", requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
             responseObject.setStatusCode(StatusCode.error_editing_taxonomy);
             responseObject.setErrorMessage("Error editing taxonomy: Node could not be found");
         }
-     return responseObject;
+        return responseObject;
     }
 
-/**
- * Update the content of a node (not implemented yet)
- * @param id the identification of the user that updates the node
- * @param requestId the unique request id
- * @param node the updated node, the id of the node must not be changed.
- * @return a ResponseObject, check the statuscode in this object to see
- * if the operation was succesfull
- */
-public ResponseObject updateVocabularyNode(
-
-Identification id, String requestId, MedicalNode node) {
-
+    /**
+     * Update the content of a node (not implemented yet)
+     * @param id the identification of the user that updates the node
+     * @param requestId the unique request id
+     * @param node the updated node, the id of the node must not be changed.
+     * @return ResponseObject with status information.
+     */
+    public ResponseObject updateVocabularyNode(Identification id, String requestId, MedicalNode node) {
         //TODO: implement this method
         return new ResponseObject(requestId);
 
     }
 
-/**
- * Dump the entire appelon database as xml, awaiting specification.
- */
-public void
-
-dumpDbAsXML() {
-        //TODO: Write spec and implement this method;
+    /**
+     * Retrieves the XML representation of an Apelon namespace.
+     * Only preconfiguered namespaces can be selected. These are
+     * VGR, xyz , and xyz. The namespace configuration is available
+     * by the classpath resource <code>keywordservice-svc.properties</code>.
+     *
+     * @param id
+     * @param requestId
+     * @param namespace
+     */
+    public void getNamespaceXml(Identification id, String requestId, String namespace) {
+        if (allowedNamespaces.contains(namespace)) {
+            // ok
+        } else {
+            // err
+        }
+        
+        // TODO: return XMLResponseObject
+        // TODO: Implement this method;
     }
 
-    public void
-
-setMedicalTaxonomyService(
-            MedicalTaxonomyService medicalTaxonomyService) {
+    public void setMedicalTaxonomyService(MedicalTaxonomyService medicalTaxonomyService) {
         this.medicalTaxonomyService = medicalTaxonomyService;
+    }
+
+    public void setNamepacesExposedToXmlApi(String allowedNamespaces) {
+        Set<String> set = new HashSet<String>();
+        String[] arr = allowedNamespaces.split(",");
+        if (arr != null) {
+            for (String str : arr) {
+                set.add(str.trim());
+            }
+        }
+        this.allowedNamespaces = set;
     }
 }

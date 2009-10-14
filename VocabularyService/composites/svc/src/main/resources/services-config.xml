@@ -4,31 +4,33 @@
 	xmlns:jee="http://www.springframework.org/schema/jee"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-	http://www.springframework.org/schema/tx
-	http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-	http://www.springframework.org/schema/jee
-	http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
+            http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+            http://www.springframework.org/schema/tx
+            http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+            http://www.springframework.org/schema/jee
+            http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
 
 	<!--  Property file reader -->
-	<bean id="propertyPlaceholder"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location"
-			value="classpath:keywordservice-svc.properties" />
+	<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:keywordservice-svc.properties" />
 	</bean>
 
 	<!--  SERVICE DEFINITIONS -->
 
 	<bean id="metaservice.vocabularyService" class="se.vgregion.metaservice.vocabularyservice.VocabularyService">
 		<property name="medicalTaxonomyService" ref="metaservice.medicalTaxonomyService" />
+
+
+                <!-- Defines the namespaces, as a comma separated list, which may be exposed to the routine getNamespaceXml -->
+                <property name="metaservice.allowedNamespaces" value="${taxonomyservice.sitemapLocation}" />
 	</bean>
 	
 
-	<!--  Conection to apelon -->
+	<!--  Connection to apelon -->
 	
 	<bean id="metaservice.medicalTaxonomyService"
-		class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
-		init-method="initConnection">
+            class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
+            init-method="initConnection">
 		<property name="host" value="${taxonomyservice.host}" />
 		<property name="port" value="${taxonomyservice.port}" />
 		<property name="username" value="${taxonomyservice.username}" />
