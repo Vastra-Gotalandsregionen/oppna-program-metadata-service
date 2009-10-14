@@ -4,12 +4,15 @@
 Checka ut källkoden
 
 I projektet KeywordService-svc, skapa filen keywordservice-svc.properties i src/main/resources
-Den ska innehålla fyra properties för metadatatjänsten:
+Den ska innehålla fem properties för metadatatjänsten:
 {{{
+# Apelon connection details
 taxonomyservice.host=
 taxonomyservice.port=
 taxonomyservice.username=
 taxonomyservice.password=
+# A comma separated list of namespaces we wish to expose to the routine getNamespaceXML(..). 
+taxonomyservice.allowedNamespaces=
 }}}
 Fyll den med dina login-uppgifter till Apelon.
 Skapa en likadan fil i VocabularyService-svc men döp den till vocabularyservice-svc.properties.
