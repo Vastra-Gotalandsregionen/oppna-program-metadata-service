@@ -157,9 +157,17 @@ _ResponseObject statuskod och ev. felmeddelande_
 
 
 <br><br>
-== getSitemap ==
+== getNamespaceXML ==
 
-Genererar en sitemap för en Apelon namnrymd enligt [http://www.sitemaps.org/protocol.php sitemaps.org]
+_*This method is NOT yet implemented*_
+
+Hämtar den fulla strukturen för en namnrymd och presenterar detta som XML. <br>
+Endast godkända namnrymder är exponerade:
+ * VGR
+ * ...
+
+
+
 
 *Inparametrar*
 
@@ -170,4 +178,4 @@ Genererar en sitemap för en Apelon namnrymd enligt [http://www.sitemaps.org/pro
 
 
 *Returvärde*
-_XMLResponseObject innehållande sitemap-XML, statuskod och ev. felmeddelande _
+_XMLResponseObject innehållande svars-XML, statuskod och ev. felmeddelande _
