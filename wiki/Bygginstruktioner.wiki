@@ -26,3 +26,28 @@ Skapa en databas för UserProfileService. I det här exemplet har vi använt en 
 }}}
 Ändra username,password,driverClassName och url för att passa din installation.
 Lägg till jdbc-drivrutinen för databasen i tomcats lib-katalog. För Derby används derbyclient.jar
+
+
+= Instruktioner för SitemapGenerator =
+SitemapGenerator är en standalone applikation i metaservice projektet. Applikationen genererar en sitemap för varje angiven namnrymd. Rekomenderad körning är att applikationen startas via en enkel .bat fil, schemalagd enligt operativsystemet inbyggda schemaläggninigresurser. 
+
+I classpath:en behövs en properties-fil _sitemapgenerator.properties_. 
+{{{
+# Directory to store the sitemaps in, e.g., C:\\sitemaps\ for windows or /var/sitemaps/ for linux
+# Must be slash ('/') terminated
+sitemapgenerator.sitemapLocation=C:\\my_sitemaps\
+
+# The static requestId to use when sitemapgenerator invokes metaservice.vocabularyservice.getVocabulary.
+sitemapgenerator.requestId=sitemapGenerator
+
+# The base location used as prefix to each node when generating the url property of the sitemap. 
+# Must be slash ('/') terminated
+sitemapgenerator.sitePrefix=http://localhost:8081/dtstreebrowser/
+}}}
+
+
+Batscriptet för att köra applikationen placeras i samma mapp som jar-filen och ska innehålla: 
+{{{
+@echo off
+java -jar MetaService-SitemapGenerator-app-1.0-SNAPSHOT.jar namespace_1 namespace_2 ... namespace_n
+}}}
