@@ -46,8 +46,12 @@ sitemapgenerator.sitePrefix=http://localhost:8081/dtstreebrowser/
 }}}
 
 
-Batscriptet för att köra applikationen placeras i samma mapp som jar-filen och ska innehålla: 
+Batscriptet för att köra applikationen placeras i samma mapp som jar-filen och ska innehålla:
 {{{
 @echo off
 java -jar MetaService-SitemapGenerator-app-1.0-SNAPSHOT.jar namespace_1 namespace_2 ... namespace_n
+
+java -cp log4j-1.2.9.jar;MetaService-KeywordService-composite-types-1.0SNAPSHOT.jar;MetaService-SitemapGenerator-app-1.0-SNAPSHOT.jar se.vgregion.metaservice.sitemapgenerator.SitemapGenerator
 }}}
+
+Notera att klasserna log4j-1.2.9.jar och MetaService-KeywordService-composite-types-1.0SNAPSHOT.jar ska ligga i samma mapp som MetaService-SitemapGenerator-app-1.0-SNAPSHOT.jar 
