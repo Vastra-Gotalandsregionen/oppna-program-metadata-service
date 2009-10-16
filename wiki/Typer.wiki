@@ -125,3 +125,16 @@ En enumerationstyp för statuskoder.
 || 3001 || Error getting keywords from taxonomy || Ett fel uppstod när nyckelorden skulle hämtas från taxonomihanteraren ||
 || 3002 || Error editing taxonomy: <detailed message> || Ett fel uppstod när användaren försökte ändra i taxonomin. Det specialiserade meddelandet ger mer info. Ex. Flytta nod, skapa nod. ||
 || 6001 || Unknown error occured  || Ett oväntat fel uppstod, kolla loggen för detaljer ||
+
+
+<br><br>
+
+=== XMLResponseObject===
+
+XMLResponseObject används för att returnera XML information. Typen följer samma principer som ResponseObject med den skillnaden att ett fält för XML information är tillagt. 
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| xml || String || XML information som genererats som svar på anropet ||
+|| requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
+|| statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
+|| errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
