@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+
+	This pom generates a JAR file for this standalone application.
+	
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Version is defined by parent -->
+    <parent>
+        <groupId>MetaService</groupId>
+        <artifactId>MetaService-SitemapGenerator</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>MetaService-SitemapGenerator</groupId>
+    <!--
+    Use full name qualification (with system name) here to ensure uniqueness
+    when deploying in container.
+    -->
+    <artifactId>MetaService-SitemapGenerator-app</artifactId>
+    <name>MetaService-SitemapGenerator-app</name>
+    <packaging>jar</packaging>
+
+
+    <build>
+
+        <plugins>
+
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <includes>
+                        <include>${basedir}/target/generated-sources/</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <sourceDestDir>
+                             ${basedir}/target/generated-sources/java
+                    </sourceDestDir>
+                    <wsdlUrls>
+                        <wsdlUrl>
+                                <!-- Update the location host to where the VocabularyService is actually deployed -->
+                                http://localhost:8080/MetaService-VocabularyService-module-intsvc-1.0-SNAPSHOT/VocabularyService?wsdl
+                        </wsdlUrl>
+                    </wsdlUrls>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+    <dependencies>
+     
+        <dependency>
+            <groupId>MetaService</groupId>
+            <artifactId>MetaService-KeywordService-composite-types</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+
+    </dependencies>
+
+
+
+
+
+</project>
+
