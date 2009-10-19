@@ -5,6 +5,9 @@
         xmlns:tns="urn:se.vgregion.metaservice.schema.Types.v1"
 	elementFormDefault="qualified" jxb:version="1.0">
 
+
+ 
+
     <!-- DOCUMENT -->
     <complexType name="DocumentType" abstract="true">
         <sequence/>
@@ -135,14 +138,22 @@
   </complexType>
 
   <complexType name="IncludeSourceIdsListType">
-		<sequence>
-			<element name="includeSourceId" maxOccurs="unbounded"
-				type="string" />
-		</sequence>
-	</complexType>
+        <sequence>
+            <element name="includeSourceId" maxOccurs="unbounded" type="string" />
+        </sequence>
+  </complexType>
 
     <!-- RESPONSE -->
-        <complexType name="ResponseObjectType">
+
+    <!-- XML RESPONSE -->
+    <complexType name="XMLResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="xml" type="string" minOccurs="1" maxOccurs="1" />
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="ResponseObjectType">
         <sequence>
             <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
             <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />

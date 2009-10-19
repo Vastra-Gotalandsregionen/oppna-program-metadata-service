@@ -8,7 +8,7 @@
     jxb:version="1.0">
     <import schemaLocation="Node_1.0.xsd"
 				namespace="urn:se.vgregion.metaservice.schema.Node.v1" />
-   
+
     <complexType name="ResponseObjectType">
         <sequence>
             <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
