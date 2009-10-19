@@ -1,18 +1,21 @@
 package se.vgregion.metaservice.vocabularyservice.intsvc;
 
-import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.XMLResponseObject;
 import se.vgregion.metaservice.keywordservice.schema.IdentificationSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.NodeSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.OptionsSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.ResponseObjectSdoHelper;
+import se.vgregion.metaservice.keywordservice.schema.XMLResponseObjectSdoHelper;
 import se.vgregion.metaservice.schema.domain.LookupResponseObjectType;
 import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
 import se.vgregion.metaservice.schema.domain.ResponseObjectType;
+import se.vgregion.metaservice.schema.domain.XMLResponseObjectType;
 import se.vgregion.metaservice.vocabularyservice.VocabularyService;
 import se.vgregion.metaservice.wsdl.vocabularyservices.AddVocabularyNodeRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.GetNamespaceXmlRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.GetVocabularyRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.LookupWordRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.MoveVocabularyNodeRequest;
@@ -78,8 +81,18 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
 
-    public void dumpDbAsXML() {
-        //TODO: Write spec and implement this method;
+    /**
+     * Interface to return a namespace as XML
+     * @param parameters
+     * @return
+     */
+    public XMLResponseObjectType getNamespaceXml(GetNamespaceXmlRequest parameters)  {
+        XMLResponseObject responseObject = vocabularyService.getNamespaceXml(
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
+                parameters.getRequestId(),
+                parameters.getNamespace());
+
+        return XMLResponseObjectSdoHelper.toXMLRepsonseObjectType(responseObject);
     }
 
     /**

@@ -21,9 +21,18 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="GetVocabularyResponse"
-				type="kws:NodeListResponseObjectType" />
-        
+            <xsd:element name="GetVocabularyResponse" type="kws:NodeListResponseObjectType" />
+            <xsd:element name="GetNamespaceXmlRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" />
+                        <xsd:element name="namespace" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="GetNamespaceXmlResponse"  type="kws:XMLResponseObjectType">
+            </xsd:element>
             <xsd:element name="LookupWordRequest">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -70,6 +79,14 @@
         </xsd:schema>
     </wsdl:types>
 
+    <wsdl:message name="GetNamespaceXmlRequest">
+        <wsdl:part element="tns:GetNamespaceXmlRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="GetNamespaceXmlResponse">
+        <wsdl:part element="tns:GetNamespaceXmlResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="GetVocabularyRequest">
         <wsdl:part name="parameters" element="tns:GetVocabularyRequest">
         </wsdl:part>
@@ -106,6 +123,10 @@
         <wsdl:part element="tns:UpdateVocabularyNodeResponse" name="parameters" />
     </wsdl:message>
     <wsdl:portType name="VocabularyService">
+        <wsdl:operation name="GetNamespaceXml">
+            <wsdl:input message="tns:GetNamespaceXmlRequest" />
+            <wsdl:output message="tns:GetNamespaceXmlResponse" />
+        </wsdl:operation>
         <wsdl:operation name="GetVocabulary">
             <wsdl:input message="tns:GetVocabularyRequest" />
             <wsdl:output message="tns:GetVocabularyResponse" />
@@ -134,6 +155,16 @@
         <soap:binding style="document"
 			transport="http://schemas.xmlsoap.org/soap/http" />
 
+
+        <wsdl:operation name="GetNamespaceXml">
+            <soap:operation />
+            <wsdl:input>
+                <soap:body use="literal" />
+            </wsdl:input>
+            <wsdl:output>
+                <soap:body use="literal" />
+            </wsdl:output>
+        </wsdl:operation>
         <wsdl:operation name="GetVocabulary">
             <soap:operation />
             <wsdl:input>

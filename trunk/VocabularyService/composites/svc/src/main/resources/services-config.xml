@@ -22,7 +22,7 @@
 
 
                 <!-- Defines the namespaces, as a comma separated list, which may be exposed to the routine getNamespaceXml -->
-                <property name="metaservice.allowedNamespaces" value="${taxonomyservice.sitemapLocation}" />
+                <property name="namepacesExposedToXmlApi" value="${taxonomyservice.allowedNamespaces}" />
 	</bean>
 	
 
