@@ -5,6 +5,10 @@
         xmlns:tns="urn:se.vgregion.metaservice.schema.Types.v1"
 	elementFormDefault="qualified" jxb:version="1.0">
 
+
+
+
+
     <!-- DOCUMENT -->
     <complexType name="DocumentType" abstract="true">
         <sequence/>
@@ -111,6 +115,7 @@
         </sequence>
     </complexType>
 
+
     <!-- OPTIONS -->
 
      <complexType name="OptionsType">
@@ -142,12 +147,19 @@
 	</complexType>
 
     <!-- RESPONSE -->
-        <complexType name="ResponseObjectType">
+    <complexType name="ResponseObjectType">
         <sequence>
             <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
             <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
             <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
         </sequence>
+    </complexType>
+    <complexType name="XMLResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="xml" type="string" minOccurs="1" maxOccurs="1" />
+            </extension>
+        </complexContent>
     </complexType>
     <complexType name="NodeListResponseObjectType">
         <complexContent>
@@ -196,5 +208,5 @@
             <enumeration value="6001" />
         </restriction>
     </simpleType>
-
+    
 </schema>
