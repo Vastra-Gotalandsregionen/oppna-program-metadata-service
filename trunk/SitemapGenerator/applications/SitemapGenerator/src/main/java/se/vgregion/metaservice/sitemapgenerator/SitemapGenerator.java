@@ -15,7 +15,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.apache.log4j.Logger;
 import se.vgregion.metaservice.vocabularyservice.intsvc.VocabularyService;
 import se.vgregion.metaservice.vocabularyservice.intsvc.VocabularyServiceIntServiceImplService;
-import v1.node.schema.metaservice.vgregion.se.NodeType;
 import v1.vocabularyservices.wsdl.metaservice.vgregion.se.GetVocabularyRequest;
 
 /**
@@ -90,7 +89,7 @@ public class SitemapGenerator {
         request.setPath(namespace);
         request.setRequestId(requestId);
 
-        List<NodeType> nodeList = service.getVocabulary(request).getNodeList().getNode();
+        List<v1.types.schema.metaservice.vgregion.se.NodeType> nodeList = service.getVocabulary(request).getNodeList().getNode();
         XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter writer = null;
         OutputStream out = null;
@@ -115,7 +114,7 @@ public class SitemapGenerator {
 
             // iterate Apelon nodes recursively and write XML to stream
             if (nodeList != null) {
-                for (NodeType node : nodeList) {
+                for (v1.types.schema.metaservice.vgregion.se.NodeType node : nodeList) {
                     traverseChildNodes(node, requestId, writer, namespace);
                 }
             } else {
@@ -148,7 +147,7 @@ public class SitemapGenerator {
     }
 
 
-    private void traverseChildNodes(NodeType node, String requestId, XMLStreamWriter writer, String path) throws XMLStreamException {
+    private void traverseChildNodes(v1.types.schema.metaservice.vgregion.se.NodeType node, String requestId, XMLStreamWriter writer, String path) throws XMLStreamException {
         writer.writeStartElement("url");
         
         writer.writeStartElement("loc");
@@ -177,10 +176,10 @@ public class SitemapGenerator {
         GetVocabularyRequest request = new GetVocabularyRequest();
         request.setPath(childpath);
         request.setRequestId(requestId);
-        List<NodeType> nodeList = service.getVocabulary(request).getNodeList().getNode();
+        List<v1.types.schema.metaservice.vgregion.se.NodeType> nodeList = service.getVocabulary(request).getNodeList().getNode();
 
         if (nodeList != null) {
-            for (NodeType n : nodeList) {
+            for (v1.types.schema.metaservice.vgregion.se.NodeType n : nodeList) {
                 // Recusively call this routine for all children
                 traverseChildNodes(n, requestId, writer, childpath);
             }

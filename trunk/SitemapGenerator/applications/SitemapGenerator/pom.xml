@@ -1,8 +1,17 @@
 <?xml version="1.0"?>
 <!--
 
-	This pom generates a JAR file for this standalone application.
-	
+	This pom generates a JAR+ZIP file for this standalone application.
+
+
+        NOTE:
+
+            ON BUILD
+                * Update the hostname and port of "wsdlUrl" property below
+                * Update the src/main/resources/sitemapgenerator.properties file
+
+            IF NAME IS CHANGED
+                * Update the bat-script in src/main/etc/
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -36,8 +45,8 @@
                 <configuration>
                     <archive>
                         <manifest>
+                            <!-- mainclass manifest attribute not really used when invoked supplied batscript -->
                             <mainClass>se.vgregion.metaservice.sitemapgenerator.SitemapGenerator</mainClass>
-                           <!-- <packageName>se.vgregion.metaservice.sitemapgenerator</packageName>-->
                             <addClasspath>true</addClasspath>
                             <addExtensions/>
                             <classpathPrefix/>
@@ -88,6 +97,24 @@
                 </configuration>
             </plugin>
 
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/resources/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
 
     </build>
@@ -106,7 +133,6 @@
             <artifactId>log4j</artifactId>
             <version>1.2.9</version>
             <type>jar</type>
-            <scope>provided</scope>
         </dependency>
 
     </dependencies>
