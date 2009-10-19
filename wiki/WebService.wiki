@@ -162,11 +162,7 @@ _ResponseObject statuskod och ev. felmeddelande_
 _*This method is NOT yet implemented*_
 
 Hämtar den fulla strukturen för en namnrymd och presenterar detta som XML. <br>
-Endast godkända namnrymder är exponerade:
- * VGR
- * ...
-
-
+Godkända namnrymder konfigureras i en properties-fil. Se [Bygginstruktioner] för vidare konfiguration. 
 
 
 *Inparametrar*
