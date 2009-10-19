@@ -159,8 +159,6 @@ _ResponseObject statuskod och ev. felmeddelande_
 <br><br>
 == getNamespaceXML ==
 
-_*This method is NOT yet implemented*_
-
 Hämtar den fulla strukturen för en namnrymd och presenterar detta som XML. <br>
 Godkända namnrymder konfigureras i en properties-fil. Se [Bygginstruktioner] för vidare konfiguration. 
 
