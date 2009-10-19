@@ -32,7 +32,7 @@ Lägg till jdbc-drivrutinen för databasen i tomcats lib-katalog. För Derby anv
 SitemapGenerator är en standalone applikation i metaservice projektet. Applikationen genererar en sitemap för varje angiven namnrymd. Rekomenderad körning är att applikationen startas via en enkel .bat fil, schemalagd enligt operativsystemet inbyggda schemaläggninigresurser. 
 
 
-När projektet ska _sitemapgenerator.properties_ från resource mappen uppdateras:
+När projektet byggs ska _sitemapgenerator.properties_ från resource mappen uppdateras:
 
 {{{
 # Directory to store the sitemaps in, e.g., C:\\sitemaps\ for windows or /var/sitemaps/ for linux
