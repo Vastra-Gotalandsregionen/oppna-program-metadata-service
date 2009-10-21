@@ -9,6 +9,7 @@ import java.util.Map;
 import com.apelon.dts.client.concept.ConceptChild;
 
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
+import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
@@ -86,8 +87,19 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
     }
 
     @Override
-    public void updateNodeProperties(MedicalNode node) throws KeywordsException {
+    public void updateNodeProperties(MedicalNode node, boolean overwriteProperties) throws KeywordsException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public long setLastChangeNow() throws KeywordsException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public long getLastChange(Identification id) throws KeywordsException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 
 }

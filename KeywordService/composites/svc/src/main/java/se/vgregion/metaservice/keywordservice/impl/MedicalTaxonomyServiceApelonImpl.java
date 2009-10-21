@@ -39,6 +39,8 @@ import com.apelon.dts.client.namespace.Namespace;
 import com.apelon.dts.client.namespace.NamespaceQuery;
 import com.apelon.dts.client.subset.SubsetQuery;
 import com.apelon.dts.common.subset.Subset;
+import java.util.Date;
+import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
@@ -68,7 +70,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * @see MedicalTaxonomyService
      */
     public boolean initConnection() {
-        log.info("Initiating connection to server "+host);
+        log.info("Initiating connection to server " + host);
         boolean retval = true;
         try {
             ServerConnection serverConnection = new ServerConnectionSecureSocket(
@@ -201,6 +203,46 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return roots;
     }
 
+    public long setLastChangeNow() throws KeywordsException {
+        //TODO: base namespace on id
+        Long now = new Date().getTime();
+        List<MedicalNode> list = findNodes("LastChange", false);
+        MedicalNode node = null;
+        if (list.isEmpty()) {
+            log.error("Could not find the lastChange-Node");
+            throw new KeywordsException("Could not find the lastUpdate-Node");
+        } else {
+            // There should only be one of these
+            node = list.get(0);
+            node.getProperties().clear();
+            node.addProperty("lastChange", now.toString());
+            //update and overwrite!
+            updateNodeProperties(node, true);
+            return now;
+        }
+    }
+
+    public long getLastChange(Identification id) throws KeywordsException {
+        //TODO: base namespace on id
+        List<MedicalNode> list = findNodes("LastChange", false);
+        MedicalNode node = null;
+        if (list.isEmpty()) {
+            log.error("Could not find the lastChange-Node");
+            throw new KeywordsException("Could not find the lastChange-Node");
+        } else {
+            // There should only be one of these
+            node = list.get(0);
+            List<NodeProperty> propList = node.getProperties();
+            if (propList.isEmpty()) {
+                log.error("Could not find the lastChange-property");
+                throw new KeywordsException("Could not find the lastChange-property");
+            }
+            // and there should only be one of these as well
+            return Long.parseLong(propList.get(0).getValue());
+        }
+    }
+
+
     public MedicalNode getNodeByInternalId(String internalId) {
         MedicalNode node = null;
         DTSConcept concept;
@@ -250,14 +292,30 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return nodes;
     }
 
-    public void updateNodeProperties(MedicalNode node) throws KeywordsException {
+    /**
+     * Update the properties
+     * @param node the node to update
+     * @param owerwriteProperties overwrite properties with the same name
+     * @throws KeywordsException
+     */
+    public void updateNodeProperties(MedicalNode node, boolean owerwriteProperties) throws KeywordsException {
         try {
             DTSConcept concept = getConceptByInternalId(node.getInternalId());
+
+            int nrOfProperties = node.getProperties().size();
+            DTSProperty[] props = new DTSProperty[nrOfProperties];
 
             for (NodeProperty prop : node.getProperties()) {
                 DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
                 DTSProperty property = new DTSProperty(pType, prop.getValue());
-                if (!concept.containsProperty(property)) {
+
+                if (owerwriteProperties) {
+                    DTSProperty oldProperty = getFirstPropertyByName(concept, prop.getName());
+                    if (oldProperty != null) {
+                        thesaurusConceptQuery.deleteProperty(concept, oldProperty);
+                    }
+                    thesaurusConceptQuery.addProperty(concept, property);
+                } else if (!concept.containsProperty(property)) {
                     thesaurusConceptQuery.addProperty(concept, property);
                 }
             }
@@ -265,19 +323,27 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             log.error("Exception setting properties for keywords in taxonomy service ", ex);
             throw new KeywordsException("Exception setting properties for keywords in taxonomy service" + ex);
         }
-
-
     }
 
-    public void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException,NodeNotFoundException {
+    public DTSProperty getFirstPropertyByName(DTSConcept concept, String name) {
+        DTSProperty[] props = concept.getFetchedProperties();
+        for (DTSProperty prop : props) {
+            if (name.equals(prop.getName())) {
+                return prop;
+            }
+        }
+        return null;
+    }
+
+    public void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException, NodeNotFoundException {
         try {
             DTSConcept concept = getConceptByInternalId(nodeId);
-            if(concept == null) {
-                throw new NodeNotFoundException("Node "+nodeId+" not found");
+            if (concept == null) {
+                throw new NodeNotFoundException("Node " + nodeId + " not found");
             }
             DTSConcept parentConcept = getConceptByInternalId(destinationParentNodeId);
-            if(parentConcept == null) {
-                 throw new NodeNotFoundException("Destination parent node "+" not found");
+            if (parentConcept == null) {
+                throw new NodeNotFoundException("Destination parent node " + " not found");
             }
             AssociationType parentRelation = getParentAssociation();
             ConceptAssociation oldParentAssociation = getParentAssociationForConcept(concept);
@@ -289,6 +355,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             {
                 assocQuery.updateConceptAssociation(oldParentAssociation, newParentAssociation);
             }
+
         } catch (DTSException ex) {
             log.error("Exception moving keywords in taxonomy service", ex);
             throw new KeywordsException("Exception moving keywords in taxonomy service");
@@ -302,7 +369,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 return assoc;
             }
         }
-
         return null;
     }
 
@@ -459,7 +525,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 }
             }
         }
-
         return false;
     }
 
@@ -487,7 +552,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             }
             //Create the properties
             node.setInternalId(String.valueOf(concept.getId()));
-            updateNodeProperties(node);
+            updateNodeProperties(node, false);
 
             //TODO: synonyms, children etc
 
@@ -518,7 +583,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
         // Add properties to MedicalNode
         for (DTSProperty property : properties) {
-            node.addProperty(property.getName(),property.getValue());
+            node.addProperty(property.getName(), property.getValue());
         }
 
 
@@ -554,9 +619,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 }
             }
         }
-
         return node;
-
     }
 
     /*
