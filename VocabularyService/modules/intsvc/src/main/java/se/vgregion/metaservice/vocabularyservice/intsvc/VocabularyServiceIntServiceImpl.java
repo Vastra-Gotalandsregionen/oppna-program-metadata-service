@@ -1,5 +1,6 @@
 package se.vgregion.metaservice.vocabularyservice.intsvc;
 
+import se.vgregion.metaservice.keywordservice.domain.LastChangeResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
@@ -9,6 +10,7 @@ import se.vgregion.metaservice.keywordservice.schema.NodeSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.OptionsSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.ResponseObjectSdoHelper;
 import se.vgregion.metaservice.keywordservice.schema.XMLResponseObjectSdoHelper;
+import se.vgregion.metaservice.schema.domain.LastChangeResponseObjectType;
 import se.vgregion.metaservice.schema.domain.LookupResponseObjectType;
 import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
 import se.vgregion.metaservice.schema.domain.ResponseObjectType;
@@ -17,21 +19,34 @@ import se.vgregion.metaservice.vocabularyservice.VocabularyService;
 import se.vgregion.metaservice.wsdl.vocabularyservices.AddVocabularyNodeRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.GetNamespaceXmlRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.GetVocabularyRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.LastChangeRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.LookupWordRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.MoveVocabularyNodeRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.UpdateVocabularyNodeRequest;
 
-
 public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.wsdl.vocabularyservices.VocabularyService {
 
     private VocabularyService vocabularyService;
+
+    /**
+     * Interface to getVocabulary in vocabularyService
+     * @param parameters
+     * @return
+     */
+    public LastChangeResponseObjectType getLastChange(LastChangeRequest parameters) {
+
+        LastChangeResponseObject lastChangeResponseObject = vocabularyService.getLastChange(IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
+                parameters.getRequestId());
+        return ResponseObjectSdoHelper.toLastChangeRepsonseObjectType(lastChangeResponseObject);
+    }
+
     /**
      * Interface to getVocabulary in vocabularyService
      * @param parameters
      * @return
      */
     public NodeListResponseObjectType getVocabulary(GetVocabularyRequest parameters) {
-    
+
         NodeListResponseObject nodeListResponseObject = vocabularyService.getVocabulary(parameters.getRequestId(), parameters.getPath());
         return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
     }
@@ -86,7 +101,7 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      * @param parameters
      * @return
      */
-    public XMLResponseObjectType getNamespaceXml(GetNamespaceXmlRequest parameters)  {
+    public XMLResponseObjectType getNamespaceXml(GetNamespaceXmlRequest parameters) {
         XMLResponseObject responseObject = vocabularyService.getNamespaceXml(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
@@ -109,7 +124,7 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
                 parameters.getRequestId(),
                 parameters.getWord(),
                 OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
-                
+
         return ResponseObjectSdoHelper.toLookupRepsonseObjectType(responseObject);
     }
 }

@@ -11,12 +11,14 @@ import java.util.List;
 
 
 import java.util.Set;
+import java.util.logging.Level;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.apache.log4j.Logger;
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
+import se.vgregion.metaservice.keywordservice.domain.LastChangeResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
@@ -44,6 +46,18 @@ public class VocabularyService {
     private String urlPropertyName = "url";
     private Set<String> allowedNamespaces = null;
 
+
+    public LastChangeResponseObject getLastChange(Identification identification, String requestId){
+
+        Long lastChange;
+        try {
+            lastChange = medicalTaxonomyService.getLastChange(identification);
+        } catch (KeywordsException ex) {
+            //TODO: another error message??
+            return new LastChangeResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "No lastChange property found");
+        }
+        return new LastChangeResponseObject(requestId,lastChange);
+    }
     
     /**
      * Look up a word in whitelist or blacklist
@@ -69,8 +83,8 @@ public class VocabularyService {
                 if (parent.getName().equals(reviewlistName)) {
                     node = addNodeProperties(node, identification, options);
                     try {
-                        medicalTaxonomyService.updateNodeProperties(node);
-
+                        medicalTaxonomyService.updateNodeProperties(node,false);
+                        medicalTaxonomyService.setLastChangeNow();
                         response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
                     } catch (KeywordsException ex) {
                         //TODO: new statuscode?
@@ -92,6 +106,7 @@ public class VocabularyService {
                 node.setNamespaceId("33315");
                 node = addNodeProperties(node, identification, options);
                 medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
+                medicalTaxonomyService.setLastChangeNow();
 
             } catch (KeywordsException ex) {
                 //TODO: new statuscode?
@@ -169,6 +184,7 @@ public class VocabularyService {
         ResponseObject responseObject = new ResponseObject(requestId);
         try {
             medicalTaxonomyService.moveNode(nodeId, destNodeId);
+            medicalTaxonomyService.setLastChangeNow();
         } catch (KeywordsException ex) {
             log.error(MessageFormat.format("{0}:{1}: Node ({2}) could not be moved to parent {{3}}",
                     requestId, StatusCode.error_editing_taxonomy.code(), nodeId, destNodeId), ex);

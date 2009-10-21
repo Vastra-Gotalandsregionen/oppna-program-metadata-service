@@ -45,6 +45,16 @@
             </xsd:element>
             <xsd:element name="LookupWordResponse"
 				type="kws:LookupResponseObjectType" />
+            <xsd:element name="LastChangeRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="LastChangeResponse"
+				type="kws:LastChangeResponseObjectType" />
             <xsd:element name="AddVocabularyNodeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -101,6 +111,12 @@
     <wsdl:message name="LookupWordResponse">
         <wsdl:part element="tns:LookupWordResponse" name="parameters" />
     </wsdl:message>
+    <wsdl:message name="LastChangeRequest">
+        <wsdl:part element="tns:LastChangeRequest" name="parameters" />
+    </wsdl:message>
+    <wsdl:message name="LastChangeResponse">
+        <wsdl:part element="tns:LastChangeResponse" name="parameters" />
+    </wsdl:message>
     <wsdl:message name="AddVocabularyNodeRequest">
         <wsdl:part element="tns:AddVocabularyNodeRequest" name="parameters">
         </wsdl:part>
@@ -134,6 +150,10 @@
         <wsdl:operation name="LookupWord">
             <wsdl:input message="tns:LookupWordRequest" />
             <wsdl:output message="tns:LookupWordResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="GetLastChange">
+            <wsdl:input message="tns:LastChangeRequest" />
+            <wsdl:output message="tns:LastChangeResponse" />
         </wsdl:operation>
         <wsdl:operation name="AddVocabularyNode">
             <wsdl:input message="tns:AddVocabularyNodeRequest" />
