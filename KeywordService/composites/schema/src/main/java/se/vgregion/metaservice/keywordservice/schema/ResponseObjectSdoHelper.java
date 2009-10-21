@@ -1,10 +1,12 @@
 package se.vgregion.metaservice.keywordservice.schema;
 
+import se.vgregion.metaservice.keywordservice.domain.LastChangeResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject.ListType;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
+import se.vgregion.metaservice.schema.domain.LastChangeResponseObjectType;
 import se.vgregion.metaservice.schema.domain.ResponseObjectType;
 import se.vgregion.metaservice.schema.domain.LookupResponseObjectType;
 import se.vgregion.metaservice.schema.domain.NodeListResponseObjectType;
@@ -38,6 +40,30 @@ public class ResponseObjectSdoHelper {
         responseObject.setRequestId(responseObjectType.getRequestId());
         responseObject.setErrorMessage(responseObjectType.getErrorMessage());
         responseObject.setStatusCode(fromStatusCodeEnum(responseObjectType.getStatusCode()));
+
+        return responseObject;
+    }
+
+    public static LastChangeResponseObjectType toLastChangeRepsonseObjectType(LastChangeResponseObject responseObject) {
+
+        LastChangeResponseObjectType responseObjectType = new LastChangeResponseObjectType();
+
+        responseObjectType.setRequestId(responseObject.getRequestId());
+        responseObjectType.setErrorMessage(responseObject.getErrorMessage());
+        responseObjectType.setStatusCode(toStatusCodeEnum(responseObject.getStatusCode()));
+        responseObjectType.setLastChange(responseObject.getLastChange());
+
+        return responseObjectType;
+    }
+
+    public static LastChangeResponseObject fromLastChangeRepsonseObjectType(LastChangeResponseObjectType responseObjectType) {
+
+        LastChangeResponseObject responseObject = new LastChangeResponseObject();
+
+        responseObject.setRequestId(responseObjectType.getRequestId());
+        responseObject.setErrorMessage(responseObjectType.getErrorMessage());
+        responseObject.setStatusCode(fromStatusCodeEnum(responseObjectType.getStatusCode()));
+        responseObject.setLastChange(responseObjectType.getLastChange());
 
         return responseObject;
     }
@@ -83,7 +109,7 @@ public class ResponseObjectSdoHelper {
             return null;
         }
         StatusCode statusCode = StatusCode.valueOf(statusCodeEnum.name());
-        
+
         return statusCode;
     }
 
