@@ -136,5 +136,16 @@ XMLResponseObject används för att returnera XML information. Typen följer sam
 || *Namn* || *Typ* || *Förklaring* ||
 || xml || String || XML information som genererats som svar på anropet ||
 || requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
+|| time || Long || Tiden då detta anropet gjordes ||
+|| statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
+|| errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
+
+=== XMLResponseObject===
+
+LastChangeResponseObject används för att returnera tiden för senaste ändringen i apelon
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| requestId || String || Identifieraren på den inkommande requesten som det här svaret tillhör ||
+|| time || Long || Tiden då något senast ändrades ||
 || statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
