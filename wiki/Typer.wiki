@@ -140,6 +140,9 @@ XMLResponseObject används för att returnera XML information. Typen följer sam
 || statusCode || Enum || Enumerationstyp som markerar om anropet lyckades eller ej ||
 || errorMessage || String || Ett eventuellt felmeddelande om anropet misslyckades ||
 
+
+<br><br>
+
 === LastChangeResponseObject===
 
 LastChangeResponseObject används för att returnera tiden för senaste ändringen i apelon
