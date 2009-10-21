@@ -6,7 +6,7 @@
 	xmlns:kws="urn:se.vgregion.metaservice.schema.Types.v1"
         name="KeywordServices_1.0"
 	targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
-    <wsdl:types>
+    <wsdl:types>   
         <xsd:schema 
 			targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
             <xsd:import schemaLocation="KeywordService_Types_1.0.xsd"
