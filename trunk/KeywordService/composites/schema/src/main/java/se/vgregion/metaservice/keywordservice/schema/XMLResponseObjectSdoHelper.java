@@ -20,7 +20,7 @@ public class XMLResponseObjectSdoHelper {
         responseObjectType.setXml(responseObject.getXml());
         responseObjectType.setErrorMessage(responseObject.getErrorMessage());
         responseObjectType.setStatusCode(ResponseObjectSdoHelper.toStatusCodeEnum(responseObject.getStatusCode()));
-
+        responseObjectType.setTime(responseObject.getTime());
         return responseObjectType;
     }
 
@@ -32,6 +32,7 @@ public class XMLResponseObjectSdoHelper {
         responseObject.setRequestId(responseObjectType.getRequestId());
         responseObject.setErrorMessage(responseObjectType.getErrorMessage());
         responseObject.setStatusCode(ResponseObjectSdoHelper.fromStatusCodeEnum(responseObjectType.getStatusCode()));
+        responseObject.setTime(responseObjectType.getTime());
 
         return responseObject;
     }

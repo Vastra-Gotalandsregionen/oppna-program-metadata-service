@@ -43,14 +43,14 @@
 
     <!-- IDENTIFICATION -->
     <complexType name="IdentificationType">
-            <sequence>
-                <element name="userId" type="string" minOccurs="1" maxOccurs="1"/>
-                <element name="profileId" type="string" minOccurs="1" maxOccurs="1"/>
-            </sequence>
+        <sequence>
+            <element name="userId" type="string" minOccurs="1" maxOccurs="1"/>
+            <element name="profileId" type="string" minOccurs="1" maxOccurs="1"/>
+        </sequence>
     </complexType>
 
     <!-- NODE -->
-     <complexType name="NodeType">
+    <complexType name="NodeType">
         <sequence>
             <element name="name" minOccurs="1" maxOccurs="1"
 				type="string" />
@@ -118,33 +118,33 @@
 
     <!-- OPTIONS -->
 
-     <complexType name="OptionsType">
-    <sequence>
-      <element name="includeSourceIds">
-        <complexType>
-          <sequence>
-            <element name="entry" minOccurs="0" maxOccurs="unbounded">
-              <complexType>
-                <sequence>
-                  <element name="key" minOccurs="0" type="int"/>
-                  <element name="value" minOccurs="0" type="tns:IncludeSourceIdsListType"/>
-                </sequence>
-              </complexType>
+    <complexType name="OptionsType">
+        <sequence>
+            <element name="includeSourceIds">
+                <complexType>
+                    <sequence>
+                        <element name="entry" minOccurs="0" maxOccurs="unbounded">
+                            <complexType>
+                                <sequence>
+                                    <element name="key" minOccurs="0" type="int"/>
+                                    <element name="value" minOccurs="0" type="tns:IncludeSourceIdsListType"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
             </element>
-          </sequence>
-        </complexType>
-      </element>
-      <element name="wordLimit" type="int"/>
-      <element name="url" type="string" />
-    </sequence>
-  </complexType>
+            <element name="wordLimit" type="int"/>
+            <element name="url" type="string" />
+        </sequence>
+    </complexType>
 
-  <complexType name="IncludeSourceIdsListType">
-		<sequence>
-			<element name="includeSourceId" maxOccurs="unbounded"
+    <complexType name="IncludeSourceIdsListType">
+        <sequence>
+            <element name="includeSourceId" maxOccurs="unbounded"
 				type="string" />
-		</sequence>
-	</complexType>
+        </sequence>
+    </complexType>
 
     <!-- RESPONSE -->
     <complexType name="ResponseObjectType">
@@ -155,11 +155,13 @@
         </sequence>
     </complexType>
     <complexType name="XMLResponseObjectType">
-        <complexContent>
-            <extension base="tns:ResponseObjectType">
-                <element name="xml" type="string" minOccurs="1" maxOccurs="1" />
-            </extension>
-        </complexContent>
+        <sequence>
+            <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
+            <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
+            <element name="xml" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="time" type="long" minOccurs="1" maxOccurs="1" />
+        </sequence>
     </complexType>
     <complexType name="NodeListResponseObjectType">
         <complexContent>
@@ -175,7 +177,7 @@
             </extension>
         </complexContent>
     </complexType>
-        <complexType name="LastChangeResponseObjectType">
+    <complexType name="LastChangeResponseObjectType">
         <complexContent>
             <extension base="tns:ResponseObjectType">
                 <element name="lastChange" type="long" minOccurs="1" maxOccurs="1"/>
