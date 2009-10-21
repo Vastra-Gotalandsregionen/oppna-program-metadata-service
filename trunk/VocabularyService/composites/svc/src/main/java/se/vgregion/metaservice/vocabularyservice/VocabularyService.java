@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -224,6 +225,8 @@ public class VocabularyService {
     public XMLResponseObject getNamespaceXml(Identification id, String requestId, String namespace) {
         XMLResponseObject response = new XMLResponseObject();
         response.setRequestId(requestId);
+
+        Long now = new Date().getTime();
         
         if (allowedNamespaces.contains(namespace)) {
             XMLOutputFactory factory = XMLOutputFactory.newInstance();
@@ -258,10 +261,12 @@ public class VocabularyService {
                 log.error("Error exporting namespace to XML", ex);
                 response.setStatusCode(XMLResponseObject.StatusCode.error_processing_content);
                 response.setErrorMessage("Error exporting namespace to XML: " + ex.getMessage());
+                
             } catch (XMLStreamException ex) {
                 log.error("Error exporting namespace to XML", ex);
                 response.setStatusCode(XMLResponseObject.StatusCode.error_processing_content);
                 response.setErrorMessage("Error exporting namespace to XML: " + ex.getMessage());
+                
 
             } finally {
                 try {
@@ -275,9 +280,10 @@ public class VocabularyService {
         } else {
             response.setStatusCode(XMLResponseObject.StatusCode.error_processing_content);
             response.setErrorMessage("Namespace is not in the list of namespaces authorized for xml export");
+            
 
         }
-        
+        response.setTime(now);
         return response;
     }
 
