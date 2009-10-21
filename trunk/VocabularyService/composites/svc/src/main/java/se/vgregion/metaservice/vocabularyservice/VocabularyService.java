@@ -331,26 +331,10 @@ public class VocabularyService {
         }
         writer.writeEndElement();
 
-        writer.writeStartElement("userstatus");
-        for (UserStatus status : node.getUserStatus()) {
-            writer.writeStartElement(status.name());
-            writer.writeCharacters(status.value());
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-
         writer.writeStartElement("synonyms");
         for (String synonym : node.getSynonyms()) {
             writer.writeStartElement("synonym");
             writer.writeCharacters(synonym);
-            writer.writeEndElement();
-        }
-        writer.writeEndElement();
-
-        writer.writeStartElement("parents");
-        for (MedicalNode parent : node.getParents()) {
-            writer.writeStartElement("parent");
-            writer.writeCharacters(parent.getName());
             writer.writeEndElement();
         }
         writer.writeEndElement();
