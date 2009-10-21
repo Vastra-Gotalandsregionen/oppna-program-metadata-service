@@ -173,3 +173,20 @@ Godkända namnrymder konfigureras i en properties-fil. Se [Bygginstruktioner] f�
 
 *Returvärde*
 _XMLResponseObject innehållande svars-XML, statuskod och ev. felmeddelande _
+
+<br><br>
+== getLastChange ==
+
+Returnerar när något senast ändrades i apelon 
+
+
+*Inparametrar*
+
+|| *Namn* || *Typ* || *Förklaring* ||
+|| id || Identification || Objekt som identifierar användare och profil ||
+|| requestId || String || Unik anrops-identifierare ||
+|| namespace || String || Identifierare för vilken namnrymd sitemap:en ska genereras för ||
+
+
+*Returvärde*
+_LastChangeResponseObject innehållande tid, statuskod och ev. felmeddelande _
