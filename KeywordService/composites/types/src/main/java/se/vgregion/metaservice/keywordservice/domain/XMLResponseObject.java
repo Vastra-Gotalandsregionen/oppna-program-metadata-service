@@ -7,6 +7,7 @@ package se.vgregion.metaservice.keywordservice.domain;
  */
 public class XMLResponseObject extends ResponseObject {
     private String xml = null;
+    private long time = 0;
 
 
     /**
@@ -47,5 +48,14 @@ public class XMLResponseObject extends ResponseObject {
         this.xml = xml;
     }
 
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
+    }
+
+    
 
 }
