@@ -8,6 +8,7 @@ import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 
 import com.apelon.dts.client.concept.ConceptChild;
 import com.apelon.dts.client.concept.OntylogConcept;
+import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
@@ -82,7 +83,12 @@ public abstract class MedicalTaxonomyService {
 
         public abstract MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException;
 
-        public abstract void updateNodeProperties(MedicalNode node) throws KeywordsException;
+        public abstract void updateNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException;
+
+        public abstract long setLastChangeNow() throws KeywordsException;
+
+        public abstract long getLastChange(Identification id) throws KeywordsException;
+
     
 	/**
 	 * Sets the username to use when connecting to the Medical Taxonomy backend
