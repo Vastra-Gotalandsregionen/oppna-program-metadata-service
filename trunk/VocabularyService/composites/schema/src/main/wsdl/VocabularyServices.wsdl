@@ -1,16 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-	xmlns:tns="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1"
+	xmlns:tns="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:kws="urn:se.vgregion.metaservice.schema.Types.v1"
-	name="VocabularyServices_1.0"
-	targetNamespace="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1">
+        xmlns:doc="urn:Document.schema.metaservice.vgr.se:v1"
+        xmlns:node="urn:Node.schema.metaservice.vgr.se:v2"
+        xmlns:req="urn:Request.schema.metaservice.vgr.se:v1"
+        xmlns:res="urn:Response.schema.metaservice.vgr.se:v1"
+	name="VocabularyServices"
+	targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
     <wsdl:types>
         <xsd:schema
-			targetNamespace="urn:se.vgregion.metaservice.wsdl.VocabularyServices.v1">
-            <xsd:import schemaLocation="KeywordService_Types_1.0.xsd"
-				namespace="urn:se.vgregion.metaservice.schema.Types.v1" />
+			targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
+            <xsd:import schemaLocation="Document_V1.xsd"
+				namespace="urn:Document.schema.metaservice.vgr.se:v1" />
+<xsd:import schemaLocation="Node_V2.xsd"
+				namespace="urn:Node.schema.metaservice.vgr.se:v2" />
+<xsd:import schemaLocation="Request_V1.xsd"
+				namespace="urn:Request.schema.metaservice.vgr.se:v1" />
+<xsd:import schemaLocation="Response_V1.xsd"
+				namespace="urn:Response.schema.metaservice.vgr.se:v1" />
             <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
             <xsd:element name="GetVocabularyRequest">
                 <xsd:complexType>
@@ -21,71 +30,71 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="GetVocabularyResponse" type="kws:NodeListResponseObjectType" />
+            <xsd:element name="GetVocabularyResponse" type="res:NodeListResponseObjectType" />
             <xsd:element name="GetNamespaceXmlRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="namespace" type="xsd:string" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="GetNamespaceXmlResponse"  type="kws:XMLResponseObjectType">
+            <xsd:element name="GetNamespaceXmlResponse"  type="res:XMLResponseObjectType">
             </xsd:element>
             <xsd:element name="LookupWordRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="word" type="xsd:string" />
-                        <xsd:element name="options" type="kws:OptionsType" />
+                        <xsd:element name="options" type="req:OptionsType" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="LookupWordResponse"
-				type="kws:LookupResponseObjectType" />
+				type="res:LookupResponseObjectType" />
             <xsd:element name="LastChangeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="LastChangeResponse"
-				type="kws:LastChangeResponseObjectType" />
+				type="res:LastChangeResponseObjectType" />
             <xsd:element name="AddVocabularyNodeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
-                        <xsd:element name="node" type="kws:NodeType" />
+                        <xsd:element name="node" type="node:NodeType" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="AddVocabularyNodeResponse" type="kws:ResponseObjectType" />
+            <xsd:element name="AddVocabularyNodeResponse" type="res:ResponseObjectType" />
             <xsd:element name="MoveVocabularyNodeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="nodeId" type="xsd:string" />
                         <xsd:element name="destParentNodeId" type="xsd:string" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="MoveVocabularyNodeResponse" type="kws:ResponseObjectType" />
+            <xsd:element name="MoveVocabularyNodeResponse" type="res:ResponseObjectType" />
             <xsd:element name="UpdateVocabularyNodeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" />
+                        <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
-                        <xsd:element name="node" type="kws:NodeType" />
+                        <xsd:element name="node" type="node:NodeType" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="UpdateVocabularyNodeResponse" type="kws:ResponseObjectType" />
+            <xsd:element name="UpdateVocabularyNodeResponse" type="res:ResponseObjectType" />
         </xsd:schema>
     </wsdl:types>
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:Document.schema.metaservice.vgr.se:v1"
+	xmlns:tns="urn:Document.schema.metaservice.vgr.se:v1"
+	elementFormDefault="qualified" version="1.0">
+    <complexType name="DocumentType" abstract="true">
+        <sequence/>
+    </complexType>
+
+    <complexType name="InputStreamType" abstract="true">
+        <sequence/>
+    </complexType>
+
+    <complexType name="FileDocumentType">
+        <complexContent>
+            <extension base="tns:DocumentType">
+                <sequence>
+                    <element name="encoding" type="string" minOccurs="0"/>
+                    <element name="filename" type="string" minOccurs="0"/>
+                    <element name="inputStream" type="tns:InputStreamType" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+
+    <complexType name="TextDocumentType">
+        <complexContent>
+            <extension base="tns:DocumentType">
+                <sequence>
+                    <element name="textContent" type="string" minOccurs="0"/>
+                    <element name="title" type="string" minOccurs="0"/>
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+</schema>
