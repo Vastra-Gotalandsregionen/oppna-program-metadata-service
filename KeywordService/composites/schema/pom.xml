@@ -69,15 +69,27 @@ Generation time : 2008-04-23 12:41:48 CEST
 									<extraargs>
 										<extraarg>-p</extraarg>
 										<extraarg>
-											urn:se.vgregion.metaservice.wsdl.KeywordServices.v1=se.vgregion.metaservice.wsdl.keywordservices
+											urn:KeywordServices:wsdl:metaservice.vgr.se:v2=se.vgregion.metaservice.wsdl.keywordservices
 										</extraarg>
 										<extraarg>-p</extraarg>
 										<extraarg>
-											urn:se.vgregion.metaservice.schema.Types.v1=se.vgregion.metaservice.schema.domain
+											urn:Document.schema.metaservice.vgr.se:v1=se.vgregion.metaservice.schema.domain
+										</extraarg>
+                                                                                <extraarg>-p</extraarg>
+										<extraarg>
+											urn:Node.schema.metaservice.vgr.se:v2=se.vgregion.metaservice.schema.domain
+										</extraarg>
+                                                                                <extraarg>-p</extraarg>
+										<extraarg>
+											urn:Request.schema.metaservice.vgr.se:v1=se.vgregion.metaservice.schema.domain
+										</extraarg>
+                                                                                <extraarg>-p</extraarg>
+										<extraarg>
+											urn:Response.schema.metaservice.vgr.se:v1=se.vgregion.metaservice.schema.domain
 										</extraarg>
 									</extraargs>
 									<wsdl>
-										${basedir}/src/main/wsdl/KeywordServices_1.0.wsdl
+										${basedir}/src/main/wsdl/KeywordServices.wsdl
 									</wsdl>
 								</wsdlOption>
 							</wsdlOptions>

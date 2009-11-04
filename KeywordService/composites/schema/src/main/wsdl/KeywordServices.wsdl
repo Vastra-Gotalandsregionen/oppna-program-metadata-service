@@ -1,45 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
-	xmlns:tns="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1"
+	xmlns:tns="urn:KeywordServices:wsdl:metaservice.vgr.se:v2"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-	xmlns:kws="urn:se.vgregion.metaservice.schema.Types.v1"
-        name="KeywordServices_1.0"
-	targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
+	xmlns:doc="urn:Document.schema.metaservice.vgr.se:v1"
+        xmlns:node="urn:Node.schema.metaservice.vgr.se:v2"
+        xmlns:req="urn:Request.schema.metaservice.vgr.se:v1"
+        xmlns:res="urn:Response.schema.metaservice.vgr.se:v1"
+        name="KeywordServices"
+	targetNamespace="urn:KeywordServices:wsdl:metaservice.vgr.se:v2">
+    <wsdl:documentation>Versoin: 2.0</wsdl:documentation>
     <wsdl:types>  
         <xsd:schema  
-			targetNamespace="urn:se.vgregion.metaservice.wsdl.KeywordServices.v1">
-            <xsd:import schemaLocation="KeywordService_Types_1.0.xsd"
-				namespace="urn:se.vgregion.metaservice.schema.Types.v1" />
+			targetNamespace="urn:KeywordServices:wsdl:metaservice.vgr.se:v2">
+            <xsd:import schemaLocation="Document_V1.xsd"
+				namespace="urn:Document.schema.metaservice.vgr.se:v1" />
+<xsd:import schemaLocation="Node_V2.xsd"
+				namespace="urn:Node.schema.metaservice.vgr.se:v2" />
+<xsd:import schemaLocation="Request_V1.xsd"
+				namespace="urn:Request.schema.metaservice.vgr.se:v1" />
+<xsd:import schemaLocation="Response_V1.xsd"
+				namespace="urn:Response.schema.metaservice.vgr.se:v1" />
             
             <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
             <xsd:element name="GetKeywordsRequest">
                 <xsd:complexType>
                     <xsd:sequence> 
-                        <xsd:element name="identification" type="kws:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="identification" type="req:IdentificationType" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
-                        <xsd:element name="document" type="kws:DocumentType" minOccurs="1" maxOccurs="1" />
-                        <xsd:element name="options" type="kws:OptionsType" minOccurs="0" maxOccurs="1" />;
+                        <xsd:element name="document" type="doc:DocumentType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="options" type="req:OptionsType" minOccurs="0" maxOccurs="1" />;
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="GetKeywordsResponse"
-				type="kws:NodeListResponseObjectType" />
+				type="res:NodeListResponseObjectType" />
             <xsd:element name="GetNodeByInternalIdRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="identification" type="req:IdentificationType" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="internalId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="GetNodeByInternalIdResponse"
-				type="kws:NodeListResponseObjectType" />
+				type="res:NodeListResponseObjectType" />
             <xsd:element name="TagKeywordsRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="identification" type="req:IdentificationType" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="userId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="keywordIds">
@@ -53,11 +63,11 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="TagKeywordsResponse" type="kws:ResponseObjectType" />
+            <xsd:element name="TagKeywordsResponse" type="res:ResponseObjectType" />
             <xsd:element name="BookmarkKeywordsRequest">
                 <xsd:complexType>
                     <xsd:sequence>
-                        <xsd:element name="identification" type="kws:IdentificationType" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="identification" type="req:IdentificationType" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="userId" type="xsd:string" minOccurs="1" maxOccurs="1" />
                         <xsd:element name="keywordIds">
@@ -70,7 +80,7 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="BookmarkKeywordsResponse" type="kws:ResponseObjectType" />
+            <xsd:element name="BookmarkKeywordsResponse" type="res:ResponseObjectType" />
         </xsd:schema>
     </wsdl:types>
 

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:Response.schema.metaservice.vgr.se:v1"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+        xmlns:tns="urn:Response.schema.metaservice.vgr.se:v1"
+        xmlns:node="urn:Node.schema.metaservice.vgr.se:v2"
+	elementFormDefault="qualified" jxb:version="1.0">
+    <complexType name="ResponseObjectType">
+        <sequence>
+            <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
+            <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <complexType name="XMLResponseObjectType">
+        <sequence>
+            <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
+            <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
+            <element name="xml" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="time" type="long" minOccurs="1" maxOccurs="1" />
+        </sequence>
+    </complexType>
+    <complexType name="NodeListResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="nodeList" type="node:NodeListType" minOccurs="1" maxOccurs="1"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="LookupResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="listType" type="tns:ListTypeEnum" minOccurs="1" maxOccurs="1"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="LastChangeResponseObjectType">
+        <complexContent>
+            <extension base="tns:ResponseObjectType">
+                <element name="lastChange" type="long" minOccurs="1" maxOccurs="1"/>
+            </extension>
+        </complexContent>
+    </complexType>
+    <simpleType name="ListTypeEnum">
+        <restriction base="string">
+            <enumeration value="WHITELIST" />
+            <enumeration value="BLACKLIST" />
+            <enumeration value="NONE" />
+        </restriction>
+    </simpleType>
+    <simpleType name="StatusCodeEnum">
+        <annotation>
+            <appinfo>
+                <jxb:typesafeEnumClass>
+                    <jxb:typesafeEnumMember name="ok" value="200" />
+                    <jxb:typesafeEnumMember name="unsupported_text_format" value="1001" />
+                    <jxb:typesafeEnumMember name="error_formatting_content" value="1002" />
+                    <jxb:typesafeEnumMember name="no_content" value="1003" />
+                    <jxb:typesafeEnumMember name="error_processing_content" value="2001" />
+                    <jxb:typesafeEnumMember name="error_getting_keywords_from_taxonomy" value="3001" />
+                    <jxb:typesafeEnumMember name="error_editing_taxonomy" value="3002" />
+                    <jxb:typesafeEnumMember name="unknown_error" value="6001" />
+                </jxb:typesafeEnumClass>
+            </appinfo>
+        </annotation>
+        <restriction base="int">
+            <enumeration value="200" />
+            <enumeration value="1001" />
+            <enumeration value="1002" />
+            <enumeration value="1003"/>
+            <enumeration value="2001" />
+            <enumeration value="3001" />
+            <enumeration value="3002" />
+            <enumeration value="6001" />
+        </restriction>
+    </simpleType>
+</schema>
