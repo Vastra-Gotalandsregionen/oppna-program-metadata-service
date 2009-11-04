@@ -56,7 +56,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     private Namespace namespace;
     private ConceptAttributeSetDescriptor ca;
-    NamespaceQuery nameQuery;
+    NamespaceQuery nameQuery = null;
     SearchQuery searchQuery;
     AssociationQuery assocQuery;
     NavQuery navQuery;
@@ -660,5 +660,14 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     private String getSourceIdPropertyKey() {
         return this.sourceIdPropertyKey;
+    }
+
+
+    public String findNamespaceById(int namespaceId) throws Exception {
+        if (nameQuery != null) {
+            return nameQuery.findNamespaceById(namespaceId).getName();
+        }
+        // not initialized
+        throw new DTSException("Error finding namespaceById. MedicalTaxonomyService.initConnection() has not been invoked.");
     }
 }

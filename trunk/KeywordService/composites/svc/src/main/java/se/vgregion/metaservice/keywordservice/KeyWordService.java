@@ -1,10 +1,9 @@
 package se.vgregion.metaservice.keywordservice;
 
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,12 +14,12 @@ import se.vgregion.metaservice.keywordservice.dao.BlacklistedWordDao;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
-import se.vgregion.metaservice.keywordservice.domain.Metadata;
 import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
+import se.vgregion.metaservice.keywordservice.domain.SearchProfile;
 import se.vgregion.metaservice.keywordservice.domain.document.Document;
 import se.vgregion.metaservice.keywordservice.domain.document.FileDocument;
 import se.vgregion.metaservice.keywordservice.domain.document.TextDocument;
@@ -48,10 +47,18 @@ public class KeyWordService {
     private MedicalTaxonomyService medicalTaxonomyService;
     private UserProfileService userProfileService;
     private BlacklistedWordDao bwd;
-    private int blacklistLimit = 20; // If an input word to apelon results in
-    // more hits than the blacklistLimit, the word should
-    // be blacklisted. Defaults to 20
     private static Logger log = Logger.getLogger(KeyWordService.class);
+    
+    /** If an input word to apelon results in more hits than the
+     * blacklistLimit, the word should be blacklisted. Defaults to 20 */
+    private int blacklistLimit = 20;
+
+    /** Caches namespaceId to namespace-name resolutions. */
+    private Map<String, String> namespaceCache;
+
+    /** Map of searchprofiles indexed by profileId */
+    private Map<String, SearchProfile> searchProfiles;
+    
 
     /**
      * Sets the medicalTaxonomyService that is used at the backend to retrieve
@@ -61,6 +68,7 @@ public class KeyWordService {
      */
     public void setMedicalTaxonomyService(
             MedicalTaxonomyService medicalTaxonomyService) {
+        namespaceCache = new HashMap<String, String>();
         this.medicalTaxonomyService = medicalTaxonomyService;
     }
 
@@ -123,6 +131,18 @@ public class KeyWordService {
             /** * Find medical keywords ** */
             log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
             List<MedicalNode> nodes = findMedicalNodes(keywords, id.getUserId(), options.getIncludeSourceIds());
+
+            /** * Ensure user has read access to the namespace ** */
+            if (!nodes.isEmpty()) {
+                MedicalNode firstNode = nodes.get(0);
+
+                if (!hasNamespaceReadAccess(firstNode.getInternalId(), id.getProfileId(), requestId)) {
+
+                    /** * Return an NodeListResponseObject with an error code * **/
+                    return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy,
+                            "The profileId doesn't have read privileges to target namespace");
+                }
+            }
 
             /** * Return an NodeListResponseObject with statusCode ok (200) * **/
             return new NodeListResponseObject(requestId, nodes);
@@ -218,8 +238,11 @@ public class KeyWordService {
     public NodeListResponseObject getNodeByInternalId(
             Identification id,
             String requestId,
-            String internalId)
-            {
+            String internalId) {
+
+        NodeListResponseObject response = new NodeListResponseObject();
+        response.setRequestId(requestId);
+
         if (internalId == null) {
             log.error(MessageFormat.format("{0}:{1}:No interalId supplied"
                     ,requestId,StatusCode.error_getting_keywords_from_taxonomy.code()));
@@ -227,17 +250,37 @@ public class KeyWordService {
                     StatusCode.error_getting_keywords_from_taxonomy,
                     "No internalId supplied");
         }
-        //TODO: make this method handle errors and set statusCodes
+        
         MedicalNode node = medicalTaxonomyService.getNodeByInternalId(internalId);
-        List<MedicalNode> list = new ArrayList<MedicalNode>();
-        list.add(node);
-        log.debug(MessageFormat.format("{0}:{1}:InternalId provided by the user: {2}. The node name from TaxonomyService: {3}",
-                requestId,
-                StatusCode.ok.code(),
-                internalId,
-                node.getName()));
-        return new NodeListResponseObject(requestId, list);
+
+        if (node != null) {
+
+            if (hasNamespaceReadAccess(node.getInternalId(), id.getProfileId(), requestId)) {
+                List<MedicalNode> list = new ArrayList<MedicalNode>();
+                list.add(node);
+                response.setNodeList(list);
+                response.setStatusCode(StatusCode.ok);
+
+                log.debug(MessageFormat.format("{0}:{1}:InternalId provided by the user: {2}. The node name from TaxonomyService: {3}",
+                    requestId, StatusCode.ok.code(), internalId, node.getName()));
+
+            } else {
+                response.setErrorMessage("The profileId doesn't have read privileges to target namespace");
+                response.setNodeList(new ArrayList<MedicalNode>());
+            }
+
+        } else {
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving node from medicalTaxonomyService",
+                    requestId, StatusCode.error_getting_keywords_from_taxonomy.code()));
+
+            response.setErrorMessage("Error retrieving node from medicalTaxonomyService");
+            response.setNodeList(new ArrayList<MedicalNode>());
+        }
+
+        return response;
     }
+
+  
 
     /**
      * Adds a list of keywords as tagged. Should be called by the GUI to tell
@@ -341,5 +384,104 @@ public class KeyWordService {
                 }
             }
         }
+    }
+
+    
+   /**
+     * Check if a used has read access to the given namespace. This routine
+     * makes use of the namespace cache and updates it where neccessary.
+     *
+     * @param namespaceId The id of the namespace used in the request
+     * @param profileId The id of the profile used in the request
+     * @param requestId The request identifier
+     * @return True if the profile has read access to the namespace
+     */
+    private boolean hasNamespaceReadAccess(String namespaceId, String profileId, String requestId) {
+        String namespace = getNamespaceById(namespaceId, requestId);
+        if (namespace != null) {
+            SearchProfile profile = searchProfiles.get(profileId);
+
+            if (profile != null) {
+
+                if (profile.getWriteableNamespaces().contains(namespace)) {
+                    return true;
+
+                } else {
+                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not have read privileges to namespace '{3}'",
+                        requestId, StatusCode.unknown_error, profileId, namespace));
+                }
+
+            } else {
+                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not match any predefined search profile",
+                        requestId, StatusCode.unknown_error, profileId));
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Check if a used has write access to the given namespace. This routine
+     * makes use of the namespace cache and updates it where neccessary.
+     *
+     * @param namespaceId The id of the namespace used in the request
+     * @param profileId The id of the profile used in the request
+     * @param requestId The request identifier
+     * @return True if the profile has write access to the namespace
+     */
+    private boolean hasNamespaceWriteAccess(String namespaceId, String profileId, String requestId) {
+        String namespace = getNamespaceById(namespaceId, requestId);
+        if (namespace != null) {
+            SearchProfile profile = searchProfiles.get(profileId);
+
+            if (profile != null) {
+
+                if (profile.getWriteableNamespaces().contains(namespace)) {
+                    return true;
+
+                } else {
+                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not have write privileges to namespace '{3}'",
+                        requestId, StatusCode.unknown_error, profileId, namespace));
+                }
+
+            } else {
+                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not match any predefined search profile",
+                        requestId, StatusCode.unknown_error, profileId));
+            }
+        }
+
+        return false;
+    }
+
+    
+    /**
+     * A utility routine to get the namespace name from a namespaceId.
+     * This routine initially checks the namespaceCache. If no match is
+     * found it retrieves the namespace name and updates the namespaceCache.
+     *
+     * @param namespaceId The id of the namespace to lookup. Must be capable
+     * of being converted to an integer.
+     * @param requestId The request identifier
+     * @return The namespace or null if an error occured
+     */
+    private String getNamespaceById(String namespaceId, String requestId) {
+        String namespace;
+        if ( (namespace = namespaceCache.get(namespaceId)) != null ) {
+
+            try {
+                // Query the MedicaTaxonomyService for the namespace and update the cache
+                namespace = medicalTaxonomyService.findNamespaceById( Integer.parseInt(namespaceId) );
+                namespaceCache.put(namespaceId, namespace);
+                return namespace;
+
+            } catch (NumberFormatException ex) {
+                log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId '{2}' cannot be converted to an integer.",
+                        requestId, StatusCode.unknown_error, namespaceId));
+
+            } catch (Exception ex) {
+                log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
+            }
+        }
+        return null;
     }
 }

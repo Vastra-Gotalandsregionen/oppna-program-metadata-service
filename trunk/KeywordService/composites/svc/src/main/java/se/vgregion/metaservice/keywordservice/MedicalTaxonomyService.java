@@ -2,12 +2,8 @@ package se.vgregion.metaservice.keywordservice;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
-
 import com.apelon.dts.client.concept.ConceptChild;
-import com.apelon.dts.client.concept.OntylogConcept;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
@@ -146,4 +142,15 @@ public abstract class MedicalTaxonomyService {
 	public void setSourceIdPropertyKey(String sourceIdPropertyKey){
 		this.sourceIdPropertyKey = sourceIdPropertyKey;
 	}
+
+
+        /**
+         * Locates a namespace name by namespaceId.
+         *
+         * @param namespaceId
+         * @return The name of the namespace
+         * @throws Exception If a communication error occurs to the database, or
+         * the init routine has not been invoked. 
+         */
+        public abstract String findNamespaceById(int namespaceId) throws Exception;
 }
