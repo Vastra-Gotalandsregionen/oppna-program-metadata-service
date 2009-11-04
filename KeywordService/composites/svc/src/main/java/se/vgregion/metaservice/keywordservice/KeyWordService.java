@@ -483,4 +483,9 @@ public class KeyWordService {
         }
         return null;
     }
+
+    public void setSearchProfiles(Map<String, SearchProfile> searchProfiles) {
+        this.searchProfiles = searchProfiles;
+    }
+
 }
