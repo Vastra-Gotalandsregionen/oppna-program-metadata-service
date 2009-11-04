@@ -54,7 +54,7 @@ public class KeyWordService {
     private int blacklistLimit = 20;
 
     /** Caches namespaceId to namespace-name resolutions. */
-    private Map<String, String> namespaceCache;
+    private Map<String, String> namespaceCache = new HashMap<String, String>();
 
     /** Map of searchprofiles indexed by profileId */
     private Map<String, SearchProfile> searchProfiles;
@@ -68,7 +68,6 @@ public class KeyWordService {
      */
     public void setMedicalTaxonomyService(
             MedicalTaxonomyService medicalTaxonomyService) {
-        namespaceCache = new HashMap<String, String>();
         this.medicalTaxonomyService = medicalTaxonomyService;
     }
 
