@@ -38,6 +38,12 @@
 		<property name="namespaceName" value="VGR" />
 		<property name="resultKeywordsLimit" value="100" />
 		<property name="sourceIdPropertyKey" value="ID" />
+                <!-- Set of searchprofiles defined in searchprofiles-config.xml -->
+                <property name="searchProfiles">
+                    <set>
+                        <ref bean="searchProfile.vgr" />
+                    </set>
+                </property>
 	</bean>
 	
 </beans>
