@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:Request.schema.metaservice.vgr.se:v1"
+	xmlns:tns="urn:Request.schema.metaservice.vgr.se:v1"
+	elementFormDefault="qualified" version="1.0">
+    <complexType name="IdentificationType">
+        <sequence>
+            <element name="userId" type="string" minOccurs="1" maxOccurs="1"/>
+            <element name="profileId" type="string" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+    <!-- OPTIONS -->
+
+    <complexType name="OptionsType">
+        <sequence>
+            <element name="includeSourceIds">
+                <complexType>
+                    <sequence>
+                        <element name="entry" minOccurs="0" maxOccurs="unbounded">
+                            <complexType>
+                                <sequence>
+                                    <element name="key" minOccurs="0" type="int"/>
+                                    <element name="value" minOccurs="0" type="tns:IncludeSourceIdsListType"/>
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="wordLimit" type="int"/>
+            <element name="url" type="string" />
+        </sequence>
+    </complexType>
+
+    <complexType name="IncludeSourceIdsListType">
+        <sequence>
+            <element name="includeSourceId" maxOccurs="unbounded"
+				type="string" />
+        </sequence>
+    </complexType>
+</schema>

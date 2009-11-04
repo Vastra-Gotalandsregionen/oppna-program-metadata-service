@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="urn:Node.schema.metaservice.vgr.se:v2"
+	xmlns:tns="urn:Node.schema.metaservice.vgr.se:v2"
+	elementFormDefault="qualified" version="1.0">
+
+	<!-- NODE -->
+    <complexType name="NodeType">
+        <sequence>
+            <element name="name" minOccurs="1" maxOccurs="1"
+				type="string" />
+            <element name="namespaceId" minOccurs="1" maxOccurs="1"
+				type="string" />
+            <element name="internalId" minOccurs="1" maxOccurs="1"
+				type="string" />
+            <element name="sourceId" minOccurs="1" maxOccurs="1"
+				type="string" />
+            <element name="synonyms" minOccurs="0" maxOccurs="1"
+				type="tns:SynonymsListType" />
+            <element name="nodeProperties" minOccurs="0" maxOccurs="1"
+				type="tns:NodePropertyListType" />
+            <element name="parents" minOccurs="0" maxOccurs="1"
+				type="tns:NodeListType" />
+            <element name="userStatus" minOccurs="0" maxOccurs="1"
+				type="tns:UserStatusListType" />
+            <element name="hasChildren" minOccurs="1" maxOccurs="1"
+				type="boolean" />
+        </sequence>
+    </complexType>
+
+    <simpleType name="UserStatusEnum">
+        <restriction base="string">
+            <enumeration value="Bookmarked" />
+            <enumeration value="Tagged" />
+        </restriction>
+    </simpleType>
+
+    <complexType name="UserStatusListType">
+        <sequence>
+            <element name="UserStatus" maxOccurs="unbounded"
+				type="tns:UserStatusEnum" />
+        </sequence>
+    </complexType>
+
+    <complexType name="NodeListType">
+        <sequence>
+            <element name="Node" maxOccurs="unbounded"
+				type="tns:NodeType" />
+        </sequence>
+    </complexType>
+
+    <complexType name="SynonymsListType">
+        <sequence>
+            <element name="Synonym" maxOccurs="unbounded" type="string" />
+        </sequence>
+    </complexType>
+
+    <complexType name="NodePropertyListType">
+        <sequence>
+            <element name="NodeProperty" maxOccurs="unbounded" type="tns:NodePropertyType" />
+        </sequence>
+    </complexType>
+
+    <complexType name="NodePropertyType">
+        <sequence>
+            <element name="name" minOccurs="1" maxOccurs="1"
+				type="string" />
+            <element name="value" minOccurs="1" maxOccurs="1"
+				type="string" />
+        </sequence>
+    </complexType>
+</schema>
