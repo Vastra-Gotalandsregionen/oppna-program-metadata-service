@@ -12,7 +12,7 @@
 
 	<!--  Property file reader -->
 	<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:keywordservice-svc.properties" />
+		<property name="location" value="classpath:vocabularyservice-svc.properties" />
 	</bean>
 
 	<!--  SERVICE DEFINITIONS -->
@@ -36,7 +36,7 @@
 		<property name="username" value="${taxonomyservice.username}" />
 		<property name="password" value="${taxonomyservice.password}" />
 		<property name="namespaceName" value="VGR" />
-		<property name="resultKeywordsLimit" value="10" />
+		<property name="resultKeywordsLimit" value="100" />
 		<property name="sourceIdPropertyKey" value="ID" />
 	</bean>
 	
