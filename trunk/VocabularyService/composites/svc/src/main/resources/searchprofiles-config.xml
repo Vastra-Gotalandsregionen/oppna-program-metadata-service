@@ -20,8 +20,21 @@
                 <value>VGR</value>
             </set>
         </property>
+        <property name="blackList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/Blacklist" />
+            </bean>
+        </property>
+        <property name="whiteList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/Whitelist" />
+            </bean>
+        </property>
+        <property name="reviewList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/Whitelist" />
+            </bean>
+        </property>
     </bean>
-    	
-
 
 </beans>
