@@ -13,11 +13,13 @@
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
+                <value>vgr</value>
             </set>
         </property>
         <property name="writeableNamespaces">
             <set>
                 <value>VGR</value>
+                <value>vgr</value>
             </set>
         </property>
     </bean>

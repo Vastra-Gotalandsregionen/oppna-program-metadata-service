@@ -101,5 +101,10 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public String findNamespaceById(int namespaceId) throws Exception {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 
 }

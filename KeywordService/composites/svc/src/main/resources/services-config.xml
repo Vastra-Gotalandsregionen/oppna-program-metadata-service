@@ -103,11 +103,11 @@
         <property name="medicalTaxonomyService" ref="metaservice.medicalTaxonomyService" />
         <property name="userProfileService" ref = "metaservice.userProfileService"/>
         <property name="blacklistedWordDao" ref="blacklistedWordDao" />
-        <!-- Set of searchprofiles defined in searchprofiles-config.xml -->
+        <!-- List of searchprofiles defined in searchprofiles-config.xml -->
         <property name="searchProfiles">
-            <set>
-                <ref bean="searchProfile.vgr" />
-            </set>
+            <list>
+                <ref bean="searchProfile.vgr"/>
+            </list>
         </property>
     </bean>
 
