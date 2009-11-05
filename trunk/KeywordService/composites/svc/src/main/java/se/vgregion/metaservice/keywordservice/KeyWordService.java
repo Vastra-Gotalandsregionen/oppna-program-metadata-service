@@ -135,11 +135,11 @@ public class KeyWordService {
             if (!nodes.isEmpty()) {
                 MedicalNode firstNode = nodes.get(0);
 
-                if (!hasNamespaceReadAccess(firstNode.getInternalId(), id.getProfileId(), requestId)) {
+                if (!hasNamespaceReadAccess(firstNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
                     /** * Return an NodeListResponseObject with an error code * **/
                     return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy,
-                            "The profileId doesn't have read privileges to target namespace");
+                            "The profile is invalid or does not have read privileges to target namespace");
                 }
             }
 
@@ -253,8 +253,7 @@ public class KeyWordService {
         MedicalNode node = medicalTaxonomyService.getNodeByInternalId(internalId);
 
         if (node != null) {
-
-            if (hasNamespaceReadAccess(node.getInternalId(), id.getProfileId(), requestId)) {
+            if (hasNamespaceReadAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
                 List<MedicalNode> list = new ArrayList<MedicalNode>();
                 list.add(node);
                 response.setNodeList(list);
@@ -264,7 +263,7 @@ public class KeyWordService {
                     requestId, StatusCode.ok.code(), internalId, node.getName()));
 
             } else {
-                response.setErrorMessage("The profileId doesn't have read privileges to target namespace");
+                response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
                 response.setNodeList(new ArrayList<MedicalNode>());
             }
 
@@ -331,35 +330,6 @@ public class KeyWordService {
 
     }
 
-    /**
-     * Sets the blacklistedWordDao
-     * @param bwd the blacklistedWordDao
-     */
-    public void setBlacklistedWordDao(BlacklistedWordDao bwd) {
-        this.bwd = bwd;
-    }
-
-    /**
-     * Sets the minimum limit of responses from the medicalTaxonomyService to
-     * consider the word as blacklisted I.e if an extracted word gets more than
-     * hits in the taxonomy than the limit specifies, the word is considered
-     * ambiguous and is blacklisted. Default limit is 20.
-     *
-     * @param limit  the limit
-     */
-    public void setBlacklistLimit(int limit) {
-        this.blacklistLimit = limit;
-    }
-
-    /**
-     * Sets the user profile to use in order to personalize the response.
-     *
-     * @param userProfileService the userProfileService
-     */
-    public void setUserProfileService(UserProfileService userProfileService) {
-        this.userProfileService = userProfileService;
-    }
-
     private void setUserStatus(String userId, List<MedicalNode> nodes) {
         for (MedicalNode node : nodes) {
             UserKeyword keyword = userProfileService.getKeywordForUser(userId,
@@ -401,24 +371,26 @@ public class KeyWordService {
             SearchProfile profile = searchProfiles.get(profileId);
 
             if (profile != null) {
-
-                if (profile.getWriteableNamespaces().contains(namespace)) {
+                if (profile.getSearchableNamespaces().contains(namespace)) {
                     return true;
 
                 } else {
-                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not have read privileges to namespace '{3}'",
+                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
                         requestId, StatusCode.unknown_error, profileId, namespace));
                 }
-
             } else {
-                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not match any predefined search profile",
+                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
                         requestId, StatusCode.unknown_error, profileId));
             }
+        } else {
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
+                        requestId, StatusCode.unknown_error, namespaceId));
         }
 
         return false;
     }
 
+    
     /**
      * Check if a used has write access to the given namespace. This routine
      * makes use of the namespace cache and updates it where neccessary.
@@ -434,19 +406,20 @@ public class KeyWordService {
             SearchProfile profile = searchProfiles.get(profileId);
 
             if (profile != null) {
-
                 if (profile.getWriteableNamespaces().contains(namespace)) {
                     return true;
 
                 } else {
-                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not have write privileges to namespace '{3}'",
+                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
                         requestId, StatusCode.unknown_error, profileId, namespace));
                 }
-
             } else {
-                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not match any predefined search profile",
+                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
                         requestId, StatusCode.unknown_error, profileId));
             }
+        } else {
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
+                        requestId, StatusCode.unknown_error, namespaceId));
         }
 
         return false;
@@ -464,28 +437,64 @@ public class KeyWordService {
      * @return The namespace or null if an error occured
      */
     private String getNamespaceById(String namespaceId, String requestId) {
-        String namespace;
-        if ( (namespace = namespaceCache.get(namespaceId)) != null ) {
+        String namespace = namespaceCache.get(namespaceId);
 
-            try {
-                // Query the MedicaTaxonomyService for the namespace and update the cache
-                namespace = medicalTaxonomyService.findNamespaceById( Integer.parseInt(namespaceId) );
-                namespaceCache.put(namespaceId, namespace);
-                return namespace;
-
-            } catch (NumberFormatException ex) {
-                log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId '{2}' cannot be converted to an integer.",
-                        requestId, StatusCode.unknown_error, namespaceId));
-
-            } catch (Exception ex) {
-                log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
-            }
+        if (namespace != null) {
+            return namespace;
         }
+        
+        try {
+            // Query the MedicaTaxonomyService for the namespace and update the cache
+            namespace = medicalTaxonomyService.findNamespaceById(Integer.parseInt(namespaceId));
+            namespaceCache.put(namespaceId, namespace);
+            return namespace;
+
+        } catch (NumberFormatException ex) {
+            log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId {2} cannot be converted to an integer.",
+                    requestId, StatusCode.unknown_error, namespaceId));
+        } catch (Exception ex) {
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
+        }
+
         return null;
     }
 
-    public void setSearchProfiles(Map<String, SearchProfile> searchProfiles) {
-        this.searchProfiles = searchProfiles;
+
+    public void setSearchProfiles(List<SearchProfile> searchProfiles) {
+        // Simplify spring configuration by creating list instead of map
+        this.searchProfiles = new HashMap<String, SearchProfile>();
+        for (SearchProfile profile : searchProfiles) {
+            this.searchProfiles.put(profile.getProfileId(), profile);
+        }
     }
 
+
+    /**
+     * Sets the blacklistedWordDao
+     * @param bwd the blacklistedWordDao
+     */
+    public void setBlacklistedWordDao(BlacklistedWordDao bwd) {
+        this.bwd = bwd;
+    }
+
+    /**
+     * Sets the minimum limit of responses from the medicalTaxonomyService to
+     * consider the word as blacklisted I.e if an extracted word gets more than
+     * hits in the taxonomy than the limit specifies, the word is considered
+     * ambiguous and is blacklisted. Default limit is 20.
+     *
+     * @param limit  the limit
+     */
+    public void setBlacklistLimit(int limit) {
+        this.blacklistLimit = limit;
+    }
+
+    /**
+     * Sets the user profile to use in order to personalize the response.
+     *
+     * @param userProfileService the userProfileService
+     */
+    public void setUserProfileService(UserProfileService userProfileService) {
+        this.userProfileService = userProfileService;
+    }
 }
