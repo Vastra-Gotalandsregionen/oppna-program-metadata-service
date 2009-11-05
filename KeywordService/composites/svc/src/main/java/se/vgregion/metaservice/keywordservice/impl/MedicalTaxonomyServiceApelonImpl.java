@@ -38,12 +38,15 @@ import com.apelon.dts.client.concept.ThesaurusConceptQuery;
 import com.apelon.dts.client.namespace.Namespace;
 import com.apelon.dts.client.namespace.NamespaceQuery;
 import com.apelon.dts.client.subset.SubsetQuery;
+import com.apelon.dts.client.term.Term;
+import com.apelon.dts.client.term.TermAttributeSetDescriptor;
 import com.apelon.dts.common.subset.Subset;
 import java.util.Date;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
+import com.apelon.dts.client.term.TermQuery;
 
 /**
  * Implementation of the abstract class MedicalTaxonomyService. This
@@ -60,6 +63,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     SearchQuery searchQuery;
     AssociationQuery assocQuery;
     NavQuery navQuery;
+    TermQuery termQuery;
     SubsetQuery subsetQuery;
     ThesaurusConceptQuery thesaurusConceptQuery;
     BlacklistedWordDao blacklistedWordDao;
@@ -93,6 +97,8 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
             assocQuery = AssociationQuery.createInstance(serverConnection);
             navQuery = NavQuery.createInstance(serverConnection);
+
+            termQuery = TermQuery.createInstance(serverConnection);
 
             subsetQuery = SubsetQuery.createInstance(serverConnection);
 
@@ -242,7 +248,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         }
     }
 
-
     public MedicalNode getNodeByInternalId(String internalId) {
         MedicalNode node = null;
         DTSConcept concept;
@@ -323,6 +328,49 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             log.error("Exception setting properties for keywords in taxonomy service ", ex);
             throw new KeywordsException("Exception setting properties for keywords in taxonomy service" + ex);
         }
+    }
+
+    /**
+     * Update the properties
+     * @param node the node to update
+     * @param owerwriteProperties overwrite properties with the same name
+     * @throws KeywordsException
+     */
+    public void updateNodeSynonyms(MedicalNode node) throws KeywordsException {
+        try {
+
+            DTSConcept concept = getConceptByInternalId(node.getInternalId());
+            List<String> synonyms = node.getSynonyms();
+
+            for (String synonymName : synonyms) {
+                AssociationType aType = getSynonymAssociationType();
+
+                Term term = getExistingTerm(synonymName);
+                if (term != null) {
+                    log.info("Term " + synonymName + " exists, using existing");
+                } else {
+                    log.info("Creating term " + synonymName);
+                    term = termQuery.addTerm(new Term(synonymName, namespace.getId()));
+                    thesaurusConceptQuery.addSynonym(new Synonym(aType,term));
+                }
+            }
+        } catch (DTSException ex) {
+            log.error("Exception setting synonyms for keywords in taxonomy service ", ex);
+            throw new KeywordsException("Exception setting synonyms for keywords in taxonomy service" + ex);
+        }
+    }
+
+    private AssociationType getSynonymAssociationType() throws DTSException {
+        AssociationType type = assocQuery.findAssociationTypeByName("Synonym", namespace.getId());
+        return type;
+    }
+
+    private Term getExistingTerm(String name) throws DTSException {
+        Term[] terms = termQuery.findTermsByName(name, namespace.getId(), TermAttributeSetDescriptor.NO_ATTRIBUTES);
+        if (terms.length > 0){
+            return terms[0];
+        }
+        return null;
     }
 
     public DTSProperty getFirstPropertyByName(DTSConcept concept, String name) {
@@ -554,8 +602,10 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             node.setInternalId(String.valueOf(concept.getId()));
             updateNodeProperties(node, false);
 
-            //TODO: synonyms, children etc
+            //TODO: synonyms
+            //updateNodeSynonyms(node);
 
+            // A new node should not have any initial children!
             return createMedicalNode(concept, node.getSourceId(), false);
         } catch (DTSException ex) {
             throw new KeywordsException("Exception creating new keyword in taxonomy service");
@@ -661,7 +711,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     private String getSourceIdPropertyKey() {
         return this.sourceIdPropertyKey;
     }
-
 
     public String findNamespaceById(int namespaceId) throws Exception {
         if (nameQuery != null) {
