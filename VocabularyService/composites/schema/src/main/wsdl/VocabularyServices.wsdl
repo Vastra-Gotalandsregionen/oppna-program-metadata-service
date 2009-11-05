@@ -14,11 +14,11 @@
 			targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
             <xsd:import schemaLocation="Document_V1.xsd"
 				namespace="urn:Document.schema.metaservice.vgr.se:v1" />
-<xsd:import schemaLocation="Node_V2.xsd"
+            <xsd:import schemaLocation="Node_V2.xsd"
 				namespace="urn:Node.schema.metaservice.vgr.se:v2" />
-<xsd:import schemaLocation="Request_V1.xsd"
+            <xsd:import schemaLocation="Request_V1.xsd"
 				namespace="urn:Request.schema.metaservice.vgr.se:v1" />
-<xsd:import schemaLocation="Response_V1.xsd"
+            <xsd:import schemaLocation="Response_V1.xsd"
 				namespace="urn:Response.schema.metaservice.vgr.se:v1" />
             <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
             <xsd:element name="GetVocabularyRequest">
