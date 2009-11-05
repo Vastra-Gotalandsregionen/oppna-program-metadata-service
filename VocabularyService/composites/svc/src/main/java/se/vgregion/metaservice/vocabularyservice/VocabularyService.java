@@ -71,36 +71,56 @@ public class VocabularyService {
      * @param word the word to lookup
      * @return
      */
-    public LookupResponseObject lookupWord(Identification identification, String requestId, String word, Options options) {
-
+    public LookupResponseObject lookupWord(Identification id, String requestId, String word, Options options) {
         List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, true);
-        LookupResponseObject response = null;
+        LookupResponseObject response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
+
         if (nodes.size() != 0) {
             MedicalNode node = nodes.get(0);
-            for (MedicalNode parent : node.getParents()) {
-                if (parent.getName().equals(blacklistName)) {
-                    response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
-                    continue;
-                }
-                if (parent.getName().equals(whitelistName)) {
-                    response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
-                }
-                if (parent.getName().equals(reviewlistName)) {
-                    node = addNodeProperties(node, identification, options);
-                    try {
-                        medicalTaxonomyService.updateNodeProperties(node,false);
-                        medicalTaxonomyService.setLastChangeNow();
-                        response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
-                    } catch (KeywordsException ex) {
-                        //TODO: new statuscode?
-                        response = new LookupResponseObject(requestId,
-                                ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
-                                "Could not add properties to keyword");
+            
+            // Ensure read privileges to target namespace
+            if (hasNamespaceReadAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
+
+                for (MedicalNode parent : node.getParents()) {
+                    SearchProfile profile = searchProfiles.get(id.getProfileId());
+
+                    if (parent.getName().equals(blacklistName)) {
+                        response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
+                        continue;
+                    }
+                    if (parent.getName().equals(whitelistName)) {
+                        response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
+                    }
+                    if (parent.getName().equals(reviewlistName)) {
+                        
+                        // Ensure write privileges to reviewList
+                        if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
+                            node = addNodeProperties(node, id, options);
+                            
+                            try {
+                                medicalTaxonomyService.updateNodeProperties(node,false);
+                                medicalTaxonomyService.setLastChangeNow();
+                                
+                            } catch (KeywordsException ex) {
+                                response = new LookupResponseObject(requestId,
+                                        ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
+                                        "Could not add properties to keyword");
+                            }    
+                        } else {
+                            response.setErrorMessage("The profile is invalid or does not have read privileges to " + reviewlistName);
+                            response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
+                        }
+                        
                     }
                 }
+
+            } else {
+                response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
+                response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
             }
+
+            
         } else {
-            response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
 
             // create a new node and add to review-list
             MedicalNode reviewNode = medicalTaxonomyService.findNodes(reviewlistName, false).get(0);
@@ -109,9 +129,18 @@ public class VocabularyService {
                 MedicalNode node = new MedicalNode();
                 node.setName(word);
                 node.setNamespaceId("33315");
-                node = addNodeProperties(node, identification, options);
-                medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
-                medicalTaxonomyService.setLastChangeNow();
+                node = addNodeProperties(node, id, options);
+
+                // ensure write privileges to reviewlist
+                if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
+                    medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
+                    medicalTaxonomyService.setLastChangeNow();
+
+                } else {
+                    response.setErrorMessage("The profile is invalid or does not have read privileges to " + reviewlistName);
+                    response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
+                    
+                }
 
             } catch (KeywordsException ex) {
                 //TODO: new statuscode?
@@ -120,6 +149,7 @@ public class VocabularyService {
                         "Could not create the new keyword");
             }
         }
+        
         return response;
     }
 
@@ -170,10 +200,21 @@ public class VocabularyService {
      * if the operation was succesfull
      */
     public ResponseObject addVocabularyNode(Identification id, String requestId, MedicalNode node) {
+        ResponseObject response = new ResponseObject();
+        response.setRequestId(requestId);
 
-        //TODO: implement this method
-        return new ResponseObject(requestId);
+        // Check if the profile has write-access to the namespace of the node
+        if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
 
+            //TODO: implement this method
+            response.setStatusCode(StatusCode.ok);
+            
+        } else {
+            response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
+            response.setStatusCode(StatusCode.error_editing_taxonomy);
+        }
+
+        return response;
     }
 
     /**
@@ -186,21 +227,42 @@ public class VocabularyService {
      * if the operation was succesfull
      */
     public ResponseObject moveVocabularyNode(Identification id, String requestId, String nodeId, String destNodeId) {
-        ResponseObject responseObject = new ResponseObject(requestId);
+        ResponseObject response = new ResponseObject(requestId);
+
         try {
-            medicalTaxonomyService.moveNode(nodeId, destNodeId);
-            medicalTaxonomyService.setLastChangeNow();
+            // Ensure write access to namespace of both nodeId and destNodeId.
+            // This requires us to first fetch the nodes to find the namespace
+            MedicalNode node = medicalTaxonomyService.getNodeByInternalId(nodeId);
+            MedicalNode destNode = medicalTaxonomyService.getNodeByInternalId(destNodeId);
+
+            if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId) &&
+                    hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
+
+                medicalTaxonomyService.moveNode(nodeId, destNodeId);
+                medicalTaxonomyService.setLastChangeNow();
+                response.setStatusCode(StatusCode.ok);
+
+            } else {
+                response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
+                response.setStatusCode(StatusCode.error_editing_taxonomy);
+            }
+
         } catch (KeywordsException ex) {
             log.error(MessageFormat.format("{0}:{1}: Node ({2}) could not be moved to parent {{3}}",
                     requestId, StatusCode.error_editing_taxonomy.code(), nodeId, destNodeId), ex);
-            responseObject.setStatusCode(StatusCode.error_editing_taxonomy);
-            responseObject.setErrorMessage("Error editing taxonomy: Node could not be moved");
+            response.setStatusCode(StatusCode.error_editing_taxonomy);
+            response.setErrorMessage("Error editing taxonomy: Node could not be moved");
         } catch (NodeNotFoundException ex) {
             log.error(MessageFormat.format("{0}:{1}:{2}", requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
-            responseObject.setStatusCode(StatusCode.error_editing_taxonomy);
-            responseObject.setErrorMessage("Error editing taxonomy: Node could not be found");
+            response.setStatusCode(StatusCode.error_editing_taxonomy);
+            response.setErrorMessage("Error editing taxonomy: Node could not be found");
+        } catch (Exception ex) {
+            log.error(MessageFormat.format("{0}:{1}:{2}", requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
+            response.setStatusCode(StatusCode.error_editing_taxonomy);
+            response.setErrorMessage("Error editing taxonomy: Node could not be found");
         }
-        return responseObject;
+
+        return response;
     }
 
     /**
@@ -211,10 +273,23 @@ public class VocabularyService {
      * @return ResponseObject with status information.
      */
     public ResponseObject updateVocabularyNode(Identification id, String requestId, MedicalNode node) {
-        //TODO: implement this method
-        return new ResponseObject(requestId);
+        ResponseObject response = new ResponseObject(requestId);
+
+         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
+
+                //TODO: implement this method
+                response.setStatusCode(StatusCode.ok);
+
+            } else {
+                response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
+                response.setStatusCode(StatusCode.error_editing_taxonomy);
+            }
+
+        
+        return response;
 
     }
+
 
     /**
      * Retrieves the XML representation of an Apelon namespace.
@@ -392,23 +467,25 @@ public class VocabularyService {
             SearchProfile profile = searchProfiles.get(profileId);
 
             if (profile != null) {
-
-                if (profile.getWriteableNamespaces().contains(namespace)) {
+                if (profile.getSearchableNamespaces().contains(namespace)) {
                     return true;
 
                 } else {
-                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not have read privileges to namespace '{3}'",
+                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
                         requestId, StatusCode.unknown_error, profileId, namespace));
                 }
-
             } else {
-                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not match any predefined search profile",
+                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
                         requestId, StatusCode.unknown_error, profileId));
             }
+        } else {
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
+                        requestId, StatusCode.unknown_error, namespaceId));
         }
 
         return false;
     }
+
 
     /**
      * Check if a used has write access to the given namespace. This routine
@@ -425,19 +502,20 @@ public class VocabularyService {
             SearchProfile profile = searchProfiles.get(profileId);
 
             if (profile != null) {
-
                 if (profile.getWriteableNamespaces().contains(namespace)) {
                     return true;
 
                 } else {
-                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not have write privileges to namespace '{3}'",
+                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
                         requestId, StatusCode.unknown_error, profileId, namespace));
                 }
-
             } else {
-                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId '{2}' does not match any predefined search profile",
+                log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
                         requestId, StatusCode.unknown_error, profileId));
             }
+        } else {
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
+                        requestId, StatusCode.unknown_error, namespaceId));
         }
 
         return false;
@@ -455,32 +533,38 @@ public class VocabularyService {
      * @return The namespace or null if an error occured
      */
     private String getNamespaceById(String namespaceId, String requestId) {
-        String namespace;
-        if ( (namespace = namespaceCache.get(namespaceId)) != null ) {
+        String namespace = namespaceCache.get(namespaceId);
 
-            try {
-                // Query the MedicaTaxonomyService for the namespace and update the cache
-                namespace = medicalTaxonomyService.findNamespaceById( Integer.parseInt(namespaceId) );
-                namespaceCache.put(namespaceId, namespace);
-                return namespace;
-
-            } catch (NumberFormatException ex) {
-                log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId '{2}' cannot be converted to an integer.",
-                        requestId, StatusCode.unknown_error, namespaceId));
-
-            } catch (Exception ex) {
-                log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
-            }
+        if (namespace != null) {
+            return namespace;
         }
+
+        try {
+            // Query the MedicaTaxonomyService for the namespace and update the cache
+            namespace = medicalTaxonomyService.findNamespaceById(Integer.parseInt(namespaceId));
+            namespaceCache.put(namespaceId, namespace);
+            return namespace;
+
+        } catch (NumberFormatException ex) {
+            log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId {2} cannot be converted to an integer.",
+                    requestId, StatusCode.unknown_error, namespaceId));
+        } catch (Exception ex) {
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
+        }
+
         return null;
     }
 
 
-    public void setSearchProfiles(Map<String, SearchProfile> searchProfiles) {
-        this.searchProfiles = searchProfiles;
+    public void setSearchProfiles(List<SearchProfile> searchProfiles) {
+        // Simplify spring configuration by creating list instead of map
+        this.searchProfiles = new HashMap<String, SearchProfile>();
+        for (SearchProfile profile : searchProfiles) {
+            this.searchProfiles.put(profile.getProfileId(), profile);
+        }
     }
 
-     public void setMedicalTaxonomyService(MedicalTaxonomyService medicalTaxonomyService) {
+    public void setMedicalTaxonomyService(MedicalTaxonomyService medicalTaxonomyService) {
         this.medicalTaxonomyService = medicalTaxonomyService;
     }
 
