@@ -22,25 +22,28 @@
         </sequence>
     </complexType>
     <complexType name="NodeListResponseObjectType">
-        <complexContent>
-            <extension base="tns:ResponseObjectType">
-                <element name="nodeList" type="node:NodeListType" minOccurs="1" maxOccurs="1"/>
-            </extension>
-        </complexContent>
+        <sequence>
+            <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
+            <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
+            <element name="nodeList" type="node:NodeListType" minOccurs="1" maxOccurs="1"/>
+        </sequence>
     </complexType>
     <complexType name="LookupResponseObjectType">
-        <complexContent>
-            <extension base="tns:ResponseObjectType">
-                <element name="listType" type="tns:ListTypeEnum" minOccurs="1" maxOccurs="1"/>
-            </extension>
-        </complexContent>
+        <sequence>
+            <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
+            <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
+            <element name="listType" type="tns:ListTypeEnum" minOccurs="1" maxOccurs="1"/>
+        </sequence>
     </complexType>
     <complexType name="LastChangeResponseObjectType">
-        <complexContent>
-            <extension base="tns:ResponseObjectType">
-                <element name="lastChange" type="long" minOccurs="1" maxOccurs="1"/>
-            </extension>
-        </complexContent>
+        <sequence>
+            <element name="requestId" type="string" minOccurs="1" maxOccurs="1" />
+            <element name="statusCode" type="tns:StatusCodeEnum" minOccurs="1" maxOccurs="1" />
+            <element name="errorMessage" type="string" minOccurs="0" maxOccurs="1"/>
+            <element name="lastChange" type="long" minOccurs="1" maxOccurs="1"/>
+        </sequence>
     </complexType>
     <simpleType name="ListTypeEnum">
         <restriction base="string">
