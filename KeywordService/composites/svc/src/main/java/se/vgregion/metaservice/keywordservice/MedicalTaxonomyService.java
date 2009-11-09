@@ -5,7 +5,9 @@ import java.util.Map;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import com.apelon.dts.client.concept.ConceptChild;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
+import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 /**
@@ -77,9 +79,9 @@ public abstract class MedicalTaxonomyService {
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
 
-        public abstract MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException;
+        public abstract MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException,NodeAlreadyExistsException,InvalidPropertyTypeException, NodeNotFoundException;
 
-        public abstract void updateNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException;
+        public abstract void updateNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException,InvalidPropertyTypeException;
 
         public abstract long setLastChangeNow() throws KeywordsException;
 
