@@ -47,6 +47,8 @@ import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 import com.apelon.dts.client.term.TermQuery;
+import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
+import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
 
 /**
  * Implementation of the abstract class MedicalTaxonomyService. This
@@ -222,8 +224,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             node = list.get(0);
             node.getProperties().clear();
             node.addProperty("lastChange", now.toString());
-            //update and overwrite!
-            updateNodeProperties(node, true);
+            try {
+                //update and overwrite!
+                updateNodeProperties(node, true);
+            } catch (InvalidPropertyTypeException ex) {
+                log.error("The apelon-setup does not have any lastChange propertyType");
+                throw new KeywordsException("The apelon-setup does not have any lastChange propertyType");
+            }
             return now;
         }
     }
@@ -303,27 +310,34 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * @param owerwriteProperties overwrite properties with the same name
      * @throws KeywordsException
      */
-    public void updateNodeProperties(MedicalNode node, boolean owerwriteProperties) throws KeywordsException {
+    public void updateNodeProperties(MedicalNode node, boolean owerwriteProperties) throws KeywordsException, InvalidPropertyTypeException {
         try {
             DTSConcept concept = getConceptByInternalId(node.getInternalId());
 
             int nrOfProperties = node.getProperties().size();
             DTSProperty[] props = new DTSProperty[nrOfProperties];
 
-            for (NodeProperty prop : node.getProperties()) {
-                DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
-                DTSProperty property = new DTSProperty(pType, prop.getValue());
-
-                if (owerwriteProperties) {
-                    DTSProperty oldProperty = getFirstPropertyByName(concept, prop.getName());
-                    if (oldProperty != null) {
-                        thesaurusConceptQuery.deleteProperty(concept, oldProperty);
+            if (node.getProperties() != null) {
+                for (NodeProperty prop : node.getProperties()) {
+                    DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
+                    if (pType == null) {
+                        throw new InvalidPropertyTypeException("No such property type");
                     }
-                    thesaurusConceptQuery.addProperty(concept, property);
-                } else if (!concept.containsProperty(property)) {
-                    thesaurusConceptQuery.addProperty(concept, property);
+
+                    DTSProperty property = new DTSProperty(pType, prop.getValue());
+
+                    if (owerwriteProperties) {
+                        DTSProperty oldProperty = getFirstPropertyByName(concept, prop.getName());
+                        if (oldProperty != null) {
+                            thesaurusConceptQuery.deleteProperty(concept, oldProperty);
+                        }
+                        thesaurusConceptQuery.addProperty(concept, property);
+                    } else if (!concept.containsProperty(property)) {
+                        thesaurusConceptQuery.addProperty(concept, property);
+                    }
                 }
             }
+
         } catch (DTSException ex) {
             log.error("Exception setting properties for keywords in taxonomy service ", ex);
             throw new KeywordsException("Exception setting properties for keywords in taxonomy service" + ex);
@@ -342,22 +356,26 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             DTSConcept concept = getConceptByInternalId(node.getInternalId());
             List<String> synonyms = node.getSynonyms();
 
-            for (String synonymName : synonyms) {
-                AssociationType aType = getSynonymAssociationType();
-
-                Term term = getExistingTerm(synonymName);
-                if (term != null) {
-                    log.info("Term " + synonymName + " exists, using existing");
-                } else {
-                    log.info("Creating term " + synonymName);
-                    term = termQuery.addTerm(new Term(synonymName, namespace.getId()));
-                    thesaurusConceptQuery.addSynonym(new Synonym(aType,term));
+            if (synonyms != null) {
+                for (String synonymName : synonyms) {
+                    AssociationType aType = getSynonymAssociationType();
+                    Term term = getExistingTerm(synonymName);
+                    if (term != null) {
+                        log.info("Term " + synonymName + " exists, using existing");
+                    } else {
+                        log.info("Creating term " + synonymName);
+                        term = termQuery.addTerm(new Term(synonymName, namespace.getId()));
+                    }
+                    Synonym syn = new Synonym(aType, term);
+                    syn.setConcept(concept);
+                    thesaurusConceptQuery.addSynonym(syn);
                 }
             }
         } catch (DTSException ex) {
             log.error("Exception setting synonyms for keywords in taxonomy service ", ex);
             throw new KeywordsException("Exception setting synonyms for keywords in taxonomy service" + ex);
         }
+
     }
 
     private AssociationType getSynonymAssociationType() throws DTSException {
@@ -367,18 +385,20 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     private Term getExistingTerm(String name) throws DTSException {
         Term[] terms = termQuery.findTermsByName(name, namespace.getId(), TermAttributeSetDescriptor.NO_ATTRIBUTES);
-        if (terms.length > 0){
+        if (terms.length > 0) {
             return terms[0];
         }
         return null;
     }
 
-    public DTSProperty getFirstPropertyByName(DTSConcept concept, String name) {
+    public DTSProperty getFirstPropertyByName(
+            DTSConcept concept, String name) {
         DTSProperty[] props = concept.getFetchedProperties();
         for (DTSProperty prop : props) {
             if (name.equals(prop.getName())) {
                 return prop;
             }
+
         }
         return null;
     }
@@ -389,10 +409,12 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             if (concept == null) {
                 throw new NodeNotFoundException("Node " + nodeId + " not found");
             }
+
             DTSConcept parentConcept = getConceptByInternalId(destinationParentNodeId);
             if (parentConcept == null) {
                 throw new NodeNotFoundException("Destination parent node " + " not found");
             }
+
             AssociationType parentRelation = getParentAssociation();
             ConceptAssociation oldParentAssociation = getParentAssociationForConcept(concept);
             ConceptAssociation newParentAssociation = new ConceptAssociation(parentConcept, parentRelation, concept);
@@ -408,6 +430,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             log.error("Exception moving keywords in taxonomy service", ex);
             throw new KeywordsException("Exception moving keywords in taxonomy service");
         }
+
     }
 
     private ConceptAssociation getParentAssociationForConcept(DTSConcept concept) throws DTSException {
@@ -416,6 +439,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             if (assoc.getAssociationType().equals(getParentAssociation())) {
                 return assoc;
             }
+
         }
         return null;
     }
@@ -437,7 +461,8 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return subsetId;
     }
 
-    public MedicalNode getChildNode(MedicalNode node, String childName) {
+    public MedicalNode getChildNode(
+            MedicalNode node, String childName) {
 
         if (node == null) {
             log.info(MessageFormat.format("Trying to get root node {0}", childName));
@@ -446,6 +471,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 log.warn(MessageFormat.format("No nodes with name {0} found. Returning null", childName));
                 return null;
             }
+
             if (rootNodes.size() == 1) {
                 MedicalNode rootNode = rootNodes.get(0);
                 if (rootNode.getParents().size() == 0) {
@@ -455,6 +481,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                     log.warn("Node is not a root node (has parents). Returning null");
                     return null;
                 }
+
             } else { //If multiple nodes, loop through each node and find one without parents
                 log.debug(MessageFormat.format("Multiple nodes with name {0} found", childName));
                 boolean foundRootNode = false;
@@ -464,7 +491,8 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                         log.info(MessageFormat.format("Root node {0} found", childName));
                         if (!foundRootNode) { //First root node found.
                             foundRootNode = true;
-                            rootNode = candidateNode;
+                            rootNode =
+                                    candidateNode;
                         } else { //Multiple root nodes exist. Abort
                             log.warn(MessageFormat.format("Multiple root nodes with name {0} found. Returning null", childName));
                             return null;
@@ -474,6 +502,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
                 return rootNode;
             }
+
         } else {
             log.info(MessageFormat.format("Trying to get child {0} from node {1}", childName, node.getName()));
             try {
@@ -489,11 +518,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                         log.info(MessageFormat.format("Found child {0}", childNode.getName()));
                         return childNode;
                     }
+
                 }
             } catch (DTSException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+
         }
         return null;
     }
@@ -501,10 +532,12 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     public List<MedicalNode> getChildNodes(MedicalNode node) {
         List<MedicalNode> nodes = new ArrayList<MedicalNode>();
         DTSConcept concept;
+
         try {
             AssociationType fetchAss = assocQuery.findAssociationTypeByName("Parent Of", namespace.getId());
             ca.addConceptAssociationType(fetchAss);
-            concept = searchQuery.findConceptById(Integer.parseInt(node.getInternalId()),
+            concept =
+                    searchQuery.findConceptById(Integer.parseInt(node.getInternalId()),
                     namespace.getId(), ca);
 
             // Add all first-level children to MedicalNode
@@ -514,6 +547,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             for (ConceptAssociation assoc : children) {
                 DTSConcept lazyChild = assoc.getToConcept();
                 DTSConcept child;
+
                 try {
                     child = searchQuery.findConceptById(lazyChild.getId(),
                             namespace.getId(), ca);
@@ -526,6 +560,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                     log.warn(MessageFormat.format("Child not found: {0}",
                             lazyChild.getName()));
                 }
+
             }
 
         } catch (DTSException e) {
@@ -557,8 +592,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             e.printStackTrace();
         }
 
-
-
     }
 
     private boolean shouldBeIncluded(OntylogConcept concept, Map<Integer, String[]> sourceIds) {
@@ -570,6 +603,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                         log.info(MessageFormat.format("This concept should be included: {0}", property.getValue()));
                         return true;
                     }
+
                 }
             }
         }
@@ -586,32 +620,53 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * @return
      * @throws KeywordsException
      */
-    public MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException {
+    @Override
+    public MedicalNode createNewConcept(
+            MedicalNode node, String parentNodeId) throws KeywordsException, NodeAlreadyExistsException, InvalidPropertyTypeException, NodeNotFoundException {
         try {
+
+            // check if any node with this name exists
+            if (thesaurusConceptQuery.findConceptByName(node.getName(), Integer.valueOf(node.getNamespaceId()), ca) != null) {
+                log.error("Node already exists");
+                throw new NodeAlreadyExistsException("Node already exist");
+            }
+
             // Create the concept
             DTSConcept concept = new DTSConcept(node.getName(), Integer.valueOf(node.getNamespaceId()));
 
-            //add the concept
-            concept = thesaurusConceptQuery.addConcept(concept);
+            try {
+                //add the concept
+                concept = thesaurusConceptQuery.addConcept(concept);
 
-            //create parent-realations
-            if (parentNodeId != null) {
-                moveNode(String.valueOf(concept.getId()), parentNodeId);
+                //create parent-realations
+                if (parentNodeId != null) {
+                    moveNode(String.valueOf(concept.getId()), parentNodeId);
+                }
+                //Create the properties
+                node.setInternalId(String.valueOf(concept.getId()));
+                updateNodeProperties(node, false);
+
+                // A new node should not have any initial children, if that changes
+                // implement something to handle that here
+                updateNodeSynonyms(node);
+
+            } catch (KeywordsException ex) {
+                thesaurusConceptQuery.deleteConcept(concept);
+                throw ex;
+            } catch (InvalidPropertyTypeException ex) {
+                thesaurusConceptQuery.deleteConcept(concept);
+                throw ex;
+            } catch (NodeNotFoundException ex){
+                thesaurusConceptQuery.deleteConcept(concept);
+                throw ex;
             }
-            //Create the properties
-            node.setInternalId(String.valueOf(concept.getId()));
-            updateNodeProperties(node, false);
 
-            //TODO: synonyms
-            //updateNodeSynonyms(node);
-
-            // A new node should not have any initial children!
             return createMedicalNode(concept, node.getSourceId(), false);
         } catch (DTSException ex) {
-            throw new KeywordsException("Exception creating new keyword in taxonomy service");
-        } catch (NodeNotFoundException ex) {
+            log.info("Error when creating new node: ", ex);
             throw new KeywordsException(ex);
         }
+
     }
 
     protected MedicalNode createMedicalNode(DTSConcept concept,
@@ -636,8 +691,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             node.addProperty(property.getName(), property.getValue());
         }
 
-
-        // get the children of a node
+// get the children of a node
         ConceptAssociation[] children = concept.getFetchedConceptAssociations();
         if (children.length > 0) {
             node.setHasChildren(true);
@@ -653,6 +707,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             for (ConceptAssociation assoc : parents) {
                 DTSConcept lazyParent = assoc.getFromConcept();
                 DTSConcept parent;
+
                 try {
                     parent = searchQuery.findConceptById(lazyParent.getId(),
                             namespace.getId(), ca);
@@ -667,6 +722,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                     log.warn(MessageFormat.format("Parent not found: {0}",
                             lazyParent.getName()));
                 }
+
             }
         }
         return node;
@@ -690,11 +746,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         if (preferredSynonym == null) {
             // Remove [a-z0-9] portion of node name.
             String[] splitName = concept.getName().split("\\[");
-            nodeName = splitName[0].trim();
+            nodeName =
+                    splitName[0].trim();
         } else {
             nodeName = concept.getFetchedPreferredTerm().getValue();
 
         }
+
         return nodeName;
     }
 
@@ -704,6 +762,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             if (prop.getName().equals(sourceIdKey)) {
                 return prop.getValue();
             }
+
         }
         return "";
     }
@@ -712,11 +771,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return this.sourceIdPropertyKey;
     }
 
-    public String findNamespaceById(int namespaceId) throws Exception {
+    public String findNamespaceById(
+            int namespaceId) throws Exception {
         if (nameQuery != null) {
             return nameQuery.findNamespaceById(namespaceId).getName();
         }
-        // not initialized
+// not initialized
+
         throw new DTSException("Error finding namespaceById. MedicalTaxonomyService.initConnection() has not been invoked.");
     }
 }
