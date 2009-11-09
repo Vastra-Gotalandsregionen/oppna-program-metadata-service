@@ -42,6 +42,7 @@ public abstract class NodeSdoHelper {
      */
     public static NodeType toNodeType(MedicalNode node) {
         NodeType nodeSDO = new NodeType();
+
         nodeSDO.setInternalId(node.getInternalId());
         nodeSDO.setName(node.getName());
         nodeSDO.setNamespaceId(node.getNamespaceId());
@@ -62,12 +63,30 @@ public abstract class NodeSdoHelper {
      */
     public static MedicalNode fromNodeType(NodeType sdoNode) {
         MedicalNode newNode = new MedicalNode();
-        newNode.setInternalId(sdoNode.getInternalId());
-        newNode.setName(sdoNode.getName());
-        newNode.setNamespaceId(sdoNode.getNamespaceId());
-        newNode.setSourceId(sdoNode.getSourceId());
-        newNode.setParents(fromNodeListType(sdoNode.getParents()));
-        newNode.setUserStatus(fromUserStatusListType(sdoNode.getUserStatus()));
+        if (sdoNode.getInternalId() != null) {
+            newNode.setInternalId(sdoNode.getInternalId());
+        }
+        if (sdoNode.getName() != null) {
+            newNode.setName(sdoNode.getName());
+        }
+        if (sdoNode.getNamespaceId() != null) {
+            newNode.setNamespaceId(sdoNode.getNamespaceId());
+        }
+        if (sdoNode.getSourceId() != null) {
+            newNode.setSourceId(sdoNode.getSourceId());
+        }
+        if (sdoNode.getParents() != null) {
+            newNode.setParents(fromNodeListType(sdoNode.getParents()));
+        }
+        if (sdoNode.getUserStatus() != null) {
+            newNode.setUserStatus(fromUserStatusListType(sdoNode.getUserStatus()));
+        }
+        if (sdoNode.getNodeProperties() != null) {
+            newNode.setProperties(fromNodePropertyListType(sdoNode.getNodeProperties()));
+        }
+        if (sdoNode.getSynonyms() != null) {
+            newNode.setSynonyms(fromSynonymsListType(sdoNode.getSynonyms()));
+        }
         newNode.setHasChildren(sdoNode.isHasChildren());
         return newNode;
     }
@@ -117,8 +136,10 @@ public abstract class NodeSdoHelper {
             UserStatusListType list) {
         List<UserStatus> returnType = new ArrayList<UserStatus>();
         for (UserStatusEnum use : list.getUserStatus()) {
-            UserStatus us = UserStatus.valueOf(use.value());
-            returnType.add(us);
+            if (use != null) {
+                UserStatus us = UserStatus.valueOf(use.value());
+                returnType.add(us);
+            }
         }
 
         return returnType;
@@ -181,7 +202,7 @@ public abstract class NodeSdoHelper {
 
     }
 
-     /**
+    /**
      * Builds a NodePropertyType from a NodeProperty 
      * @param nodeProperty
      * @return
