@@ -4,7 +4,7 @@
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:doc="urn:Document.schema.metaservice.vgr.se:v1"
-        xmlns:node="urn:Node.schema.metaservice.vgr.se:v2"
+        xmlns:node="urn:Node.schema.metaservice.vgr.se:v2" 
         xmlns:req="urn:Request.schema.metaservice.vgr.se:v1"
         xmlns:res="urn:Response.schema.metaservice.vgr.se:v1"
 	name="VocabularyServices"
