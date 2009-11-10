@@ -10,8 +10,8 @@ import java.util.Map;
 public class Options {
 
     //Default values?
-    private int wordLimit = 5;
-    private String url;
+    private int wordLimit = 10;
+    private String url = "";
     private Map<Integer,String[]> includeSourceIds;
 
     /**

@@ -3,129 +3,139 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx-2.5.xsd">
 
+    <!-- Import searchprofiles -->
+    <import resource="classpath*:searchprofiles-config.xml" />
+
 <!-- TEXT PROCESSORS -->
     <bean id="normalizerProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorNormalizerImpl" />
 
-	<bean id="stopwordProcessor"
+    <bean id="stopwordProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorStopWordImpl">
-		<property name="initDependencies">
-			<map>
-				<entry key="stopwordlist" value="/stop_words.txt" />
-			</map>
-		</property>
-	</bean>
+        <property name="initDependencies">
+            <map>
+                <entry key="stopwordlist" value="/stop_words.txt" />
+            </map>
+        </property>
+    </bean>
 
-	<bean id="stemmingProcessor"
+    <bean id="stemmingProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.stemming.TextProcessorStemmingSwedishImpl" />
 
 
-	<bean id="wordCounterProcessor"
+    <bean id="wordCounterProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorWordFrequencyCounterImpl">
-		<property name="initDependencies">
-			<map>
-				<entry key="docfreqlist" value="/document_frequency.txt" />
-			</map>
-		</property>
-	</bean>
+        <property name="initDependencies">
+            <map>
+                <entry key="docfreqlist" value="/document_frequency.txt" />
+            </map>
+        </property>
+    </bean>
 
-	<bean id="shortWordProcessor"
+    <bean id="shortWordProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveShortWordsImpl">
-		<property name="initDependencies">
-			<map>
-				<entry key="minwordlength" value="3" />
-			</map>
-		</property>
-	</bean>
+        <property name="initDependencies">
+            <map>
+                <entry key="minwordlength" value="3" />
+            </map>
+        </property>
+    </bean>
 
-	<bean id="blacklistedWordsProcessor"
+    <bean id="blacklistedWordsProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveBlacklistedWords">
-		<property name="blacklistedWordDao" ref="blacklistedWordDao" />
-	</bean>
+        <property name="blacklistedWordDao" ref="blacklistedWordDao" />
+    </bean>
 
-	<bean id="wordRemoverProcessor"
+    <bean id="wordRemoverProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveLowFrequencyWordsImpl">
 		<!--
 			<property name="initDependencies"> <map> <entry key="stopwordlist"
 			value="/Users/tobias/Documents/Projekt/VGR/stop_words.txt" /> </map>
 			</property>
 		-->
-	</bean>
+    </bean>
 
-	<bean id="wordsSorterProcessor"
+    <bean id="wordsSorterProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorSortWordsByFrequencyImpl" />
 
     <!-- FORMAT PROCESSORS -->
     <bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
-	<bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
+    <bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
+    <!--
     <bean id="formatProcessorPdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorPdf" />
     <bean id="formatProcessorOdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorOdf" />
     <bean id="formatProcessorDoc" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorDoc" />
-
+    -->
 
 	<!--  SERVICE DEFINITIONS -->
 
 
-	<bean id="metaservice.analysisService"
+    <bean id="metaservice.analysisService"
 		class="se.vgregion.metaservice.keywordservice.impl.AnalysisServiceImpl">
-		<property name="textProcessors">
-			<list>
-				<ref bean="normalizerProcessor" />
-				<ref bean="stopwordProcessor" />
-				<ref bean="stemmingProcessor" />
-				<ref bean="shortWordProcessor" />
-				<ref bean="wordCounterProcessor" />
-				<ref bean="blacklistedWordsProcessor" />
-				<ref bean="wordRemoverProcessor" />
-			</list>
-		</property>
-		<property name="minWordLength" value="0" />
-	</bean>
+        <property name="textProcessors">
+            <list>
+                <ref bean="normalizerProcessor" />
+                <ref bean="stopwordProcessor" />
+                <ref bean="stemmingProcessor" />
+                <ref bean="shortWordProcessor" />
+                <ref bean="wordCounterProcessor" />
+                <ref bean="blacklistedWordsProcessor" />
+                <ref bean="wordRemoverProcessor" />
+            </list>
+        </property>
+        <property name="minWordLength" value="0" />
+    </bean>
 
 	
 
     <!--  Mock connection -->
 	 
-     <bean id="metaservice.medicalTaxonomyService"
+    <bean id="metaservice.medicalTaxonomyService"
 		class="se.vgregion.metaservice.keywordservice.mock.MedicalTaxonomyServiceMock"
 		init-method="initConnection" />
  	 
-	<bean id="metaservice.keywordService"
+    <bean id="metaservice.keywordService"
 		class="se.vgregion.metaservice.keywordservice.KeyWordService">
-		<property name="analysisService"
+        <property name="analysisService"
 			ref="metaservice.analysisService">
-		</property>
-		<property name="medicalTaxonomyService"
+        </property>
+        <property name="medicalTaxonomyService"
 			ref="metaservice.medicalTaxonomyService" />
-		<property name="userProfileService"
+        <property name="userProfileService"
 			ref="metaservice.userProfileService" />
-		<property name="blacklistedWordDao" ref="blacklistedWordDao" />
-	</bean>
+        <property name="blacklistedWordDao" ref="blacklistedWordDao" />
+                        <!-- List of searchprofiles defined in searchprofiles-config.xml -->
+        <property name="searchProfiles">
+            <list>
+                <ref bean="searchProfile.vgr"/>
+            </list>
+        </property>
+        </bean>
 
-	<bean id="metaservice.userProfileService"
+        <bean id="metaservice.userProfileService"
 		class="se.vgregion.metaservice.keywordservice.impl.UserProfileServiceImpl">
-		<property name="userKeywordDao" ref="userKeywordDao" />
-	</bean>
+            <property name="userKeywordDao" ref="userKeywordDao" />
+        </bean>
 
-	<bean id="myFormatProcessorFactoryManager"
+        <bean id="myFormatProcessorFactoryManager"
 		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"
+            <property name="staticMethod"
 			value="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorFactory.setFormatProcessors" />
-		<property name="arguments">
-			<map>
-				<entry key="text" value-ref="formatProcessorText" />
-				<entry key="html" value-ref="formatProcessorHtml" />
-			</map>
-		</property>
-	</bean>
+            <property name="arguments">
+                <map>
+                    <entry key="text" value-ref="formatProcessorText" />
+                    <entry key="html" value-ref="formatProcessorHtml" />
+                </map>
+            </property>
+        </bean>
 
 
 	<!--  Property file reader -->
-	<bean id="propertyPlaceholder"
+        <bean id="propertyPlaceholder"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location"
+            <property name="location"
 			value="classpath:keywordservice-svc.properties" />
-	</bean>
+        </bean>
 
 	<!-- DATASOURCE -->
 
@@ -144,15 +154,15 @@
 
 	<!-- DERBY -->
 
-	<bean id="dataSource"
+        <bean id="dataSource"
 		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName"
-			value="org.apache.derby.jdbc.ClientDriver" />
-		<property name="url"
-			value="jdbc:derby://localhost:1527/metaservice;create=true" />
-		<property name="username" value="metaservice" />
-		<property name="password" value="metaservice" />
-	</bean>
+            <property name="driverClassName"
+			value="org.apache.derby.jdbc.EmbeddedDriver" />
+            <property name="url"
+			value="jdbc:derby:target/metaservice;create=true" />
+            <property name="username" value="metaservice" />
+            <property name="password" value="metaservice" />
+        </bean>
 
 	<!-- ORACLE -->
 	<!-- <bean id="dataSource"
@@ -178,36 +188,36 @@
 
 	<!-- DAO:S -->
 
-	<bean id="userKeywordDao"
+        <bean id="userKeywordDao"
 		class="se.vgregion.metaservice.keywordservice.dao.UserKeywordJpaDao">
-	</bean>
+        </bean>
 
-	<bean id="blacklistedWordDao"
+        <bean id="blacklistedWordDao"
 		class="se.vgregion.metaservice.keywordservice.dao.BlacklistedWordJpaDao">
-	</bean>
+        </bean>
 
 	<!-- Managers -->
-	<bean id="entityManagerFactory"
+        <bean id="entityManagerFactory"
 		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-		<property name="dataSource" ref="dataSource" />
-		<property name="loadTimeWeaver">
-			<bean
+            <property name="dataSource" ref="dataSource" />
+            <property name="loadTimeWeaver">
+                <bean
 				class="org.springframework.instrument.classloading.SimpleLoadTimeWeaver">
-			</bean>
-		</property>
-		<property name="jpaVendorAdapter">
-			<bean
+                </bean>
+            </property>
+            <property name="jpaVendorAdapter">
+                <bean
 				class="org.springframework.orm.jpa.vendor.OpenJpaVendorAdapter">
-				<property name="showSql" value="false" />
-				<property name="generateDdl" value="true" />
-			</bean>
-		</property>
+                    <property name="showSql" value="true" />
+                    <property name="generateDdl" value="true" />
+                </bean>
+            </property>
 		<!-- <property name="jpaProperties">
 			<props>
 			<prop key="openjpa.Log"></prop>
 			</props>
 			</property> -->
-	</bean>
+        </bean>
 
 	<!-- 
 		<bean id="entityManagerFactory"
@@ -228,17 +238,17 @@
 		</bean>
 	-->
 	<!-- bean post-processor for JPA annotations -->
-	<bean
+        <bean
 		class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
 	<!-- <bean class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor"/> -->
 
 
-	<bean id="transactionManager"
+        <bean id="transactionManager"
 		class="org.springframework.orm.jpa.JpaTransactionManager">
-		<property name="entityManagerFactory"
+            <property name="entityManagerFactory"
 			ref="entityManagerFactory" />
-		<property name="dataSource" ref="dataSource" />
-	</bean>
+            <property name="dataSource" ref="dataSource" />
+        </bean>
 
 
-</beans>
+    </beans>

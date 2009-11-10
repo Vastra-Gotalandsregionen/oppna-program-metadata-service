@@ -9,6 +9,7 @@ import se.vgregion.metaservice.keywordservice.dao.BlacklistedWordDao;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
 import se.vgregion.metaservice.keywordservice.domain.document.TextDocument;
 import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
 import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatException;
@@ -34,10 +35,11 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
         TextDocument doc = new TextDocument();
         doc.setTitle(DOCUMENT_TITLE);
         doc.setTextContent(TEXT_TO_PROCESS);
-
-        NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "456"),REQUEST_ID,doc,
+        System.out.println("getting keywords");
+        NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "vgr"),REQUEST_ID,doc,
 				null);
-
+        System.out.println(response.getErrorMessage());
+        assertEquals(StatusCode.ok, response.getStatusCode());
         List<MedicalNode> keywords = response.getNodeList();
 		assertNotNull(keywords);
 		assertTrue(keywords.size() > 0);
@@ -66,10 +68,9 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
         TextDocument doc = new TextDocument();
         doc.setTitle(null);
         doc.setTextContent(null);
-        NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "456"), REQUEST_ID, doc,null);
+        NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "vgr"), REQUEST_ID, doc,null);
 		List<MedicalNode> keywords = response.getNodeList();
-		assertNotNull(keywords);
-		assertEquals(0, keywords.size());
+		assertNull(keywords);
 	}
 	
 	public void testGetKeywordsWithNoHits() throws UnsupportedFormatException{
@@ -77,7 +78,7 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
         TextDocument doc = new TextDocument();
         doc.setTitle(null);
         doc.setTextContent(content);
-		NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "456"), REQUEST_ID, doc,null);
+		NodeListResponseObject response = keywordService.getKeywords(new Identification("123", "vgr"), REQUEST_ID,doc,null);
 		List<MedicalNode> keywords = response.getNodeList();
 		assertEquals(0, keywords.size());
 		BlacklistedWordDao bwd = (BlacklistedWordDao) applicationContext.getBean("blacklistedWordDao");
@@ -89,10 +90,12 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testFindNodeByInternalId() throws UnsupportedFormatException {
-        NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "456"), REQUEST_ID,"2149");
-		MedicalNode node = response.getNodeList().get(0);
-        assertEquals("2149",node.getInternalId());
-		assertNotNull(node);
+            NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "vgr"), REQUEST_ID,"2149");
+            System.out.println(response.getErrorMessage());
+            assertEquals(StatusCode.ok,response.getStatusCode());
+            MedicalNode node = response.getNodeList().get(0);
+            assertEquals("2149",node.getInternalId());
+            assertNotNull(node);
 	}
 	
 }
