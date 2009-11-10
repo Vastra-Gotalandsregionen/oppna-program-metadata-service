@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.apelon.dts.client.concept.ConceptChild;
 
+import java.util.Date;
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
@@ -20,16 +21,19 @@ import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
  *
  */
 public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
-
-	public String[] noHitWords = new String[] {"abab", "bullulu", "mumumu"};
+        public String[] noHitWords = new String[] {"abab", "bullulu", "mumumu"};
 	
 	public String[] sourceIds = new String[] {"A", "C"}; 
 	
 	public Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer,String[]> sourceIds) {
-		Map<String, List<MedicalNode>> keywords = new HashMap<String, List<MedicalNode>>();
+		System.out.println("called mock findKeywords");
+                Map<String, List<MedicalNode>> keywords = new HashMap<String, List<MedicalNode>>();
 		MedicalNode node = new MedicalNode("kalle","1234");
-        node.setSourceId("A");
+                node.setSourceId("A");
+                node.setNamespaceId("123");
+                System.out.println(words.length);
 		for(String word : words) {
+                        System.out.println(word);
 			List<MedicalNode> nodes = new ArrayList<MedicalNode>(3);
 			if(!Arrays.asList(noHitWords).contains(word)) {
 				nodes.add(node);
@@ -48,6 +52,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 	public MedicalNode getNodeByInternalId(String internalId) {
 		MedicalNode node = new MedicalNode();
 		node.setInternalId(internalId);
+                node.setNamespaceId("123");
 		return node;
 	}
 	
@@ -93,17 +98,17 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 
     @Override
     public long setLastChangeNow() throws KeywordsException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Date().getTime();
     }
 
     @Override
     public long getLastChange(Identification id) throws KeywordsException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Date().getTime();
     }
 
     @Override
     public String findNamespaceById(int namespaceId) throws Exception {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return "vgr";
     }
 
 

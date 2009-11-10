@@ -2,6 +2,7 @@
 package se.vgregion.metaservice.keywordservice.domain.document;
 
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ public class DocumentImpl implements Document {
     String encoding = null;
     String textContent = null;
     String title = null;
-    Map<String,Object> properties = null;
+    Map<String,Object> properties = new HashMap<String, Object>();
 
     public String getEncoding() {
         return encoding;
@@ -50,6 +51,9 @@ public class DocumentImpl implements Document {
     }
 
     public String getTitle() {
+        if(title == null) {
+            title = "";
+        }
         return title;
     }
 

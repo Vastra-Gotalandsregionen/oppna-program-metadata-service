@@ -1,7 +1,6 @@
 package se.vgregion.metaservice.keywordservice.domain.document;
 
 public class AnalysisDocument extends TextDocument implements Document{
-	
 
     public String getPropertyString(String key) {
         return document.getPropertyString(key);

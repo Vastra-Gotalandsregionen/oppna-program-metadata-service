@@ -103,6 +103,8 @@ public class KeyWordService {
      * was successful.
      */
     public NodeListResponseObject getKeywords(Identification id, String requestId, Document document, Options options) {
+        if(options == null)
+            options = new Options();
 
         try {
             /** * Determine format ** */
@@ -116,7 +118,7 @@ public class KeyWordService {
                 }
                 // if the document is a text
             } else if (document instanceof TextDocument) {
-                format = "html_text";
+                format = "html";
             }
             /** * Strip formatting ** */
             log.debug(MessageFormat.format("{0}:Sending title and content to formatProcessor",requestId));
@@ -263,6 +265,7 @@ public class KeyWordService {
                     requestId, StatusCode.ok.code(), internalId, node.getName()));
 
             } else {
+                response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
                 response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
                 response.setNodeList(new ArrayList<MedicalNode>());
             }
@@ -270,7 +273,7 @@ public class KeyWordService {
         } else {
             log.warn(MessageFormat.format("{0}:{1}:Error retrieving node from medicalTaxonomyService",
                     requestId, StatusCode.error_getting_keywords_from_taxonomy.code()));
-
+            response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
             response.setErrorMessage("Error retrieving node from medicalTaxonomyService");
             response.setNodeList(new ArrayList<MedicalNode>());
         }
@@ -366,12 +369,14 @@ public class KeyWordService {
      * @return True if the profile has read access to the namespace
      */
     private boolean hasNamespaceReadAccess(String namespaceId, String profileId, String requestId) {
+        log.debug("Checking if profile "+profileId+" has access to namespace "+namespaceId);
         String namespace = getNamespaceById(namespaceId, requestId);
         if (namespace != null) {
             SearchProfile profile = searchProfiles.get(profileId);
 
             if (profile != null) {
                 if (profile.getSearchableNamespaces().contains(namespace)) {
+                    System.out.println("namespace ok");
                     return true;
 
                 } else {
@@ -440,6 +445,7 @@ public class KeyWordService {
         String namespace = namespaceCache.get(namespaceId);
 
         if (namespace != null) {
+            log.debug("Namespace with id "+namespaceId+" has name "+namespace);
             return namespace;
         }
         

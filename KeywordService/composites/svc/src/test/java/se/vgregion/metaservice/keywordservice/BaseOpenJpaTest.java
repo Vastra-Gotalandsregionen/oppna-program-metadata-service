@@ -8,7 +8,14 @@ public abstract class BaseOpenJpaTest extends AbstractJpaTests {
 	protected String[] getConfigLocations() {
 		// TODO Auto-generated method stub
 		// return super.getConfigLocations();
-		return new String[] { "services-test-config.xml", "text-processors.xml",
-				"format-processors.xml" };
+		return new String[] { "services-test-config.xml"};
 	}
+
+    @Override
+    protected boolean shouldUseShadowLoader() {
+        return false;
+    }
+
+
+
 }

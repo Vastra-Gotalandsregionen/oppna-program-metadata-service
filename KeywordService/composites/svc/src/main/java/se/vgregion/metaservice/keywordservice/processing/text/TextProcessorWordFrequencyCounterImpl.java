@@ -39,7 +39,6 @@ public class TextProcessorWordFrequencyCounterImpl extends TextProcessor {
 		countFrequencies(tokenizer, wordFreq, titleWeight);
 
 		int n = docfreqs.get("NUMBER_OF_FILES") + 1;
-		System.out.println("HERE" + n);
 		docfreqs.put("NUMBER_OF_FILES", n);
 		
 		calculateTfidf(wordFreq, tfidfTable, docfreqs, n);
