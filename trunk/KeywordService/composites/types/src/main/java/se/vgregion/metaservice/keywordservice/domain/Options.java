@@ -20,7 +20,7 @@ public class Options {
      */
     public Options(){
         Map<Integer, String[]> defaultSourceIds = new HashMap<Integer,String[]>();
-        defaultSourceIds.put(123, new String[]{"A","C"}); //TODO: Correct sweMesh id
+        defaultSourceIds.put(32769, new String[]{"A","B","C"}); //TODO: Correct sweMesh id
         setIncludeSourceIds(defaultSourceIds);
     }
 

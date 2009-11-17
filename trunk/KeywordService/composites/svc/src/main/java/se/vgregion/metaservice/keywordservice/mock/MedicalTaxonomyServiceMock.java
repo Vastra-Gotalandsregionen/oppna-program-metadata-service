@@ -25,15 +25,12 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 	
 	public String[] sourceIds = new String[] {"A", "C"}; 
 	
-	public Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer,String[]> sourceIds) {
-		System.out.println("called mock findKeywords");
+	public Map<String, List<MedicalNode>> findKeywords(List<String> namespaceIds, String[] words, Map<Integer,String[]> sourceIds) {
                 Map<String, List<MedicalNode>> keywords = new HashMap<String, List<MedicalNode>>();
 		MedicalNode node = new MedicalNode("kalle","1234");
                 node.setSourceId("A");
                 node.setNamespaceId("123");
-                System.out.println(words.length);
 		for(String word : words) {
-                        System.out.println(word);
 			List<MedicalNode> nodes = new ArrayList<MedicalNode>(3);
 			if(!Arrays.asList(noHitWords).contains(word)) {
 				nodes.add(node);
@@ -56,7 +53,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 		return node;
 	}
 	
-	public List<MedicalNode> findNodes(String name, boolean matchSynonyms) {
+	public List<MedicalNode> findNodes(String name, String namespaceId, boolean matchSynonyms) {
 		return new ArrayList<MedicalNode>();
 	}
 	
@@ -65,7 +62,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 	}
 
 	@Override
-	public MedicalNode getChildNode(MedicalNode node, String childName) {
+	public MedicalNode getChildNode(String namespaceId, MedicalNode node, String childName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -77,7 +74,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 	}
 
     @Override
-    public List<MedicalNode> findNodesWithParents(String nodeName, boolean matchSynonyms) {
+    public List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -97,18 +94,23 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
     }
 
     @Override
-    public long setLastChangeNow() throws KeywordsException {
+    public long setLastChangeNow(String namespaceId) throws KeywordsException {
         return new Date().getTime();
     }
 
     @Override
-    public long getLastChange(Identification id) throws KeywordsException {
+    public long getLastChange(String namespaceId) throws KeywordsException {
         return new Date().getTime();
     }
 
     @Override
     public String findNamespaceById(int namespaceId) throws Exception {
-        return "vgr";
+        return "VGR";
+    }
+
+    @Override
+    public String findNamespaceIdByName(String namespaceName) throws Exception {
+        return "123";
     }
 
 

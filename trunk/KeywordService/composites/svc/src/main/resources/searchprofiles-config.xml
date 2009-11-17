@@ -3,17 +3,17 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
- 
+
     <!-- ========================================================================== -->
     <!-- == Defines the search profiles used in services-config.xml              == -->
     <!-- ========================================================================== -->
  
     <bean id="searchProfile.vgr" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
-        <property name="profileId" value="vgr" />
+        <property name="profileId" value="${vgr.profileid}" />
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
-                <value>vgr</value>
+                <value>SweMESH</value>
             </set>
         </property>
         <property name="writeableNamespaces">

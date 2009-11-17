@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:jee="http://www.springframework.org/schema/jee"
+        xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:tx="http://www.springframework.org/schema/tx"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 	http://www.springframework.org/schema/tx
 	http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-	http://www.springframework.org/schema/jee
-	http://www.springframework.org/schema/jee/spring-jee-2.5.xsd">
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
+
+
+    <!--  Property file reader -->
+	<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+                    <list>
+                        <value>classpath:keywordservice-svc.properties</value>
+                        <value>classpath:searchprofiles.properties</value>
+                    </list>
+                </property>
+	</bean>
+    <!-- Properties bundles -->
+    <!--<context:property-placeholder location="classpath:searchprofiles.properties, classpath:keywordservice-svc.properties" /> -->
 
     <!-- Import searchprofiles -->
     <import resource="classpath*:searchprofiles-config.xml" />
@@ -62,11 +75,10 @@
     <!-- FORMAT PROCESSORS -->
     <bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
     <bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
-    <!--
     <bean id="formatProcessorPdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorPdf" />
     <bean id="formatProcessorOdf" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorOdf" />
     <bean id="formatProcessorDoc" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorDoc" />
-    -->
+    
 
 	<!--  SERVICE DEFINITIONS -->
 
@@ -128,12 +140,6 @@
                 <entry key="odf" value-ref="formatProcessorOdf" />
             </map>
         </property>
-    </bean>
-
-
-	<!--  Property file reader -->
-    <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="classpath:keywordservice-svc.properties" />
     </bean>
 
 	<!-- DATASOURCE -->

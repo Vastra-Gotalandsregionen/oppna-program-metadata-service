@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx-2.5.xsd">
+        xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/tx  http://www.springframework.org/schema/tx-2.5.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
+
+    <!-- Properties bundles -->
+    <context:property-placeholder location="classpath*:searchprofiles.properties, classpath*:keywordservice-svc.properties" />
     <!-- Import searchprofiles -->
     <import resource="classpath*:searchprofiles-config.xml" />
+
 
 <!-- TEXT PROCESSORS -->
     <bean id="normalizerProcessor"
@@ -129,13 +134,6 @@
             </property>
         </bean>
 
-
-	<!--  Property file reader -->
-        <bean id="propertyPlaceholder"
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-            <property name="location"
-			value="classpath:keywordservice-svc.properties" />
-        </bean>
 
 	<!-- DATASOURCE -->
 
