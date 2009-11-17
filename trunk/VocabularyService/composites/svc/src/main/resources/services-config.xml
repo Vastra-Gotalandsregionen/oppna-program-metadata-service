@@ -15,7 +15,12 @@
 
 	<!--  Property file reader -->
 	<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:vocabularyservice-svc.properties" />
+		<property name="locations">
+                    <list>
+                        <value>classpath:vocabularyservice-svc.properties</value>
+                        <value>classpath:searchprofiles.properties</value>
+                    </list>
+                </property>
 	</bean>
 
 	<!--  SERVICE DEFINITIONS -->

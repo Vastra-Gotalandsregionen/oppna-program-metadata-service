@@ -59,6 +59,7 @@
                     <xsd:sequence>
                         <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
+                        <xsd:element name="namespace" type="xsd:string" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>

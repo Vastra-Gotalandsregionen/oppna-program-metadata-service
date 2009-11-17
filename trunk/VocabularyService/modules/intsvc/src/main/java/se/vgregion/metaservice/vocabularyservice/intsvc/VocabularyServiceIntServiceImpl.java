@@ -36,7 +36,7 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
     public LastChangeResponseObjectType getLastChange(LastChangeRequest parameters) {
 
         LastChangeResponseObject lastChangeResponseObject = vocabularyService.getLastChange(IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
-                parameters.getRequestId());
+                parameters.getRequestId(),parameters.getNamespace());
         return ResponseObjectSdoHelper.toLastChangeRepsonseObjectType(lastChangeResponseObject);
     }
 

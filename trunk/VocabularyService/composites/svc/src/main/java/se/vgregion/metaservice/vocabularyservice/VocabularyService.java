@@ -23,6 +23,7 @@ import se.vgregion.metaservice.keywordservice.domain.LastChangeResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.NodePath;
 import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
@@ -49,16 +50,19 @@ public class VocabularyService {
     private String userIdPropertyName = "userId";
     private String urlPropertyName = "url";
     private Set<String> allowedNamespaces = null;
-    /** Caches namespaceId to namespace-name resolutions. */
+    /** Caches namespaceName to namespaceId-name resolutions. */
     private Map<String, String> namespaceCache = new HashMap<String, String>();
     /** Map of searchprofiles indexed by profileId */
     private Map<String, SearchProfile> searchProfiles;
 
-    public LastChangeResponseObject getLastChange(Identification identification, String requestId) {
-
+    public LastChangeResponseObject getLastChange(Identification identification, String requestId, String namespaceName) {
+        String namespaceId = getNamespaceIdByName(namespaceName, requestId);
+        if(namespaceId == null) {
+            return new LastChangeResponseObject(requestId,StatusCode.error_getting_keywords_from_taxonomy, "Invalid namesace name");
+        }
         Long lastChange;
         try {
-            lastChange = medicalTaxonomyService.getLastChange(identification);
+            lastChange = medicalTaxonomyService.getLastChange(namespaceId);
         } catch (KeywordsException ex) {
             //TODO: another error message??
             return new LastChangeResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "No lastChange property found");
@@ -74,26 +78,32 @@ public class VocabularyService {
      * @return
      */
     public LookupResponseObject lookupWord(Identification id, String requestId, String word, Options options) {
-        List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, true);
+        SearchProfile profile = searchProfiles.get(id.getProfileId());
+        if(profile == null) {
+            return new LookupResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Specified profile does not exist");
+        }
+        String namespace = profile.getWhiteList().getNamespace(); //TODO: No support for having different namespaces. Only looks in the whitelist-namespaceId
+        String namespaceId = getNamespaceIdByName(namespace, requestId);
+        List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, true);
         LookupResponseObject response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
 
         if (nodes.size() != 0) {
             MedicalNode node = nodes.get(0);
 
-            // Ensure read privileges to target namespace
+            // Ensure read privileges to target namespaceId
             if (hasNamespaceReadAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
 
                 for (MedicalNode parent : node.getParents()) {
-                    SearchProfile profile = searchProfiles.get(id.getProfileId());
-
-                    if (parent.getName().equals(blacklistName)) {
+                    
+                    
+                    if (parent.getName().equals(profile.getBlackList().getName())) {
                         response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
                         continue;
                     }
-                    if (parent.getName().equals(whitelistName)) {
+                    if (parent.getName().equals(profile.getWhiteList().getName())) {
                         response = new LookupResponseObject(requestId, LookupResponseObject.ListType.WHITELIST);
                     }
-                    if (parent.getName().equals(reviewlistName)) {
+                    if (parent.getName().equals(profile.getReviewList().getName())) {
 
                         // Ensure write privileges to reviewList
                         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
@@ -101,7 +111,7 @@ public class VocabularyService {
 
                             try {
                                 medicalTaxonomyService.updateNodeProperties(node, false);
-                                medicalTaxonomyService.setLastChangeNow();
+                                medicalTaxonomyService.setLastChangeNow(node.getNamespaceId());
 
                             } catch (InvalidPropertyTypeException ex) {
                                 response = new LookupResponseObject(requestId,
@@ -130,7 +140,7 @@ public class VocabularyService {
         } else {
 
             // create a new node and add to review-list
-            MedicalNode reviewNode = medicalTaxonomyService.findNodes(reviewlistName, false).get(0);
+            MedicalNode reviewNode = medicalTaxonomyService.findNodes(profile.getReviewList().getName(), namespaceId, false).get(0);
 
             try {
                 MedicalNode node = new MedicalNode();
@@ -141,7 +151,7 @@ public class VocabularyService {
                 // ensure write privileges to reviewlist
                 if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
                     medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
-                    medicalTaxonomyService.setLastChangeNow();
+                    medicalTaxonomyService.setLastChangeNow(node.getNamespaceId());
 
                 } else {
                     response.setErrorMessage("The profile is invalid or does not have read privileges to " + reviewlistName);
@@ -188,14 +198,15 @@ public class VocabularyService {
     public NodeListResponseObject getVocabulary(String requestId, String path) {
 
         // TODO: handle errors, catch exceptions and set errorCodes
-
+        NodePath nodePath = new NodePath();
+        nodePath.setPath(path);
         List<MedicalNode> nodes = new ArrayList<MedicalNode>();
-        path = path.charAt(0) == '/' ? path.substring(1) : path;
-        String[] hierarchy = path.split("/");
+        String[] hierarchy = nodePath.getRelativePath().split("/");
+        String namespaceId = getNamespaceIdByName(nodePath.getNamespace(),requestId);
         LinkedList<String> q = new LinkedList<String>(Arrays.asList(hierarchy));
         MedicalNode n = null;
         while (!q.isEmpty()) {
-            n = medicalTaxonomyService.getChildNode(n, q.removeFirst());
+            n = medicalTaxonomyService.getChildNode(namespaceId,n, q.removeFirst());
             if (n == null) {
                 return new NodeListResponseObject(requestId, nodes);
             }
@@ -218,7 +229,7 @@ public class VocabularyService {
         ResponseObject response = new ResponseObject();
         response.setRequestId(requestId);
 
-        // Check if the profile has write-access to the namespace of the node
+        // Check if the profile has write-access to the namespaceId of the node
         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
             try {
                 medicalTaxonomyService.createNewConcept(node, null);
@@ -258,8 +269,8 @@ public class VocabularyService {
         ResponseObject response = new ResponseObject(requestId);
 
         try {
-            // Ensure write access to namespace of both nodeId and destNodeId.
-            // This requires us to first fetch the nodes to find the namespace
+            // Ensure write access to namespaceId of both nodeId and destNodeId.
+            // This requires us to first fetch the nodes to find the namespaceId
             MedicalNode node = medicalTaxonomyService.getNodeByInternalId(nodeId);
             MedicalNode destNode = medicalTaxonomyService.getNodeByInternalId(destNodeId);
 
@@ -267,7 +278,7 @@ public class VocabularyService {
                     hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
                 medicalTaxonomyService.moveNode(nodeId, destNodeId);
-                medicalTaxonomyService.setLastChangeNow();
+                medicalTaxonomyService.setLastChangeNow(destNode.getNamespaceId());
                 response.setStatusCode(StatusCode.ok);
 
             } else {
@@ -319,14 +330,14 @@ public class VocabularyService {
     }
 
     /**
-     * Retrieves the XML representation of an Apelon namespace.
+     * Retrieves the XML representation of an Apelon namespaceId.
      * Only preconfiguered namespaces can be selected.
-     * The namespace configuration is available by the classpath
+     * The namespaceId configuration is available by the classpath
      * resource <code>keywordservice-svc.properties</code>.
      *
      * @param id User identification
      * @param requestId unique request identifier
-     * @param namespace The namespace to export
+     * @param namespaceId The namespaceId to export
      */
     public XMLResponseObject getNamespaceXml(Identification id, String requestId, String namespace) {
         XMLResponseObject response = new XMLResponseObject();
@@ -482,13 +493,13 @@ public class VocabularyService {
     }
 
     /**
-     * Check if a used has read access to the given namespace. This routine
-     * makes use of the namespace cache and updates it where neccessary.
+     * Check if a used has read access to the given namespaceId. This routine
+     * makes use of the namespaceId cache and updates it where neccessary.
      *
-     * @param namespaceId The id of the namespace used in the request
+     * @param namespaceName The id of the namespaceId used in the request
      * @param profileId The id of the profile used in the request
      * @param requestId The request identifier
-     * @return True if the profile has read access to the namespace
+     * @return True if the profile has read access to the namespaceId
      */
     private boolean hasNamespaceReadAccess(String namespaceId, String profileId, String requestId) {
         String namespace = getNamespaceById(namespaceId, requestId);
@@ -516,13 +527,13 @@ public class VocabularyService {
     }
 
     /**
-     * Check if a used has write access to the given namespace. This routine
-     * makes use of the namespace cache and updates it where neccessary.
+     * Check if a used has write access to the given namespaceId. This routine
+     * makes use of the namespaceId cache and updates it where neccessary.
      *
-     * @param namespaceId The id of the namespace used in the request
+     * @param namespaceName The id of the namespaceId used in the request
      * @param profileId The id of the profile used in the request
      * @param requestId The request identifier
-     * @return True if the profile has write access to the namespace
+     * @return True if the profile has write access to the namespaceId
      */
     private boolean hasNamespaceWriteAccess(String namespaceId, String profileId, String requestId) {
         String namespace = getNamespaceById(namespaceId, requestId);
@@ -550,14 +561,14 @@ public class VocabularyService {
     }
 
     /**
-     * A utility routine to get the namespace name from a namespaceId.
+     * A utility routine to get the namespaceId name from a namespaceName.
      * This routine initially checks the namespaceCache. If no match is
-     * found it retrieves the namespace name and updates the namespaceCache.
+     * found it retrieves the namespaceId name and updates the namespaceCache.
      *
-     * @param namespaceId The id of the namespace to lookup. Must be capable
+     * @param namespaceName The id of the namespaceId to lookup. Must be capable
      * of being converted to an integer.
      * @param requestId The request identifier
-     * @return The namespace or null if an error occured
+     * @return The namespaceId or null if an error occured
      */
     private String getNamespaceById(String namespaceId, String requestId) {
         String namespace = namespaceCache.get(namespaceId);
@@ -567,7 +578,7 @@ public class VocabularyService {
         }
 
         try {
-            // Query the MedicaTaxonomyService for the namespace and update the cache
+            // Query the MedicaTaxonomyService for the namespaceId and update the cache
             namespace = medicalTaxonomyService.findNamespaceById(Integer.parseInt(namespaceId));
             namespaceCache.put(namespaceId, namespace);
             return namespace;
@@ -577,6 +588,35 @@ public class VocabularyService {
                     requestId, StatusCode.unknown_error, namespaceId));
         } catch (Exception ex) {
             log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * A utility routine to get the namespace id from a namespace name.
+     * This routine initially checks the namespaceCache. If no match is
+     * found it retrieves the namespace id from the taxonomy service and updates the namespaceCache.
+     *
+     * @param namespaceName The name of the namespace to lookup.
+     * @param requestId The request identifier
+     * @return The namespace id or null if an error occured
+     */
+    private String getNamespaceIdByName(String namespaceName, String requestId) {
+        String namespaceId = namespaceCache.get(namespaceName);
+
+        if (namespaceId != null) {
+            return namespaceId;
+        }
+
+        try {
+            // Query the MedicaTaxonomyService for the namespaceId and update the cache
+            namespaceId = medicalTaxonomyService.findNamespaceIdByName(namespaceName);
+            namespaceCache.put(namespaceName, namespaceId);
+            return namespaceId;
+
+        } catch (Exception ex) {
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.unknown_error,namespaceName), ex);
         }
 
         return null;
