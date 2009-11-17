@@ -131,7 +131,7 @@ public class KeyWordService {
 
             /** * Find medical keywords ** */
             log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
-            List<MedicalNode> nodes = findMedicalNodes(keywords, id.getUserId(), options.getIncludeSourceIds());
+            List<MedicalNode> nodes = findMedicalNodes(keywords, id, options.getIncludeSourceIds());
 
             /** * Ensure user has read access to the namespace ** */
             if (!nodes.isEmpty()) {
@@ -174,18 +174,31 @@ public class KeyWordService {
     /**
      * Helper method to find medical nodes in MedicalTaxonomyService
      * @param keywords The extracted keywords from Analysis service
-     * @param userId User id of the user performing the search
+     * @param Identification Identification for the request
      * @param sourceIds the sourceIds of the concepts to be included
      * @return List of Medical Nodes that were found in the MedicalTaxonomyService. The nodes has been enhanced with userstatus data
      */
-    private List<MedicalNode> findMedicalNodes(String[] keywords, String userId, Map<Integer, String[]> sourceIds) throws KeywordsException {
+    private List<MedicalNode> findMedicalNodes(String[] keywords, Identification identification, Map<Integer, String[]> sourceIds) throws KeywordsException {
 
         //TODO:Make so this method actualy throws a KeywordsException!
 
-        Map<String, List<MedicalNode>> nodes = medicalTaxonomyService.findKeywords(keywords, sourceIds);
+        List<Map<String, List<MedicalNode>>> allNodes = new ArrayList<Map<String, List<MedicalNode>>>();
+        Map<String, List<MedicalNode>> nodes = new HashMap<String,List<MedicalNode>>();
+        SearchProfile profile = searchProfiles.get(identification.getProfileId());
+        if(profile == null) {
+            throw new KeywordsException("Specified profile does not exist");
+        }
+        List<String> namespaceIds = new ArrayList<String>();
+        for(String namespaceName : profile.getSearchableNamespaces()) {
+            String namespaceId = getNamespaceIdByName(namespaceName);
+            if(namespaceId != null)
+                namespaceIds.add(namespaceId);
+        }
+        nodes = (medicalTaxonomyService.findKeywords(namespaceIds, keywords, sourceIds));
         log.debug(MessageFormat.format(
                 "Keywords extracted from AnalysisService: {0}. Nodes from TaxonomyService: {1}",
                 keywords.length, nodes.size()));
+        
         /** ********************* */
         /**
          * * Examine results from TaxonomyService and blacklist words and mark
@@ -198,7 +211,7 @@ public class KeyWordService {
 
         for (String keyword : keywords) {
             List<MedicalNode> nodeHits = nodes.get(keyword);
-            setUserStatus(userId, nodeHits);
+            setUserStatus(identification.getUserId(), nodeHits);
             // Add the word to the blacklist database if it has no hits or to
             // many hits.
             log.debug(MessageFormat.format("Hits for keyword {0} is {1}",
@@ -220,7 +233,7 @@ public class KeyWordService {
             }
 
         }
-
+        
         /** *********************************** */
         return nodesList;
 
@@ -460,6 +473,35 @@ public class KeyWordService {
                     requestId, StatusCode.unknown_error, namespaceId));
         } catch (Exception ex) {
             log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
+        }
+
+        return null;
+    }
+
+        /**
+     * A utility routine to get the namespace id from a namespace name.
+     * This routine initially checks the namespaceCache. If no match is
+     * found it retrieves the namespace id from the taxonomy service and updates the namespaceCache.
+     *
+     * @param namespaceName The name of the namespace to lookup.
+     * @param requestId The request identifier
+     * @return The namespace id or null if an error occured
+     */
+    private String getNamespaceIdByName(String namespaceName) {
+        String namespaceId = namespaceCache.get(namespaceName);
+
+        if (namespaceId != null) {
+            return namespaceId;
+        }
+
+        try {
+            // Query the MedicaTaxonomyService for the namespaceId and update the cache
+            namespaceId = medicalTaxonomyService.findNamespaceIdByName(namespaceName);
+            namespaceCache.put(namespaceName, namespaceId);
+            return namespaceId;
+
+        } catch (Exception ex) {
+            log.warn(MessageFormat.format("{1}:Error retrieving namespace {2}", StatusCode.unknown_error,namespaceName), ex);
         }
 
         return null;

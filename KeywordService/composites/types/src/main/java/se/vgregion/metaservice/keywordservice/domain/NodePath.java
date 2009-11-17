@@ -8,6 +8,7 @@ package se.vgregion.metaservice.keywordservice.domain;
 public class NodePath {
     private String namespace;
     private String relativePath;
+    private String name;
 
     public NodePath() {
     }
@@ -20,8 +21,17 @@ public class NodePath {
      * @param path The full node path
      */
     public void setPath(String path) {
-        namespace = path.substring(0, path.indexOf('/'));
+        if(path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        int namespaceSeparatorIndex = path.indexOf('/');
+        if(namespaceSeparatorIndex == -1)
+            namespace = path;
+        else
+            namespace = path.substring(0, namespaceSeparatorIndex);
+        
         this.relativePath = path.substring(path.indexOf('/') + 1);
+        this.name = path.substring(path.lastIndexOf('/') + 1);
     }
 
     /**
@@ -53,6 +63,15 @@ public class NodePath {
     }
 
     /**
+     * Get the name of the node without leading path
+     * @return the name of the node
+     */
+    public String getName() {
+        return name;
+    }
+
+
+    /**
      * Get the full path of the node without the namespace prefix.
      *
      * @return The relative path of the node
@@ -66,6 +85,7 @@ public class NodePath {
      *
      * @param relativePath The relative path of the node
      */
+
     public void setRelativePath(String relativePath) {
         this.relativePath = relativePath;
     }

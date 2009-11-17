@@ -41,10 +41,11 @@ public abstract class MedicalTaxonomyService {
 	/**
 	 * Finds keywords in the Medical Taxonomy system based on the array of input words.
 	 * A keyword in this case is a node in the Medical Taxonomy
+         * @param namespaceIds - A list of all namespace ids to search in
 	 * @param words an array of words to search for in the Medical Taxonomy
 	 * @return a Map where each word in the input array is mapped to a List of {@link}MedicalNode with the result
 	 */
-	public abstract Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer,String[]> sourceIds);
+	public abstract Map<String, List<MedicalNode>> findKeywords(List<String> namespaceIds, String[] words, Map<Integer,String[]> sourceIds);
 	
 	public abstract ConceptChild[] getNamespaceRoots(int namespaceId);
 	
@@ -53,10 +54,11 @@ public abstract class MedicalTaxonomyService {
 	/**
 	 * Find nodes based on input nodeName. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
 	 * @param nodeName - The name pattern for the nodes to find
+         * @param namespaceId - The id of the namespace to search in
 	 * @param matchSynonyms - If true, match against synonym name and concept name
 	 * @return a list of MedicalNodes with names that matches the nodeName pattern.
 	 */
-	public abstract List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms);
+	public abstract List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms);
 
         /**
          * Move a node to a new parent in the tree. WARNING, if the node has several parents, these will be deleted.
@@ -70,12 +72,13 @@ public abstract class MedicalTaxonomyService {
         /**
 	 * Find nodes based on input nodeName and fetch parents to node. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
 	 * @param nodeName - The name pattern for the nodes to find
+         * @param namespaceId - The id of the namespace to search in
 	 * @param matchSynonyms - If true, match against synonym name and concept name
 	 * @return a list of MedicalNodes with names that matches the nodeName pattern.
 	 */
-	public abstract List<MedicalNode> findNodesWithParents(String nodeName, boolean matchSynonyms);
+	public abstract List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms);
 
-	public abstract MedicalNode getChildNode(MedicalNode node, String childName);
+	public abstract MedicalNode getChildNode(String namespaceId, MedicalNode node, String childName);
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
 
@@ -83,9 +86,15 @@ public abstract class MedicalTaxonomyService {
 
         public abstract void updateNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException,InvalidPropertyTypeException;
 
-        public abstract long setLastChangeNow() throws KeywordsException;
+        public abstract long setLastChangeNow(String namespaceId) throws KeywordsException;
 
-        public abstract long getLastChange(Identification id) throws KeywordsException;
+        /**
+         * Get the last change date for the specified namespace. The last change date indicates when the namespace was last changed by the WebService. If a change has been made
+         * without involving the web service, the date will not be updated.
+         * 
+         * @param namespaceId - The id of the namespace to search in
+         */
+        public abstract long getLastChange(String namespaceId) throws KeywordsException;
 
     
 	/**
@@ -155,4 +164,14 @@ public abstract class MedicalTaxonomyService {
          * the init routine has not been invoked. 
          */
         public abstract String findNamespaceById(int namespaceId) throws Exception;
+
+         /**
+         * Locates a namespace id by its name.
+         *
+         * @param namespaceName
+         * @return The id of the namespace
+         * @throws Exception If a communication error occurs to the database, or
+         * the init routine has not been invoked.
+         */
+        public abstract String findNamespaceIdByName(String namespaceName) throws Exception;
 }

@@ -1,11 +1,11 @@
 package se.vgregion.metaservice.keywordservice;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.apelon.dts.client.concept.ConceptChild;
 
 import java.util.HashMap;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
@@ -30,7 +30,7 @@ public class MedicalTaxonomyServiceTest extends BaseSpringDependencyInjectionTes
 	public void testFindKeywords() {
         Map<Integer,String[]> includeSourceIdsMap = new HashMap<Integer,String[]>();
         includeSourceIdsMap.put(123,sourceIds);
-		Map<String, List<MedicalNode>> concepts = mts.findKeywords(words, includeSourceIdsMap);
+		Map<String, List<MedicalNode>> concepts = mts.findKeywords(new ArrayList<String>(),words, includeSourceIdsMap);
 		assertNotNull(concepts);
 		assertTrue(concepts.size() > 0);
 /*

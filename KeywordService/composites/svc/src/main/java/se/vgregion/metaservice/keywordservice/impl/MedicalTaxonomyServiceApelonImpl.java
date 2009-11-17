@@ -32,7 +32,6 @@ import com.apelon.dts.client.concept.DTSSearchOptions;
 import com.apelon.dts.client.concept.NavChildContext;
 import com.apelon.dts.client.concept.NavQuery;
 import com.apelon.dts.client.concept.OntylogConcept;
-import com.apelon.dts.client.concept.OntylogExtConceptQuery;
 import com.apelon.dts.client.concept.SearchQuery;
 import com.apelon.dts.client.concept.ThesaurusConceptQuery;
 import com.apelon.dts.client.namespace.Namespace;
@@ -42,11 +41,11 @@ import com.apelon.dts.client.term.Term;
 import com.apelon.dts.client.term.TermAttributeSetDescriptor;
 import com.apelon.dts.common.subset.Subset;
 import java.util.Date;
-import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 import com.apelon.dts.client.term.TermQuery;
+import java.util.TreeMap;
 import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
 import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
 
@@ -139,59 +138,74 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     /**
      * @see MedicalTaxonomyService
      */
-    public Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer, String[]> sourceIds) {
+    public Map<String, List<MedicalNode>> findKeywords(List<String> namespaceIds, String[] words, Map<Integer, String[]> sourceIds) {
+
         Map<String, List<MedicalNode>> allKeywords = new HashMap<String, List<MedicalNode>>();
-        if (namespace == null || ca == null) {
-            return allKeywords;
-        }
-        /*
-         * AssociationType[] fetchAss = { new AssociationType("Child Of", 7,
-         * "CHD", namespace.getId(), ItemsConnected.CONCEPTS, Purpose.ARBITRARY,
-         * AssociationType.NOT_DISPLAYABLE) };
-         */
-        AssociationType fetchAss;
-        try {
-            fetchAss = assocQuery.findAssociationTypeByName("Parent Of",
-                    namespace.getId());
-            AssociationType[] fetchAssocs = new AssociationType[]{fetchAss};
-            ca.setInverseConceptAssociationTypes(fetchAssocs);
-        } catch (DTSException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+        if (ca == null) {
             return allKeywords;
         }
 
-        // ca.setConceptAssociationTypes(fetchAss);
-        DTSSearchOptions options = new DTSSearchOptions(resultKeywordsLimit,
-                namespace.getId(), ca);
+        //Setup a cache for search options per namespace
+        Map<Integer, DTSSearchOptions> optionsCache = new TreeMap<Integer, DTSSearchOptions>();
+        for (String namespaceId : namespaceIds) {
+            int namespaceIdInt = 0;
+            AssociationType fetchAss;
+            try {
+                namespaceIdInt = Integer.parseInt(namespaceId);
+                fetchAss = assocQuery.findAssociationTypeByName("Parent Of",
+                        namespaceIdInt);
+                AssociationType[] fetchAssocs = new AssociationType[]{fetchAss};
+                ca.setInverseConceptAssociationTypes(fetchAssocs);
+            } catch (DTSException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return allKeywords;
+            } catch (NumberFormatException ex) {
+                //TODO: Exception handling
+                ex.printStackTrace();
+                return allKeywords;
+            }
+
+            // ca.setConceptAssociationTypes(fetchAss);
+            DTSSearchOptions searchOptions = new DTSSearchOptions(resultKeywordsLimit,
+                    namespaceIdInt, ca);
+            optionsCache.put(namespaceIdInt, searchOptions);
+        }
+
+
 
         for (String word : words) {
-            try {
-                OntylogConcept[] concepts = searchQuery.findConceptsWithNameMatching(word + "*", options, true);
-                log.info(MessageFormat.format(
-                        "Found {0} hits for search term {1}", concepts.length,
-                        word));
-                List<MedicalNode> nodes = new ArrayList<MedicalNode>(
-                        concepts.length);
-                // Translate each concept to MedicalNode
-                for (OntylogConcept concept : concepts) {
-                    log.debug("Concept found: " + concept.getName());
+            List<MedicalNode> nodes = new ArrayList<MedicalNode>();
+            //Search for the word in every namespace
+            for (DTSSearchOptions options : optionsCache.values()) {
 
-                    if (shouldBeIncluded(concept, sourceIds)) {
-                        MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), true);
+                try {
+                    log.debug("Searching for word " + word + " in namespace " + options.getNamespaceId());
+                    OntylogConcept[] concepts = searchQuery.findConceptsWithNameMatching(word + "*", options, true);
+                    log.info(MessageFormat.format(
+                            "Found {0} hits for search term {1}", concepts.length,
+                            word));
+                    
+                    // Translate each concept to MedicalNode
+                    for (OntylogConcept concept : concepts) {
+                        log.debug("Concept found: " + concept.getName());
 
-                        nodes.add(node);
+                        if (shouldBeIncluded(concept, sourceIds)) {
+                            MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), true);
 
-                        log.info(MessageFormat.format("Nodes added: {0}", nodes.size()));
-                    } else {
-                        log.info("Concept is excluded due to configuration properties");
+                            nodes.add(node);
+
+                            log.info(MessageFormat.format("Nodes added: {0}", nodes.size()));
+                        } else {
+                            log.info("Concept is excluded due to configuration properties");
+                        }
                     }
-                }
-                allKeywords.put(word, nodes);
+                    allKeywords.put(word, nodes);
 
-            } catch (DTSException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                } catch (DTSException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
             }
         }
 
@@ -211,10 +225,10 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return roots;
     }
 
-    public long setLastChangeNow() throws KeywordsException {
-        //TODO: base namespace on id
+    public long setLastChangeNow(String namespaceId) throws KeywordsException {
+        //TODO: All update methods should call this?
         Long now = new Date().getTime();
-        List<MedicalNode> list = findNodes("LastChange", false);
+        List<MedicalNode> list = findNodes("LastChange", namespaceId, false);
         MedicalNode node = null;
         if (list.isEmpty()) {
             log.error("Could not find the lastChange-Node");
@@ -235,9 +249,9 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         }
     }
 
-    public long getLastChange(Identification id) throws KeywordsException {
+    public long getLastChange(String namespaceId) throws KeywordsException {
         //TODO: base namespace on id
-        List<MedicalNode> list = findNodes("LastChange", false);
+        List<MedicalNode> list = findNodes("LastChange", namespaceId, false);
         MedicalNode node = null;
         if (list.isEmpty()) {
             log.error("Could not find the lastChange-Node");
@@ -275,20 +289,20 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return concept;
     }
 
-    public List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms) {
-        return findNodes(nodeName, matchSynonyms, false);
+    public List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms) {
+        return findNodes(nodeName, namespaceId, matchSynonyms, false);
 
     }
 
-    public List<MedicalNode> findNodesWithParents(String nodeName, boolean matchSynonyms) {
-        return findNodes(nodeName, matchSynonyms, true);
+    public List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms) {
+        return findNodes(nodeName, namespaceId, matchSynonyms, true);
     }
 
-    private List<MedicalNode> findNodes(String nodeName, boolean matchSynonyms, boolean fetchParents) {
+    private List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, boolean fetchParents) {
         List<MedicalNode> nodes = new ArrayList<MedicalNode>(100);
         setFetchParents(ca, namespace.getId());
-        DTSSearchOptions options = new DTSSearchOptions(100, namespace.getId(), ca);
         try {
+            DTSSearchOptions options = new DTSSearchOptions(100, Integer.parseInt(namespaceId), ca);
             log.debug(MessageFormat.format("Searching for concepts with name {0}", nodeName));
             OntylogConcept[] concepts = searchQuery.findConceptsWithNameMatching(nodeName, options, matchSynonyms);
             log.debug(MessageFormat.format("Found {0} concepts", concepts.length));
@@ -299,6 +313,8 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         } catch (DTSException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Namespace id needs to be a valid integer", ex);
         }
 
         return nodes;
@@ -461,12 +477,12 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return subsetId;
     }
 
-    public MedicalNode getChildNode(
+    public MedicalNode getChildNode(String namespaceId,
             MedicalNode node, String childName) {
 
         if (node == null) {
             log.info(MessageFormat.format("Trying to get root node {0}", childName));
-            List<MedicalNode> rootNodes = findNodes(childName, false);
+            List<MedicalNode> rootNodes = findNodes(childName, namespaceId, false);
             if (rootNodes.size() == 0) {
                 log.warn(MessageFormat.format("No nodes with name {0} found. Returning null", childName));
                 return null;
@@ -595,7 +611,10 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     }
 
     private boolean shouldBeIncluded(OntylogConcept concept, Map<Integer, String[]> sourceIds) {
-        String[] ids = sourceIds.get(123); //TODO: Fix mapping between current namespace and this sourceIds
+        String[] ids = sourceIds.get(concept.getNamespaceId()); //TODO: Fix mapping between current namespace and this sourceIds
+        if (ids == null) {
+            return true;
+        }
         for (String includeId : ids) {
             for (DTSProperty property : concept.getFetchedProperties()) {
                 if (property.getName().equals(getSourceIdPropertyKey())) {
@@ -656,7 +675,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             } catch (InvalidPropertyTypeException ex) {
                 thesaurusConceptQuery.deleteConcept(concept);
                 throw ex;
-            } catch (NodeNotFoundException ex){
+            } catch (NodeNotFoundException ex) {
                 thesaurusConceptQuery.deleteConcept(concept);
                 throw ex;
             }
@@ -779,5 +798,15 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 // not initialized
 
         throw new DTSException("Error finding namespaceById. MedicalTaxonomyService.initConnection() has not been invoked.");
+    }
+
+    public String findNamespaceIdByName(
+            String namespaceName) throws Exception {
+        if (nameQuery != null) {
+            return "" + nameQuery.findNamespaceByName(namespaceName).getId();
+        }
+// not initialized
+
+        throw new DTSException("Error finding namespaceIdByName. MedicalTaxonomyService.initConnection() has not been invoked.");
     }
 }
