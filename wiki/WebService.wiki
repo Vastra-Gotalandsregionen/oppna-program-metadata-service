@@ -185,7 +185,7 @@ Returnerar när något senast ändrades i apelon
 || *Namn* || *Typ* || *Förklaring* ||
 || id || Identification || Objekt som identifierar användare och profil ||
 || requestId || String || Unik anrops-identifierare ||
-|| namespace || String || Identifierare för vilken namnrymd sitemap:en ska genereras för ||
+|| namespace || String || Anger vilken namnrymd som tidsändringen gäller ||
 
 
 *Returvärde*
