@@ -1,0 +1,38 @@
+#summary Visar tekniska flödet för vanliga användningsfall
+
+= Användardefinerade etiketter =
+
+==Beskrivning==
+Besökare på en sida kan föreslå nyckelord (etiketter) för att förbättra sökbarheten. Varje ord som föreslås lagras centralt i metadatatjänsten och godkänns av en administratör. Administratören är administratör i källsystemet där sidan ligger (ex EpiServer). När ordet godkänts kan det läggas till på sidan i källsystemet.
+
+== Del 1: Användaren föreslår etikett == 
+
+=== Förutsättning ===
+En användare har besökt en sida och vill lägga till en etikett. I det grafiska gränssnittet finns en textruta där användaren  kan skriva in sitt ord, samt en knapp för att skicka ordet.
+
+=== Tekniskt flöde ===
+  # Systemet anropar metoden LookupWord() i Metadatatjänsten
+    # Options-objektet som parameter kan innehålla en url till aktuella sidan för att para ihop ordet med en url
+  # Metadatatjänsten svarar vilken ordlista ordet finns i (whitelist,blacklist,none)
+    # Svaret whitelist innebär att ordet redan är godkänt och kan läggas till sidan direkt
+    # Svaret blacklist innebär att ordet är förbjudet och användaren ska få ett felmeddelande som informerar om detta
+    # Svaret none innebär att ordet är nytt och måste granskas. Det har därför placerats i reviewlist i Metadatatjänsten
+
+== Del 2: Administratören granskar föreslagna etiketter ==
+
+=== Förutsättning ===
+Administratören har loggat in i systemet och navigerat till sidan för administration av etiketter
+
+=== Flöde ===
+  # Systemet anropar metoden GetVocabulary() med sökvägen till reviewlistan (ex "/VGR/reviewlist"). TODO filtrera på profilId
+  # Metadatatjänsten svarar med en lista av alla ord som är redo för granskning. Systemet presenterar dessa.
+  # Administratören väljer att rättstava ett felstavat ord
+    # Systemet anropar updateVocabularyNode med den nya informationen
+  # Administratören markerar vilka ord som ska godkännas och vilka som förbjuds
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
