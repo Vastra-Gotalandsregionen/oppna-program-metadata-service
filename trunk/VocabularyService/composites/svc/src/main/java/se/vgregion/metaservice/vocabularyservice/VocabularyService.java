@@ -42,9 +42,7 @@ public class VocabularyService {
 
     private static Logger log = Logger.getLogger(VocabularyService.class);
     private MedicalTaxonomyService medicalTaxonomyService;
-    private String whitelistName = "Whitelist"; //TODO: Move to profile configuration?
-    private String blacklistName = "Blacklist"; //TODO: Move to profile configuration?
-    private String reviewlistName = "Reviewlist"; //TODO: Move to profile configuration?
+
     //TODO: specify this elsewhere?
     private String profileIdPropertyName = "profileId";
     private String userIdPropertyName = "userId";
@@ -58,7 +56,7 @@ public class VocabularyService {
     public LastChangeResponseObject getLastChange(Identification identification, String requestId, String namespaceName) {
         String namespaceId = getNamespaceIdByName(namespaceName, requestId);
         if(namespaceId == null) {
-            return new LastChangeResponseObject(requestId,StatusCode.error_getting_keywords_from_taxonomy, "Invalid namesace name");
+            return new LastChangeResponseObject(requestId,StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
         }
         Long lastChange;
         try {
@@ -124,7 +122,7 @@ public class VocabularyService {
                                         "Could not add properties to keyword");
                             }
                         } else {
-                            response.setErrorMessage("The profile is invalid or does not have read privileges to " + reviewlistName);
+                            response.setErrorMessage("The profile is invalid or does not have read privileges to " + profile.getReviewList().getName());
                             response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
                         }
 
@@ -154,7 +152,7 @@ public class VocabularyService {
                     medicalTaxonomyService.setLastChangeNow(node.getNamespaceId());
 
                 } else {
-                    response.setErrorMessage("The profile is invalid or does not have read privileges to " + reviewlistName);
+                    response.setErrorMessage("The profile is invalid or does not have read privileges to " + profile.getReviewList().getName());
                     response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
                 }
             } catch (InvalidPropertyTypeException ex) {
