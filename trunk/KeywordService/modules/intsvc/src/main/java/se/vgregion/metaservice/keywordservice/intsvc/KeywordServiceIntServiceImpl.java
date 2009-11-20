@@ -53,7 +53,8 @@ public class KeywordServiceIntServiceImpl implements
         NodeListResponseObject responseObject = keywordService.getNodeByInternalId(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getInternalId());
+                parameters.getInternalId(),
+                parameters.getNamespaceName());
 
         return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(responseObject);
     }

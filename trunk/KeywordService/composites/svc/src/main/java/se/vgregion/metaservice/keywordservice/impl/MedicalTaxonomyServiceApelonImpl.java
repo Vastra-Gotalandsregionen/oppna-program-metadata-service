@@ -269,11 +269,11 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         }
     }
 
-    public MedicalNode getNodeByInternalId(String internalId) {
+    public MedicalNode getNodeByInternalId(String internalId, String namespaceId) {
         MedicalNode node = null;
         DTSConcept concept;
         try {
-            concept = getConceptByInternalId(internalId);
+            concept = getConceptByInternalId(internalId, namespaceId);
             node = createMedicalNode(concept, getSourceIdPropertyKey(), false);
         } catch (DTSException ex) {
             // TODO Auto-generated catch block
@@ -282,10 +282,10 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return node;
     }
 
-    private DTSConcept getConceptByInternalId(String internalId) throws DTSException {
+    private DTSConcept getConceptByInternalId(String internalId, String namespaceId) throws DTSException {
         setFetchParents(ca, namespace.getId());
         DTSConcept concept = searchQuery.findConceptById(Integer.parseInt(internalId),
-                namespace.getId(), ca);
+                Integer.parseInt(namespaceId), ca);
         return concept;
     }
 
@@ -328,7 +328,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      */
     public void updateNodeProperties(MedicalNode node, boolean owerwriteProperties) throws KeywordsException, InvalidPropertyTypeException {
         try {
-            DTSConcept concept = getConceptByInternalId(node.getInternalId());
+            DTSConcept concept = getConceptByInternalId(node.getInternalId(),node.getNamespaceId());
 
             int nrOfProperties = node.getProperties().size();
             DTSProperty[] props = new DTSProperty[nrOfProperties];
@@ -369,7 +369,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     public void updateNodeSynonyms(MedicalNode node) throws KeywordsException {
         try {
 
-            DTSConcept concept = getConceptByInternalId(node.getInternalId());
+            DTSConcept concept = getConceptByInternalId(node.getInternalId(),node.getNamespaceId());
             List<String> synonyms = node.getSynonyms();
 
             if (synonyms != null) {
@@ -419,14 +419,14 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return null;
     }
 
-    public void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException, NodeNotFoundException {
+    public void moveNode(MedicalNode node, MedicalNode destinationParentNode) throws KeywordsException, NodeNotFoundException {
         try {
-            DTSConcept concept = getConceptByInternalId(nodeId);
+            DTSConcept concept = getConceptByInternalId(node.getInternalId(),node.getNamespaceId());
             if (concept == null) {
-                throw new NodeNotFoundException("Node " + nodeId + " not found");
+                throw new NodeNotFoundException("Node " + node.getInternalId()+ " not found");
             }
 
-            DTSConcept parentConcept = getConceptByInternalId(destinationParentNodeId);
+            DTSConcept parentConcept = getConceptByInternalId(destinationParentNode.getInternalId(),node.getNamespaceId());
             if (parentConcept == null) {
                 throw new NodeNotFoundException("Destination parent node " + " not found");
             }
@@ -652,14 +652,15 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
             // Create the concept
             DTSConcept concept = new DTSConcept(node.getName(), Integer.valueOf(node.getNamespaceId()));
-
+            
             try {
                 //add the concept
                 concept = thesaurusConceptQuery.addConcept(concept);
 
                 //create parent-realations
                 if (parentNodeId != null) {
-                    moveNode(String.valueOf(concept.getId()), parentNodeId);
+                    MedicalNode parentNode = getNodeByInternalId(parentNodeId, node.getNamespaceId());
+                    moveNode(node, parentNode);
                 }
                 //Create the properties
                 node.setInternalId(String.valueOf(concept.getId()));

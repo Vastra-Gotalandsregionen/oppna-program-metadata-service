@@ -23,6 +23,34 @@
             </set>
         </property>
     </bean>
+    <bean id="searchProfile.vgr_epi" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_epi.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+                <value>SweMESH</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value>VGR</value>
+            </set>
+        </property>
+    </bean>
+    <bean id="searchProfile.vgr_semsys" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_semsys.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>MeSH R</value>
+                <value>SweMESH</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value></value>
+            </set>
+        </property>
+    </bean>
     	
 
 

@@ -46,7 +46,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 		return null;
 	}
 	
-	public MedicalNode getNodeByInternalId(String internalId) {
+	public MedicalNode getNodeByInternalId(String internalId, String namespaceId) {
 		MedicalNode node = new MedicalNode();
 		node.setInternalId(internalId);
                 node.setNamespaceId("123");
@@ -79,7 +79,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
     }
 
     @Override
-    public void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException {
+    public void moveNode(MedicalNode node, MedicalNode destinationParentNode) throws KeywordsException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

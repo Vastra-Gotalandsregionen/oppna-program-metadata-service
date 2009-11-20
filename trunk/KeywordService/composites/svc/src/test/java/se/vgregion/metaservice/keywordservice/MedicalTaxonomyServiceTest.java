@@ -49,7 +49,7 @@ public class MedicalTaxonomyServiceTest extends BaseSpringDependencyInjectionTes
 	}
 	
 	public void testFindNodeByInternalId() {
-		MedicalNode node = mts.getNodeByInternalId("2149");
+		MedicalNode node = mts.getNodeByInternalId("2149","123");
 		assertNotNull(node);
 		assertEquals("2149",node.getInternalId());
 	}

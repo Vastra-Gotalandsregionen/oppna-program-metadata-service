@@ -48,8 +48,14 @@ public abstract class MedicalTaxonomyService {
 	public abstract Map<String, List<MedicalNode>> findKeywords(List<String> namespaceIds, String[] words, Map<Integer,String[]> sourceIds);
 	
 	public abstract ConceptChild[] getNamespaceRoots(int namespaceId);
-	
-	public abstract MedicalNode getNodeByInternalId(String internalId); 
+
+        /**
+         * Returns a node with the specified id in the given namespace
+         * @param internalId the id of the node
+         * @param namespaceId the namespace to search in
+         * @return a node with the specified id or null if none is found
+         */
+	public abstract MedicalNode getNodeByInternalId(String internalId, String namespaceId);
 	
 	/**
 	 * Find nodes based on input nodeName. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
@@ -63,11 +69,11 @@ public abstract class MedicalTaxonomyService {
         /**
          * Move a node to a new parent in the tree. WARNING, if the node has several parents, these will be deleted.
          * After this operation, the node will only have one parent.
-         * @param nodeId the id of the node to move
-         * @param destinationParentNodeId the id of the node to move to
+         * @param node the node to move
+         * @param destinationParentNode the node to move to
          * @throws KeywordsException
          */
-        public abstract void moveNode(String nodeId, String destinationParentNodeId) throws KeywordsException,NodeNotFoundException;
+        public abstract void moveNode(MedicalNode node, MedicalNode destinationParentNode) throws KeywordsException,NodeNotFoundException;
 
         /**
 	 * Find nodes based on input nodeName and fetch parents to node. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
