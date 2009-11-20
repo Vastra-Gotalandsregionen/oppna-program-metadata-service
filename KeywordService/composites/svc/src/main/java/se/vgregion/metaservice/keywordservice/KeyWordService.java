@@ -186,7 +186,7 @@ public class KeyWordService {
         Map<String, List<MedicalNode>> nodes = new HashMap<String,List<MedicalNode>>();
         SearchProfile profile = searchProfiles.get(identification.getProfileId());
         if(profile == null) {
-            throw new KeywordsException("Specified profile does not exist");
+            throw new KeywordsException("Specified profile "+identification.getProfileId()+" does not exist");
         }
         List<String> namespaceIds = new ArrayList<String>();
         for(String namespaceName : profile.getSearchableNamespaces()) {
@@ -252,7 +252,8 @@ public class KeyWordService {
     public NodeListResponseObject getNodeByInternalId(
             Identification id,
             String requestId,
-            String internalId) {
+            String internalId,
+            String namespaceName) {
 
         NodeListResponseObject response = new NodeListResponseObject();
         response.setRequestId(requestId);
@@ -264,8 +265,19 @@ public class KeyWordService {
                     StatusCode.error_getting_keywords_from_taxonomy,
                     "No internalId supplied");
         }
+        if( namespaceName == null) {
+            log.error(MessageFormat.format("{0}:{1}:No namespace name supplied"
+                    ,requestId,StatusCode.error_getting_keywords_from_taxonomy.code()));
+            return new NodeListResponseObject(requestId,
+                    StatusCode.error_getting_keywords_from_taxonomy,
+                    "No namespace name supplied");
+        }
+        String namespaceId = getNamespaceIdByName(namespaceName);
+        if(namespaceId == null) {
+            return new NodeListResponseObject(requestId,StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
+        }
         
-        MedicalNode node = medicalTaxonomyService.getNodeByInternalId(internalId);
+        MedicalNode node = medicalTaxonomyService.getNodeByInternalId(internalId, namespaceId);
 
         if (node != null) {
             if (hasNamespaceReadAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {

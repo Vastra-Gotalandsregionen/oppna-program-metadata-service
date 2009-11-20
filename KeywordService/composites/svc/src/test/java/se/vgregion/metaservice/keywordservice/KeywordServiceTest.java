@@ -90,7 +90,7 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testFindNodeByInternalId() throws UnsupportedFormatException {
-            NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "vgr"), REQUEST_ID,"2149");
+            NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "vgr"), REQUEST_ID,"2149","123");
             System.out.println(response.getErrorMessage());
             assertEquals(StatusCode.ok,response.getStatusCode());
             MedicalNode node = response.getNodeList().get(0);

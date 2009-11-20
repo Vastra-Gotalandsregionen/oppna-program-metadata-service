@@ -90,7 +90,6 @@
                 <ref bean="shortWordProcessor" />
                 <ref bean="stemmingProcessor" />
                 <ref bean="wordCounterProcessor" />
-                <ref bean="blacklistedWordsProcessor" />
                 <ref bean="wordRemoverProcessor" />
                 <ref bean="wordsSorterProcessor" />
             </list>
@@ -121,6 +120,8 @@
         <property name="searchProfiles">
             <list>
                 <ref bean="searchProfile.vgr"/>
+                <ref bean="searchProfile.vgr_epi" />
+                <ref bean="searchProfile.vgr_semsys" />
             </list>
         </property>
     </bean>
