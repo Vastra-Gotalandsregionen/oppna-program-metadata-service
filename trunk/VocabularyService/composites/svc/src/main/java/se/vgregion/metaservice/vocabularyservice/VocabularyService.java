@@ -263,19 +263,15 @@ public class VocabularyService {
      * @return a ResponseObject, check the statuscode in this object to see
      * if the operation was succesfull
      */
-    public ResponseObject moveVocabularyNode(Identification id, String requestId, String nodeId, String destNodeId) {
+    public ResponseObject moveVocabularyNode(Identification id, String requestId, MedicalNode node, MedicalNode destNode) {
         ResponseObject response = new ResponseObject(requestId);
 
         try {
-            // Ensure write access to namespaceId of both nodeId and destNodeId.
-            // This requires us to first fetch the nodes to find the namespaceId
-            MedicalNode node = medicalTaxonomyService.getNodeByInternalId(nodeId);
-            MedicalNode destNode = medicalTaxonomyService.getNodeByInternalId(destNodeId);
-
+            
             if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId) &&
                     hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
-                medicalTaxonomyService.moveNode(nodeId, destNodeId);
+                medicalTaxonomyService.moveNode(node, destNode);
                 medicalTaxonomyService.setLastChangeNow(destNode.getNamespaceId());
                 response.setStatusCode(StatusCode.ok);
 
@@ -286,7 +282,7 @@ public class VocabularyService {
 
         } catch (KeywordsException ex) {
             log.error(MessageFormat.format("{0}:{1}: Node ({2}) could not be moved to parent {{3}}",
-                    requestId, StatusCode.error_editing_taxonomy.code(), nodeId, destNodeId), ex);
+                    requestId, StatusCode.error_editing_taxonomy.code(), node.getInternalId(), destNode.getInternalId()), ex);
             response.setStatusCode(StatusCode.error_editing_taxonomy);
             response.setErrorMessage("Error editing taxonomy: Node could not be moved");
         } catch (NodeNotFoundException ex) {

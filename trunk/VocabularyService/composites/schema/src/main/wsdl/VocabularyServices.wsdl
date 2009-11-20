@@ -80,8 +80,8 @@
                     <xsd:sequence>
                         <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
-                        <xsd:element name="nodeId" type="xsd:string" />
-                        <xsd:element name="destParentNodeId" type="xsd:string" />
+                        <xsd:element name="node" type="node:NodeType" />
+                        <xsd:element name="destParentNode" type="node:NodeType" />
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>

@@ -35,6 +35,7 @@
                 <property name="searchProfiles">
                     <list>
                         <ref bean="searchProfile.vgr"/>
+                        <ref bean="searchProfile.vgr_epi" />
                     </list>
                 </property>
 	</bean>
