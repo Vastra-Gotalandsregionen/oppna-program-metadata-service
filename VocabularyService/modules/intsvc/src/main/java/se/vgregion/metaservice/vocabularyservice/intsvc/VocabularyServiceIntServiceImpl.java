@@ -76,8 +76,8 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
         ResponseObject responseObject = vocabularyService.moveVocabularyNode(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                parameters.getNodeId(),
-                parameters.getDestParentNodeId());
+                NodeSdoHelper.fromNodeType(parameters.getNode()),
+                NodeSdoHelper.fromNodeType(parameters.getDestParentNode()));
 
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
