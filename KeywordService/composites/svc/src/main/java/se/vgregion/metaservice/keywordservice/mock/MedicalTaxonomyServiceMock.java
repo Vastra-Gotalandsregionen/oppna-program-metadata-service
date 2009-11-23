@@ -84,7 +84,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
     }
 
     @Override
-    public MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException {
+    public MedicalNode createNewConcept(MedicalNode node) throws KeywordsException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
