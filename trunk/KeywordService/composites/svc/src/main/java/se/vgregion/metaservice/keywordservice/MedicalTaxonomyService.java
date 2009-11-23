@@ -88,7 +88,7 @@ public abstract class MedicalTaxonomyService {
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
 
-        public abstract MedicalNode createNewConcept(MedicalNode node, String parentNodeId) throws KeywordsException,NodeAlreadyExistsException,InvalidPropertyTypeException, NodeNotFoundException;
+        public abstract MedicalNode createNewConcept(MedicalNode node) throws KeywordsException,NodeAlreadyExistsException,InvalidPropertyTypeException, NodeNotFoundException;
 
         public abstract void updateNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException,InvalidPropertyTypeException;
 

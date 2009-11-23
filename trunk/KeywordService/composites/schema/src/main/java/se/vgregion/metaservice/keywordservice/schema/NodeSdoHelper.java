@@ -26,6 +26,7 @@ import se.vgregion.metaservice.schema.domain.UserStatusListType;
  */
 public abstract class NodeSdoHelper {
 
+
     public static Logger log = Logger.getLogger(NodeSdoHelper.class);
 
     /**
@@ -62,6 +63,7 @@ public abstract class NodeSdoHelper {
      * @return Node
      */
     public static MedicalNode fromNodeType(NodeType sdoNode) {
+
         MedicalNode newNode = new MedicalNode();
         if (sdoNode.getInternalId() != null) {
             newNode.setInternalId(sdoNode.getInternalId());

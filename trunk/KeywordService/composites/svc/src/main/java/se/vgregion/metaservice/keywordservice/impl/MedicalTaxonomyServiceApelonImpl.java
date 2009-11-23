@@ -641,7 +641,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      */
     @Override
     public MedicalNode createNewConcept(
-            MedicalNode node, String parentNodeId) throws KeywordsException, NodeAlreadyExistsException, InvalidPropertyTypeException, NodeNotFoundException {
+            MedicalNode node) throws KeywordsException, NodeAlreadyExistsException, InvalidPropertyTypeException, NodeNotFoundException {
         try {
 
             // check if any node with this name exists
@@ -656,14 +656,15 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             try {
                 //add the concept
                 concept = thesaurusConceptQuery.addConcept(concept);
-
+                node.setInternalId(String.valueOf(concept.getId()));
                 //create parent-realations
-                if (parentNodeId != null) {
+                if (!node.getParents().isEmpty()) {
+                    String parentNodeId = node.getParents().get(0).getInternalId();
                     MedicalNode parentNode = getNodeByInternalId(parentNodeId, node.getNamespaceId());
                     moveNode(node, parentNode);
                 }
                 //Create the properties
-                node.setInternalId(String.valueOf(concept.getId()));
+                
                 updateNodeProperties(node, false);
 
                 // A new node should not have any initial children, if that changes
