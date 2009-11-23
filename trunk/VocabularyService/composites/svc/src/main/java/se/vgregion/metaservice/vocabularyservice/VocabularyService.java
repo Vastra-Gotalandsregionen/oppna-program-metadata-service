@@ -148,7 +148,8 @@ public class VocabularyService {
 
                 // ensure write privileges to reviewlist
                 if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
-                    medicalTaxonomyService.createNewConcept(node, reviewNode.getInternalId());
+                    node.addParent(reviewNode);
+                    medicalTaxonomyService.createNewConcept(node);
                     medicalTaxonomyService.setLastChangeNow(node.getNamespaceId());
 
                 } else {
@@ -230,7 +231,8 @@ public class VocabularyService {
         // Check if the profile has write-access to the namespaceId of the node
         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
             try {
-                medicalTaxonomyService.createNewConcept(node, null);
+                log.info(node.getParents().isEmpty());
+                medicalTaxonomyService.createNewConcept(node);
                 response.setStatusCode(StatusCode.ok);
                 log.info("Created new node");
             } catch (InvalidPropertyTypeException ex) {

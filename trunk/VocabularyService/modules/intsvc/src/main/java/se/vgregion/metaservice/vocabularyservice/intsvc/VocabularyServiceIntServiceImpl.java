@@ -2,6 +2,7 @@ package se.vgregion.metaservice.vocabularyservice.intsvc;
 
 import se.vgregion.metaservice.keywordservice.domain.LastChangeResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.LookupResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.XMLResponseObject;
@@ -58,10 +59,12 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      */
     public ResponseObjectType addVocabularyNode(AddVocabularyNodeRequest parameters) {
 
+        MedicalNode node = NodeSdoHelper.fromNodeType(parameters.getNode());
+
         ResponseObject responseObject = vocabularyService.addVocabularyNode(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                NodeSdoHelper.fromNodeType(parameters.getNode()));
+                node);
 
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
