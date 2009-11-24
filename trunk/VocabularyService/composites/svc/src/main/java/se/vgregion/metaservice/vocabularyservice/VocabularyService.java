@@ -11,8 +11,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -191,27 +191,55 @@ public class VocabularyService {
      * Return all the childrens of a node
      * @param requestId the unique request id
      * @param path the path to the node
+     * @param options Options object to filter on property
      * @return a NodeListResponeObject that contains a list of all the childrenNodes
      * check the statuscode in this object to see if the operation was succesfull
      */
-    public NodeListResponseObject getVocabulary(String requestId, String path) {
-
-        // TODO: handle errors, catch exceptions and set errorCodes
+    public NodeListResponseObject getVocabulary(String requestId, String path, Options options) {
+        List<MedicalNode> nodes = new ArrayList<MedicalNode>();
+        List<MedicalNode> response = new ArrayList<MedicalNode>();
         NodePath nodePath = new NodePath();
         nodePath.setPath(path);
-        List<MedicalNode> nodes = new ArrayList<MedicalNode>();
+        
         String[] hierarchy = nodePath.getRelativePath().split("/");
-        String namespaceId = getNamespaceIdByName(nodePath.getNamespace(),requestId);
+        String namespaceId = getNamespaceIdByName(nodePath.getNamespace(), requestId);
         LinkedList<String> q = new LinkedList<String>(Arrays.asList(hierarchy));
         MedicalNode n = null;
+
         while (!q.isEmpty()) {
-            n = medicalTaxonomyService.getChildNode(namespaceId,n, q.removeFirst());
+            n = medicalTaxonomyService.getChildNode(namespaceId, n, q.removeFirst());
             if (n == null) {
-                return new NodeListResponseObject(requestId, nodes);
+                log.error(MessageFormat.format("{0}:{1}: Invalid path {2}", 
+                        requestId, StatusCode.error_getting_keywords_from_taxonomy, path));
+                return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid path '" + path + "'");
             }
         }
         nodes = medicalTaxonomyService.getChildNodes(n);
 
+        // filter returned nodes by property
+        if (nodes.size() > 0 & options != null && options.getFilterByProperties() != null) {
+            for (MedicalNode node : nodes) {
+                for (NodeProperty prop : node.getProperties()) {
+                    for (Entry<String, List<String>> filterEntry : options.getFilterByProperties().entrySet()) {
+                        if (filterEntry.getKey().equals(prop.getName())) {
+                            for (String filter : filterEntry.getValue()) {
+                                if (filter.equals(prop.getValue())) {
+                                    // Matching properties; add the node to the response
+                                    // Currently, it's enough that a node matches one filter entry
+                                    log.debug("Node matches filter. Adding node " + node.getName() + " to the list of nodes to return");
+                                    response.add(node);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Return only the nodes matching the filters
+            return new NodeListResponseObject(requestId, response);
+        }
+
+        // Return all child nodes
         return new NodeListResponseObject(requestId, nodes);
     }
 
@@ -347,7 +375,7 @@ public class VocabularyService {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
 
             // Get the first set of nodes
-            List<MedicalNode> nodeList = getVocabulary(requestId, namespace).getNodeList();
+            List<MedicalNode> nodeList = getVocabulary(requestId, namespace, null).getNodeList();
 
             try {
                 writer = factory.createXMLStreamWriter(out, "utf-8");
@@ -463,7 +491,7 @@ public class VocabularyService {
         // Prepare a new request to recurse into child nodes
 
         String childpath = path + "/" + node.getName();
-        List<MedicalNode> nodeList = getVocabulary(requestId, path).getNodeList();
+        List<MedicalNode> nodeList = getVocabulary(requestId, path, null).getNodeList();
 
         if (nodeList != null) {
             writer.writeStartElement("children");

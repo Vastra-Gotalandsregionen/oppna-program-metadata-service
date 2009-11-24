@@ -5,11 +5,14 @@
 package se.vgregion.metaservice.keywordservice.schema;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import se.vgregion.metaservice.keywordservice.domain.Options;
+import se.vgregion.metaservice.schema.domain.FilterByPropertiesListType;
 import se.vgregion.metaservice.schema.domain.IncludeSourceIdsListType;
 import se.vgregion.metaservice.schema.domain.OptionsType;
+import se.vgregion.metaservice.schema.domain.OptionsType.FilterByProperties;
 import se.vgregion.metaservice.schema.domain.OptionsType.IncludeSourceIds;
 import se.vgregion.metaservice.schema.domain.OptionsType.IncludeSourceIds.Entry;
 
@@ -36,6 +39,22 @@ public class OptionsSdoHelper {
            optionsType.setIncludeSourceIds(toIncludeSourceIds(options.getIncludeSourceIds()));
             optionsType.setWordLimit(options.getWordLimit());
             optionsType.setUrl(options.getUrl());
+            
+            FilterByProperties props = new FilterByProperties();
+            for (java.util.Map.Entry<String, List<String>> entry : options.getFilterByProperties().entrySet()) {
+                FilterByProperties.Entry sdoEntry = new FilterByProperties.Entry();
+                sdoEntry.setKey(entry.getKey());
+
+                FilterByPropertiesListType sdoEntryVal = new FilterByPropertiesListType();
+                for (String val : entry.getValue()) {
+                    sdoEntryVal.getFilter().add(val);
+                }
+                
+                sdoEntry.setValue(sdoEntryVal);
+                props.getEntry().add(sdoEntry);
+            }
+            
+            optionsType.setFilterByProperties(props);
         }
         return optionsType;
     }
@@ -76,9 +95,23 @@ public class OptionsSdoHelper {
      */
     public static Options fromOptionsType(OptionsType optionsType) {
         Options options = new Options();
-        if(optionsType != null) {
-            options = new Options(optionsType.getWordLimit(),fromIncludeSourceIds(optionsType.getIncludeSourceIds()));
+        if (optionsType != null) {
+            options = new Options();
+            options.setWordLimit(optionsType.getWordLimit());
+            options.setIncludeSourceIds(fromIncludeSourceIds(optionsType.getIncludeSourceIds()));
             options.setUrl(optionsType.getUrl());
+
+            // Construct a Map<String, List<String>>  from the sequence of entries
+            if (optionsType.getFilterByProperties() != null && optionsType.getFilterByProperties().getEntry() != null) {
+                Map<String, List<String>> filterMap = new HashMap<String, List<String>>();
+                List<FilterByProperties.Entry> entries = optionsType.getFilterByProperties().getEntry();
+                for (Iterator<FilterByProperties.Entry> itr = entries.listIterator(); itr.hasNext();) {
+                    FilterByProperties.Entry e = itr.next();
+                    filterMap.put(e.getKey(), e.getValue().getFilter());
+                }
+
+                options.setFilterByProperties(filterMap);
+            }
         }
         return options;
     }
@@ -89,6 +122,9 @@ public class OptionsSdoHelper {
      * @return
      */
     private static Map<Integer,String[]> fromIncludeSourceIds(IncludeSourceIds sourceIds) {
+        if (sourceIds == null) {
+            return null;
+        }
         List<Entry> entries = sourceIds.getEntry();
         Map<Integer,String[]> sourceIdsMap = new HashMap<Integer, String[]>(entries.size());
         for(Entry entry : entries) {

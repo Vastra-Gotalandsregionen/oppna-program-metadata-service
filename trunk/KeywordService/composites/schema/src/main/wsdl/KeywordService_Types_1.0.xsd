@@ -134,6 +134,20 @@
                     </sequence>
                 </complexType>
             </element>
+            <element name="filterByProperties">
+                <complexType>
+                    <sequence>
+                        <element name="entry" minOccurs="0" maxOccurs="unbounded">
+                            <complexType>
+                                <sequence>
+                                    <element name="key" minOccurs="0" type="string" />
+                                    <element name="value" minOccurs="0" type="string" />
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
             <element name="wordLimit" type="int"/>
             <element name="url" type="string" />
         </sequence>

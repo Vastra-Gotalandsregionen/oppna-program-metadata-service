@@ -9,24 +9,21 @@
         xmlns:res="urn:Response.schema.metaservice.vgr.se:v1"
 	name="VocabularyServices"
 	targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
+
     <wsdl:types>
-        <xsd:schema
-			targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
-            <xsd:import schemaLocation="Document_V1.xsd"
-				namespace="urn:Document.schema.metaservice.vgr.se:v1" />
-            <xsd:import schemaLocation="Node_V2.xsd"
-				namespace="urn:Node.schema.metaservice.vgr.se:v2" />
-            <xsd:import schemaLocation="Request_V1.xsd"
-				namespace="urn:Request.schema.metaservice.vgr.se:v1" />
-            <xsd:import schemaLocation="Response_V1.xsd"
-				namespace="urn:Response.schema.metaservice.vgr.se:v1" />
+        <xsd:schema targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
+            <xsd:import schemaLocation="Document_V1.xsd" namespace="urn:Document.schema.metaservice.vgr.se:v1" />
+            <xsd:import schemaLocation="Node_V2.xsd" namespace="urn:Node.schema.metaservice.vgr.se:v2" />
+            <xsd:import schemaLocation="Request_V1.xsd" namespace="urn:Request.schema.metaservice.vgr.se:v1" />
+            <xsd:import schemaLocation="Response_V1.xsd" namespace="urn:Response.schema.metaservice.vgr.se:v1" />
+
             <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
             <xsd:element name="GetVocabularyRequest">
                 <xsd:complexType>
                     <xsd:sequence>
                         <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
-                        <xsd:element name="path" type="xsd:string"
-							minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="path" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="options" type="req:OptionsType"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
@@ -52,8 +49,7 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="LookupWordResponse"
-				type="res:LookupResponseObjectType" />
+            <xsd:element name="LookupWordResponse" type="res:LookupResponseObjectType" />
             <xsd:element name="LastChangeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -63,8 +59,7 @@
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
-            <xsd:element name="LastChangeResponse"
-				type="res:LastChangeResponseObjectType" />
+            <xsd:element name="LastChangeResponse" type="res:LastChangeResponseObjectType" />
             <xsd:element name="AddVocabularyNodeRequest">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -180,10 +175,8 @@
 
     </wsdl:portType>
 
-    <wsdl:binding name="VocabularyServiceSoapHttp"
-		type="tns:VocabularyService">
-        <soap:binding style="document"
-			transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:binding name="VocabularyServiceSoapHttp" type="tns:VocabularyService">
+        <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
 
 
         <wsdl:operation name="GetNamespaceXml">
@@ -242,3 +235,4 @@
         </wsdl:operation>
     </wsdl:binding>
 </wsdl:definitions>
+
