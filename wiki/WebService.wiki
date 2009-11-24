@@ -83,6 +83,10 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 || *Namn* || *Typ* || *Förklaring* ||
 || requestId || String || Unik anrops-identifierare ||
 || path	|| String || Sökvägen till noden ||
+|| options || Options || Alternativa parametrar att skicka med requesten. 
+
+*Förväntade options-värden*
+ *filterByProperties - Endast returnera noder som har de properties som specificeras. 
 
 *Returvärde*
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
@@ -102,7 +106,7 @@ lookupWord används för att se om ett ord existerar i någon av de fördefinier
 || options || Options	        || Alternativa parametrar att skicka med requesten ||
 
 *Förväntade options-värden*
-*url - Om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet.
+ *url - Om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet.
 
 *Returvärde*
 _ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`, `blacklist`, eller `none`. _
