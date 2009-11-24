@@ -9,8 +9,8 @@
             <element name="profileId" type="string" minOccurs="1" maxOccurs="1"/>
         </sequence>
     </complexType>
-    <!-- OPTIONS -->
 
+    <!-- OPTIONS -->
     <complexType name="OptionsType">
         <sequence>
             <element name="includeSourceIds">
@@ -27,15 +27,34 @@
                     </sequence>
                 </complexType>
             </element>
+            <element name="filterByProperties">
+                <complexType>
+                    <sequence>
+                        <element name="entry" minOccurs="0" maxOccurs="unbounded">
+                            <complexType>
+                                <sequence>
+                                    <element name="key" minOccurs="0" type="string" />
+                                    <element name="value" minOccurs="0" type="tns:filterByPropertiesListType" />
+                                </sequence>
+                            </complexType>
+                        </element>
+                    </sequence>
+                </complexType>
+            </element>
             <element name="wordLimit" type="int"/>
             <element name="url" type="string" />
         </sequence>
     </complexType>
 
+    <complexType name="filterByPropertiesListType">
+        <sequence>
+            <element name="filter" maxOccurs="unbounded" type="string" />
+        </sequence>
+    </complexType>
+
     <complexType name="IncludeSourceIdsListType">
         <sequence>
-            <element name="includeSourceId" maxOccurs="unbounded"
-				type="string" />
+            <element name="includeSourceId" maxOccurs="unbounded" type="string" />
         </sequence>
     </complexType>
 </schema>

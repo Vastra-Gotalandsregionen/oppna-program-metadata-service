@@ -2,21 +2,29 @@
 package se.vgregion.metaservice.keywordservice.domain;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Options
  */
 public class Options {
-
-    //Default values?
+    /** Max number of keywords to return */
     private int wordLimit = 10;
+
+    /** ? */
     private String url = "";
-    private Map<Integer,String[]> includeSourceIds;
+
+    /** A map of includeSourceIds to include for each namespace */
+    private Map<Integer, String[]> includeSourceIds = null;
+    
+    /** Used to filter returned nodes from VocabularyService.getVocabulary by property */
+    private Map<String, List<String>> filterByProperties = null;
+    
 
     /**
      * Empty Constructor, uses the default values
-     * wordLimit = 5 includeSourceIds = {"A","C"}
+     * wordLimit = 10, includeSourceIds = {"A", "B", "C"}
      */
     public Options(){
         Map<Integer, String[]> defaultSourceIds = new HashMap<Integer,String[]>();
@@ -24,21 +32,11 @@ public class Options {
         setIncludeSourceIds(defaultSourceIds);
     }
 
-    /**
-     * Constructor
-     * @param wordLimit the max number of keywords to return
-     * @param SourceIds a map of the includeSourceIds to include for each namespace
-     */
-    public Options(int wordLimit, Map<Integer,String[]> sourceIds) {
-        setWordLimit(wordLimit);
-        setIncludeSourceIds(sourceIds);
-    }
-
-    private void setIncludeSourceIds(Map<Integer,String[]> includeSourceIds) {
+    public void setIncludeSourceIds(Map<Integer,String[]> includeSourceIds) {
         this.includeSourceIds = includeSourceIds;
     }
 
-    private void setWordLimit(int wordLimit) {
+    public void setWordLimit(int wordLimit) {
         this.wordLimit = wordLimit;
     }
 
@@ -57,4 +55,13 @@ public class Options {
     public String getUrl() {
         return url;
     }
+
+    public Map<String, List<String>> getFilterByProperties() {
+        return filterByProperties;
+    }
+
+    public void setFilterByProperties(Map<String, List<String>> filterProperties) {
+        this.filterByProperties = filterProperties;
+    }
+
 }

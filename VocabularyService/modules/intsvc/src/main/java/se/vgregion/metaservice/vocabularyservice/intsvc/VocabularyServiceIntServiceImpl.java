@@ -48,7 +48,10 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
      */
     public NodeListResponseObjectType getVocabulary(GetVocabularyRequest parameters) {
 
-        NodeListResponseObject nodeListResponseObject = vocabularyService.getVocabulary(parameters.getRequestId(), parameters.getPath());
+        NodeListResponseObject nodeListResponseObject = vocabularyService.getVocabulary(
+                parameters.getRequestId(),
+                parameters.getPath(),
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
         return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
     }
 
