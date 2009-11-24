@@ -143,7 +143,7 @@ public class VocabularyService {
             try {
                 MedicalNode node = new MedicalNode();
                 node.setName(word);
-                node.setNamespaceId("33315");
+                node.setNamespaceId(namespaceId);
                 node = addNodeProperties(node, id, options);
 
                 // ensure write privileges to reviewlist
