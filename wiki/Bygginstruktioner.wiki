@@ -28,6 +28,47 @@ Skapa en databas för UserProfileService. I det här exemplet har vi använt en 
 Lägg till jdbc-drivrutinen för databasen i tomcats lib-katalog. För Derby används derbyclient.jar
 
 
+== Sökprofiler ==
+Om sökprofiler används ska dessa definieras i både keywordservice och vocabularyservice i respective svc projekt. Exempelfiler enligt nedan: 
+
+searchprofiles-config.xml
+{{{
+<bean id="searchProfile.vgr" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <!-- profileId defined in searchprofiles.properties -->
+        <property name="profileId" value="${vgr.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value>VGR</value>
+            </set>
+        </property>
+        <property name="blackList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/Blacklist" />
+            </bean>
+        </property>
+        <property name="whiteList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/Whitelist" />
+            </bean>
+        </property>
+        <property name="reviewList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/Reviewlist" />
+            </bean>
+        </property>
+    </bean>
+}}}
+
+searchprofiles.config
+{{{
+vgr.profileid=hard_to_guess_profileId
+}}}
+
 = Instruktioner för SitemapGenerator =
 SitemapGenerator är en standalone applikation i metaservice projektet. Applikationen genererar en sitemap för varje angiven namnrymd. Rekomenderad körning är att applikationen startas via en enkel .bat fil, schemalagd enligt operativsystemet inbyggda schemaläggninigresurser. 
 
