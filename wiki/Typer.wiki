@@ -91,6 +91,7 @@ Options är ett object som anger valbara parametrar för en request.
 || wordLimit || int || Antal ord som ska returneras. Default värde är 10 ||
 || includeSourceIds || Map<Integer,List<String>> || Används för att begränsa sökresultatet till en delmängd av ett namespace.  En map med namespaceId som nyckel och en lista av sourceIds som sökningen ska begränsas till för det angivna namespaceId:t ||
 || url || String || Url som requesten kommer ifrån ||
+|| filterByProperties || Map<String, List<String>> || En map med en lista av filter. Kan användas med VocabularyService.getVocabulary för att endast returnera de noder som har en property som matchar en av strängarna i listan.  ||
 
 <br><br>
 
