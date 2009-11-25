@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.logging.Level;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -34,6 +35,7 @@ import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeExcep
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
+import se.vgregion.metaservice.keywordservice.exception.ParentNotFoundException;
 
 /**
  * Class for handling queries for a vocabulary
@@ -42,7 +44,6 @@ public class VocabularyService {
 
     private static Logger log = Logger.getLogger(VocabularyService.class);
     private MedicalTaxonomyService medicalTaxonomyService;
-
     //TODO: specify this elsewhere?
     private String profileIdPropertyName = "profileId";
     private String userIdPropertyName = "userId";
@@ -55,8 +56,8 @@ public class VocabularyService {
 
     public LastChangeResponseObject getLastChange(Identification identification, String requestId, String namespaceName) {
         String namespaceId = getNamespaceIdByName(namespaceName, requestId);
-        if(namespaceId == null) {
-            return new LastChangeResponseObject(requestId,StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
+        if (namespaceId == null) {
+            return new LastChangeResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
         }
         Long lastChange;
         try {
@@ -77,7 +78,7 @@ public class VocabularyService {
      */
     public LookupResponseObject lookupWord(Identification id, String requestId, String word, Options options) {
         SearchProfile profile = searchProfiles.get(id.getProfileId());
-        if(profile == null) {
+        if (profile == null) {
             return new LookupResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Specified profile does not exist");
         }
         String namespace = profile.getWhiteList().getNamespace(); //TODO: No support for having different namespaces. Only looks in the whitelist-namespaceId
@@ -92,8 +93,8 @@ public class VocabularyService {
             if (hasNamespaceReadAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
 
                 for (MedicalNode parent : node.getParents()) {
-                    
-                    
+
+
                     if (parent.getName().equals(profile.getBlackList().getName())) {
                         response = new LookupResponseObject(requestId, LookupResponseObject.ListType.BLACKLIST);
                         continue;
@@ -108,7 +109,7 @@ public class VocabularyService {
                             node = addNodeProperties(node, id, options);
 
                             try {
-                                medicalTaxonomyService.updateNodeProperties(node, false);
+                                medicalTaxonomyService.createNodeProperties(node, false);
                                 medicalTaxonomyService.setLastChangeNow(node.getNamespaceId());
 
                             } catch (InvalidPropertyTypeException ex) {
@@ -200,7 +201,7 @@ public class VocabularyService {
         List<MedicalNode> response = new ArrayList<MedicalNode>();
         NodePath nodePath = new NodePath();
         nodePath.setPath(path);
-        
+
         String[] hierarchy = nodePath.getRelativePath().split("/");
         String namespaceId = getNamespaceIdByName(nodePath.getNamespace(), requestId);
         LinkedList<String> q = new LinkedList<String>(Arrays.asList(hierarchy));
@@ -209,7 +210,7 @@ public class VocabularyService {
         while (!q.isEmpty()) {
             n = medicalTaxonomyService.getChildNode(namespaceId, n, q.removeFirst());
             if (n == null) {
-                log.error(MessageFormat.format("{0}:{1}: Invalid path {2}", 
+                log.error(MessageFormat.format("{0}:{1}: Invalid path {2}",
                         requestId, StatusCode.error_getting_keywords_from_taxonomy, path));
                 return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid path '" + path + "'");
             }
@@ -297,7 +298,7 @@ public class VocabularyService {
         ResponseObject response = new ResponseObject(requestId);
 
         try {
-            
+
             if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId) &&
                     hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
@@ -339,9 +340,23 @@ public class VocabularyService {
         ResponseObject response = new ResponseObject(requestId);
 
         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
-
-            //TODO: implement this method
-            response.setStatusCode(StatusCode.ok);
+            try {
+                medicalTaxonomyService.updateConcept(node);
+                response.setStatusCode(StatusCode.ok);
+            } catch (NodeNotFoundException ex) {
+                response.setErrorMessage("The node was not found");
+                response.setStatusCode(StatusCode.error_editing_taxonomy);
+            } catch (KeywordsException ex) {
+                response.setErrorMessage("The node could not be updated");
+                response.setStatusCode(StatusCode.error_editing_taxonomy);
+            } catch (InvalidPropertyTypeException ex) {
+                response.setErrorMessage("One of the properties was of an undefined type");
+                response.setStatusCode(StatusCode.error_editing_taxonomy);
+            } catch (ParentNotFoundException ex) {
+                response.setErrorMessage("Could not find the specified parent");
+                response.setStatusCode(StatusCode.error_editing_taxonomy);
+            }
+            
 
         } else {
             response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
@@ -640,7 +655,7 @@ public class VocabularyService {
             return namespaceId;
 
         } catch (Exception ex) {
-            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.unknown_error,namespaceName), ex);
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.unknown_error, namespaceName), ex);
         }
 
         return null;
