@@ -9,6 +9,7 @@ import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeExcep
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
+import se.vgregion.metaservice.keywordservice.exception.ParentNotFoundException;
 
 /**
  * Handles communication with a medical taxonomy. Implementing classes of this interface acts like fa�ades
@@ -55,7 +56,7 @@ public abstract class MedicalTaxonomyService {
          * @param namespaceId the namespace to search in
          * @return a node with the specified id or null if none is found
          */
-	public abstract MedicalNode getNodeByInternalId(String internalId, String namespaceId);
+	public abstract MedicalNode getNodeByInternalId(String internalId, String namespaceId) throws NodeNotFoundException;
 	
 	/**
 	 * Find nodes based on input nodeName. NodeName can be a wildcard pattern, e.g all*. If matchSynonyms is set, the nodeName wil be matched against concept name and synonyms
@@ -90,7 +91,9 @@ public abstract class MedicalTaxonomyService {
 
         public abstract MedicalNode createNewConcept(MedicalNode node) throws KeywordsException,NodeAlreadyExistsException,InvalidPropertyTypeException, NodeNotFoundException;
 
-        public abstract void updateNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException,InvalidPropertyTypeException;
+        public abstract void updateConcept(MedicalNode node) throws NodeNotFoundException, KeywordsException, InvalidPropertyTypeException, ParentNotFoundException;
+
+        public abstract void createNodeProperties(MedicalNode node, boolean overwriteOProperties) throws KeywordsException,InvalidPropertyTypeException;
 
         public abstract long setLastChangeNow(String namespaceId) throws KeywordsException;
 
