@@ -10,7 +10,7 @@
         name="KeywordServices"
 	targetNamespace="urn:KeywordServices:wsdl:metaservice.vgr.se:v2">
     <wsdl:documentation>Versoin: 2.0</wsdl:documentation>
-    <wsdl:types>  
+    <wsdl:types>   
         <xsd:schema  
 			targetNamespace="urn:KeywordServices:wsdl:metaservice.vgr.se:v2">
             <xsd:import schemaLocation="Document_V1.xsd"

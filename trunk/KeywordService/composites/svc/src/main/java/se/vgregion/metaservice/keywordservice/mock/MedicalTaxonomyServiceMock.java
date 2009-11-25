@@ -12,6 +12,7 @@ import java.util.Date;
 import se.vgregion.metaservice.keywordservice.MedicalTaxonomyService;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
+import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
@@ -89,7 +90,7 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
     }
 
     @Override
-    public void updateNodeProperties(MedicalNode node, boolean overwriteProperties) throws KeywordsException {
+    public void createNodeProperties(MedicalNode node, boolean overwriteProperties) throws KeywordsException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -111,6 +112,11 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
     @Override
     public String findNamespaceIdByName(String namespaceName) throws Exception {
         return "123";
+    }
+
+    @Override
+    public void updateConcept(MedicalNode node) throws NodeNotFoundException, KeywordsException, InvalidPropertyTypeException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 
