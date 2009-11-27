@@ -29,6 +29,8 @@ Administratören har loggat in i systemet och navigerat till sidan för administ
   # Administratören väljer att rättstava ett felstavat ord
     # Systemet anropar updateVocabularyNode med den nya informationen
   # Administratören markerar vilka ord som ska godkännas och vilka som förbjuds
+  # För varje ord, kan systemet kontrollera att ordet ligger kvar i reviewlistan. Denna kontroll görs med metoden getVocabularyNodesByName(). Genom att kontrollera vilken förälder den returnerade noden har, kan systemet försäkra sig om att ingen annan hunnit godkänna/förbjuda den.
+  # För varje ord som ska läggas till anropar systemet MoveVocabularyNode med noden och nodens nya förälder (whitelist/blacklist) som parameter.
 
 = Details =
 
