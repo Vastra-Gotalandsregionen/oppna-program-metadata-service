@@ -1,5 +1,6 @@
 package se.vgregion.metaservice.keywordservice;
 
+import com.apelon.dts.client.DTSException;
 import java.util.List;
 import java.util.Map;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
@@ -65,7 +66,7 @@ public abstract class MedicalTaxonomyService {
 	 * @param matchSynonyms - If true, match against synonym name and concept name
 	 * @return a list of MedicalNodes with names that matches the nodeName pattern.
 	 */
-	public abstract List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms);
+	public abstract List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms) throws DTSException;
 
         /**
          * Move a node to a new parent in the tree. WARNING, if the node has several parents, these will be deleted.
@@ -83,9 +84,9 @@ public abstract class MedicalTaxonomyService {
 	 * @param matchSynonyms - If true, match against synonym name and concept name
 	 * @return a list of MedicalNodes with names that matches the nodeName pattern.
 	 */
-	public abstract List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms);
+	public abstract List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms) throws DTSException;
 
-	public abstract MedicalNode getChildNode(String namespaceId, MedicalNode node, String childName);
+	public abstract MedicalNode getChildNode(String namespaceId, MedicalNode node, String childName) throws DTSException;
 	
 	public abstract List<MedicalNode> getChildNodes(MedicalNode node);
 

@@ -229,7 +229,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     public long setLastChangeNow(String namespaceId) throws KeywordsException {
         //TODO: All update methods should call this?
         Long now = new Date().getTime();
-        List<MedicalNode> list = findNodes("LastChange", namespaceId, false);
+        List<MedicalNode> list = null;
+        try {
+            list = findNodes("LastChange", namespaceId, false);
+        } catch (DTSException ex) {
+            log.error("Could not find the lastChange-Node");
+            throw new KeywordsException("Could not find the lastUpdate-Node");
+        }
         MedicalNode node = null;
         if (list.isEmpty()) {
             log.error("Could not find the lastChange-Node");
@@ -252,7 +258,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     public long getLastChange(String namespaceId) throws KeywordsException {
         //TODO: base namespace on id
-        List<MedicalNode> list = findNodes("LastChange", namespaceId, false);
+        List<MedicalNode> list = null;
+        try {
+            list = findNodes("LastChange", namespaceId, false);
+        } catch (DTSException ex) {
+            log.error("Could not find the lastChange-Node");
+            throw new KeywordsException("Could not find the lastChange-Node");
+        }
         MedicalNode node = null;
         if (list.isEmpty()) {
             log.error("Could not find the lastChange-Node");
@@ -294,16 +306,16 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return concept;
     }
 
-    public List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms) {
+    public List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms) throws DTSException {
         return findNodes(nodeName, namespaceId, matchSynonyms, false);
 
     }
 
-    public List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms) {
+    public List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms) throws DTSException {
         return findNodes(nodeName, namespaceId, matchSynonyms, true);
     }
 
-    private List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, boolean fetchParents) {
+    private List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, boolean fetchParents) throws DTSException {
         List<MedicalNode> nodes = new ArrayList<MedicalNode>(100);
         setFetchParents(ca, namespace.getId());
         try {
@@ -315,9 +327,6 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), fetchParents);
                 nodes.add(node);
             }
-        } catch (DTSException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (NumberFormatException ex) {
             throw new IllegalArgumentException("Namespace id needs to be a valid integer", ex);
         }
@@ -481,7 +490,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     }
 
     public MedicalNode getChildNode(String namespaceId,
-            MedicalNode node, String childName) {
+            MedicalNode node, String childName) throws DTSException{
 
         if (node == null) {
             log.info(MessageFormat.format("Trying to get root node {0}", childName));

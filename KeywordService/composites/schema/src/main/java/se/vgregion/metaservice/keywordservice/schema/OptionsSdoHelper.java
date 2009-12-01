@@ -24,7 +24,6 @@ import se.vgregion.metaservice.schema.domain.OptionsType.IncludeSourceIds.Entry;
 public class OptionsSdoHelper {
 
     public OptionsSdoHelper() {
-
     }
 
     /**
@@ -35,11 +34,11 @@ public class OptionsSdoHelper {
      */
     public static OptionsType toOptionsType(Options options) {
         OptionsType optionsType = new OptionsType();
-        if(options != null) {
-           optionsType.setIncludeSourceIds(toIncludeSourceIds(options.getIncludeSourceIds()));
+        if (options != null) {
+            optionsType.setIncludeSourceIds(toIncludeSourceIds(options.getIncludeSourceIds()));
             optionsType.setWordLimit(options.getWordLimit());
             optionsType.setUrl(options.getUrl());
-            
+
             FilterByProperties props = new FilterByProperties();
             for (java.util.Map.Entry<String, List<String>> entry : options.getFilterByProperties().entrySet()) {
                 FilterByProperties.Entry sdoEntry = new FilterByProperties.Entry();
@@ -49,12 +48,15 @@ public class OptionsSdoHelper {
                 for (String val : entry.getValue()) {
                     sdoEntryVal.getFilter().add(val);
                 }
-                
+
                 sdoEntry.setValue(sdoEntryVal);
                 props.getEntry().add(sdoEntry);
             }
-            
+
             optionsType.setFilterByProperties(props);
+            if (options.getUseSynonyms() != null) {
+                optionsType.setUseSynonyms(options.getUseSynonyms());
+            }
         }
         return optionsType;
     }
@@ -112,6 +114,9 @@ public class OptionsSdoHelper {
 
                 options.setFilterByProperties(filterMap);
             }
+
+            options.setUseSynonyms(optionsType.isUseSynonyms());
+
         }
         return options;
     }
@@ -121,13 +126,13 @@ public class OptionsSdoHelper {
      * @param sourceIds
      * @return
      */
-    private static Map<Integer,String[]> fromIncludeSourceIds(IncludeSourceIds sourceIds) {
+    private static Map<Integer, String[]> fromIncludeSourceIds(IncludeSourceIds sourceIds) {
         if (sourceIds == null) {
             return null;
         }
         List<Entry> entries = sourceIds.getEntry();
-        Map<Integer,String[]> sourceIdsMap = new HashMap<Integer, String[]>(entries.size());
-        for(Entry entry : entries) {
+        Map<Integer, String[]> sourceIdsMap = new HashMap<Integer, String[]>(entries.size());
+        for (Entry entry : entries) {
             sourceIdsMap.put(entry.getKey(), fromIncludeSourceIdsListType(entry.getValue()));
         }
         return sourceIdsMap;
@@ -142,5 +147,4 @@ public class OptionsSdoHelper {
         String[] array = includeSourceIdsListType.getIncludeSourceId().toArray(new String[0]);
         return array;
     }
-    
 }
