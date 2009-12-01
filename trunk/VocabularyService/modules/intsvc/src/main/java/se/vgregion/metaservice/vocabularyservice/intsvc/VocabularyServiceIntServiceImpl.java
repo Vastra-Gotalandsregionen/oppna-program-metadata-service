@@ -24,6 +24,7 @@ import se.vgregion.metaservice.wsdl.vocabularyservices.LastChangeRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.LookupWordRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.MoveVocabularyNodeRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.UpdateVocabularyNodeRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.FindNodesByNameRequest;
 
 public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.wsdl.vocabularyservices.VocabularyService {
 
@@ -37,7 +38,7 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
     public LastChangeResponseObjectType getLastChange(LastChangeRequest parameters) {
 
         LastChangeResponseObject lastChangeResponseObject = vocabularyService.getLastChange(IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
-                parameters.getRequestId(),parameters.getNamespace());
+                parameters.getRequestId(), parameters.getNamespace());
         return ResponseObjectSdoHelper.toLastChangeRepsonseObjectType(lastChangeResponseObject);
     }
 
@@ -52,6 +53,21 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
                 parameters.getRequestId(),
                 parameters.getPath(),
                 OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
+        return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
+    }
+
+    /**
+     * Interface to getVocabulary in vocabularyService
+     * @param parameters
+     * @return
+     */
+    public NodeListResponseObjectType findNodesByName(FindNodesByNameRequest parameters) {
+
+        NodeListResponseObject nodeListResponseObject = vocabularyService.findNodesByName(
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
+                parameters.getNameSpaceName(),parameters.getName(),parameters.getRequestId(),
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
+
         return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
     }
 

@@ -9,7 +9,7 @@
         xmlns:res="urn:Response.schema.metaservice.vgr.se:v1"
 	name="VocabularyServices"
 	targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
- 
+  
     <wsdl:types> 
         <xsd:schema targetNamespace="urn:VocabularyServices:wsdl:metaservice.vgr.se:v2">
             <xsd:import schemaLocation="Document_V1.xsd" namespace="urn:Document.schema.metaservice.vgr.se:v1" />
@@ -28,6 +28,18 @@
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="GetVocabularyResponse" type="res:NodeListResponseObjectType" />
+            <xsd:element name="FindNodesByNameRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="req:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="nameSpaceName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="options" type="req:OptionsType"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="FindNodesByNameResponse" type="res:NodeListResponseObjectType" />
             <xsd:element name="GetNamespaceXmlRequest">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -102,6 +114,14 @@
         <wsdl:part element="tns:GetNamespaceXmlResponse" name="parameters">
         </wsdl:part>
     </wsdl:message>
+    <wsdl:message name="FindNodesByNameRequest">
+        <wsdl:part element="tns:FindNodesByNameRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindNodesByNameResponse">
+        <wsdl:part element="tns:FindNodesByNameResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="GetVocabularyRequest">
         <wsdl:part name="parameters" element="tns:GetVocabularyRequest">
         </wsdl:part>
@@ -147,6 +167,10 @@
         <wsdl:operation name="GetNamespaceXml">
             <wsdl:input message="tns:GetNamespaceXmlRequest" />
             <wsdl:output message="tns:GetNamespaceXmlResponse" />
+        </wsdl:operation>
+        <wsdl:operation name="FindNodesByName">
+            <wsdl:input message="tns:FindNodesByNameRequest" />
+            <wsdl:output message="tns:FindNodesByNameResponse" />
         </wsdl:operation>
         <wsdl:operation name="GetVocabulary">
             <wsdl:input message="tns:GetVocabularyRequest" />
