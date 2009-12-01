@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 
 public class MedicalTaxonomyServiceTest extends BaseSpringDependencyInjectionTest {
 
@@ -49,8 +50,13 @@ public class MedicalTaxonomyServiceTest extends BaseSpringDependencyInjectionTes
 	}
 	
 	public void testFindNodeByInternalId() {
-		MedicalNode node = mts.getNodeByInternalId("2149","123");
-		assertNotNull(node);
-		assertEquals("2149",node.getInternalId());
+            try {
+                MedicalNode node = mts.getNodeByInternalId("2149","123");
+                assertEquals("2149",node.getInternalId());
+            }
+            catch(NodeNotFoundException ex) {
+                    assert(false);
+            }
+	
 	}
 }

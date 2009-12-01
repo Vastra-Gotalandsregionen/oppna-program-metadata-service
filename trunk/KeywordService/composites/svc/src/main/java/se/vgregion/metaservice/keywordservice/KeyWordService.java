@@ -27,6 +27,7 @@ import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
 import se.vgregion.metaservice.keywordservice.entity.UserKeyword;
 import se.vgregion.metaservice.keywordservice.exception.FormattingException;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
+import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 import se.vgregion.metaservice.keywordservice.exception.ProcessingException;
 import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatException;
 import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessor;
@@ -276,7 +277,7 @@ public class KeyWordService {
         if(namespaceId == null) {
             return new NodeListResponseObject(requestId,StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
         }
-        
+        try {
         MedicalNode node = medicalTaxonomyService.getNodeByInternalId(internalId, namespaceId);
 
         if (node != null) {
@@ -295,11 +296,13 @@ public class KeyWordService {
                 response.setNodeList(new ArrayList<MedicalNode>());
             }
 
-        } else {
+        }
+        }
+        catch(NodeNotFoundException ex) {
             log.warn(MessageFormat.format("{0}:{1}:Error retrieving node from medicalTaxonomyService",
                     requestId, StatusCode.error_getting_keywords_from_taxonomy.code()));
             response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
-            response.setErrorMessage("Error retrieving node from medicalTaxonomyService");
+            response.setErrorMessage("Node with id "+internalId+" not found in namespace "+namespaceId);
             response.setNodeList(new ArrayList<MedicalNode>());
         }
 
