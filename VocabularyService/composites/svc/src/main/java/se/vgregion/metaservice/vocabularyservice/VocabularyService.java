@@ -1,5 +1,6 @@
 package se.vgregion.metaservice.vocabularyservice;
 
+import com.apelon.dts.client.DTSException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -83,7 +84,12 @@ public class VocabularyService {
         }
         String namespace = profile.getWhiteList().getNamespace(); //TODO: No support for having different namespaces. Only looks in the whitelist-namespaceId
         String namespaceId = getNamespaceIdByName(namespace, requestId);
-        List<MedicalNode> nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, true);
+        List<MedicalNode> nodes = null;
+        try {
+            nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, true);
+        } catch (DTSException ex) {
+            return new LookupResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get keywords from taxonomy");
+        }
         LookupResponseObject response = new LookupResponseObject(requestId, LookupResponseObject.ListType.NONE);
 
         if (nodes.size() != 0) {
@@ -131,7 +137,7 @@ public class VocabularyService {
                 }
 
             } else {
-                response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
+                response.setErrorMessage("Could not create the node in reviewList");
                 response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
             }
 
@@ -139,7 +145,13 @@ public class VocabularyService {
         } else {
 
             // create a new node and add to review-list
-            MedicalNode reviewNode = medicalTaxonomyService.findNodes(profile.getReviewList().getName(), namespaceId, false).get(0);
+            MedicalNode reviewNode = null;
+            try {
+                reviewNode = medicalTaxonomyService.findNodes(profile.getReviewList().getName(), namespaceId, false).get(0);
+            } catch (DTSException ex) {
+                return new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
+                        "Invalid property types");
+            }
 
             try {
                 MedicalNode node = new MedicalNode();
@@ -208,7 +220,11 @@ public class VocabularyService {
         MedicalNode n = null;
 
         while (!q.isEmpty()) {
-            n = medicalTaxonomyService.getChildNode(namespaceId, n, q.removeFirst());
+            try {
+                n = medicalTaxonomyService.getChildNode(namespaceId, n, q.removeFirst());
+            } catch (DTSException ex) {
+                                return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get nodes from taxonomy");
+            }
             if (n == null) {
                 log.error(MessageFormat.format("{0}:{1}: Invalid path {2}",
                         requestId, StatusCode.error_getting_keywords_from_taxonomy, path));
@@ -286,6 +302,40 @@ public class VocabularyService {
     }
 
     /**
+     * Return all nodes that match a specified name, or has the specified word
+     * as a synonym if that option is set to true
+     * @param id the identification of the user searches for the node
+     * @param name the name to look for
+     * @param requestId the unique request id
+     * @param options Specify if the function is to look for synonyms as well
+     * @return
+     */
+    public NodeListResponseObject findNodesByName(Identification id, String namespaceName, String name, String requestId, Options options) {
+
+        String nameSpaceId = getNamespaceIdByName(namespaceName, requestId);
+        if (nameSpaceId == null) {
+            return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
+        }
+        Boolean getSynonyms = false;
+        if (options != null && options.getUseSynonyms() != null) {
+            getSynonyms = options.getUseSynonyms();
+        }
+
+        List<MedicalNode> list = null;
+        if (hasNamespaceReadAccess(nameSpaceId, id.getProfileId(), requestId)) {
+            try {
+                list = medicalTaxonomyService.findNodes(name, nameSpaceId, getSynonyms);
+            } catch (DTSException ex) {
+                 return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get the nodes from taxonomy");
+            }
+        } else {
+            return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "No read-priviledge in specified namespace");
+        }
+
+        return new NodeListResponseObject(requestId, list);
+    }
+
+    /**
      * Move a node in a vocabulary, that is: change the parent of the node
      * @param id the identification of the user that moves the node
      * @param requestId the unique request id
@@ -356,7 +406,7 @@ public class VocabularyService {
                 response.setErrorMessage("Could not find the specified parent");
                 response.setStatusCode(StatusCode.error_editing_taxonomy);
             }
-            
+
 
         } else {
             response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
