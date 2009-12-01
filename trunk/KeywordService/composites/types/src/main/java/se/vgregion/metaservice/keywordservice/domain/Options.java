@@ -20,7 +20,9 @@ public class Options {
     
     /** Used to filter returned nodes from VocabularyService.getVocabulary by property */
     private Map<String, List<String>> filterByProperties = null;
-    
+
+    /** Used by findNodesByName*/
+    private Boolean useSynonyms;
 
     /**
      * Empty Constructor, uses the default values
@@ -63,5 +65,14 @@ public class Options {
     public void setFilterByProperties(Map<String, List<String>> filterProperties) {
         this.filterByProperties = filterProperties;
     }
+
+    public Boolean getUseSynonyms() {
+        return useSynonyms;
+    }
+
+    public void setUseSynonyms(Boolean useSynonyms) {
+        this.useSynonyms = useSynonyms;
+    }
+
 
 }

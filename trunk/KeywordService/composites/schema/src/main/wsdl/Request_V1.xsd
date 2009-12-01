@@ -43,6 +43,7 @@
             </element>
             <element name="wordLimit" type="int"/>
             <element name="url" type="string" />
+            <element name="useSynonyms" type="boolean"/>
         </sequence>
     </complexType>
 
