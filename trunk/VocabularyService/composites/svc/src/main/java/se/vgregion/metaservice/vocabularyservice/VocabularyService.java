@@ -82,11 +82,17 @@ public class VocabularyService {
         if (profile == null) {
             return new LookupResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Specified profile does not exist");
         }
+
+        Boolean useSynonyms = false;
+        if (options != null && options.getUseSynonyms() != null) {
+            useSynonyms = options.getUseSynonyms();
+        }
+
         String namespace = profile.getWhiteList().getNamespace(); //TODO: No support for having different namespaces. Only looks in the whitelist-namespaceId
         String namespaceId = getNamespaceIdByName(namespace, requestId);
         List<MedicalNode> nodes = null;
         try {
-            nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, true);
+            nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, useSynonyms);
         } catch (DTSException ex) {
             return new LookupResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get keywords from taxonomy");
         }
@@ -223,7 +229,7 @@ public class VocabularyService {
             try {
                 n = medicalTaxonomyService.getChildNode(namespaceId, n, q.removeFirst());
             } catch (DTSException ex) {
-                                return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get nodes from taxonomy");
+                return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get nodes from taxonomy");
             }
             if (n == null) {
                 log.error(MessageFormat.format("{0}:{1}: Invalid path {2}",
@@ -326,7 +332,7 @@ public class VocabularyService {
             try {
                 list = medicalTaxonomyService.findNodes(name, nameSpaceId, getSynonyms);
             } catch (DTSException ex) {
-                 return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get the nodes from taxonomy");
+                return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get the nodes from taxonomy");
             }
         } else {
             return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "No read-priviledge in specified namespace");
