@@ -63,6 +63,13 @@
                     <jxb:typesafeEnumMember name="error_processing_content" value="2001" />
                     <jxb:typesafeEnumMember name="error_getting_keywords_from_taxonomy" value="3001" />
                     <jxb:typesafeEnumMember name="error_editing_taxonomy" value="3002" />
+                    <jxb:typesafeEnumMember name="insufficient_namespace_privileges" value="3003" />
+                    <jxb:typesafeEnumMember name="invalid_parameter" value="3004" />
+                    <jxb:typesafeEnumMember name="error_locating_namespace" value="3005" />
+                    <jxb:typesafeEnumMember name="error_resolving_property" value="3006" />
+                    <jxb:typesafeEnumMember name="invalid_node_property" value="3007" />
+                    <jxb:typesafeEnumMember name="error_storing_property" value="3008" />
+                    <jxb:typesafeEnumMember name="error_locating_node" value="3009" />
                     <jxb:typesafeEnumMember name="unknown_error" value="6001" />
                 </jxb:typesafeEnumClass>
             </appinfo>
@@ -71,10 +78,17 @@
             <enumeration value="200" />
             <enumeration value="1001" />
             <enumeration value="1002" />
-            <enumeration value="1003"/>
+            <enumeration value="1003" />
             <enumeration value="2001" />
             <enumeration value="3001" />
             <enumeration value="3002" />
+            <enumeration value="3003" />
+            <enumeration value="3004" />
+            <enumeration value="3005" />
+            <enumeration value="3006" />
+            <enumeration value="3007" />
+            <enumeration value="3008" />
+            <enumeration value="3009" />
             <enumeration value="6001" />
         </restriction>
     </simpleType>
