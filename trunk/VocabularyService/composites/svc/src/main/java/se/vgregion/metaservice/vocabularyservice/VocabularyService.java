@@ -58,14 +58,13 @@ public class VocabularyService {
     public LastChangeResponseObject getLastChange(Identification identification, String requestId, String namespaceName) {
         String namespaceId = getNamespaceIdByName(namespaceName, requestId);
         if (namespaceId == null) {
-            return new LastChangeResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
+            return new LastChangeResponseObject(requestId, StatusCode.invalid_parameter, "Invalid namespace name");
         }
         Long lastChange;
         try {
             lastChange = medicalTaxonomyService.getLastChange(namespaceId);
         } catch (KeywordsException ex) {
-            //TODO: another error message??
-            return new LastChangeResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "No lastChange property found");
+            return new LastChangeResponseObject(requestId, StatusCode.error_resolving_property, "No lastChange property found");
         }
         return new LastChangeResponseObject(requestId, lastChange);
     }
@@ -80,7 +79,7 @@ public class VocabularyService {
     public LookupResponseObject lookupWord(Identification id, String requestId, String word, Options options) {
         SearchProfile profile = searchProfiles.get(id.getProfileId());
         if (profile == null) {
-            return new LookupResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Specified profile does not exist");
+            return new LookupResponseObject(requestId, StatusCode.invalid_parameter, "Specified profile does not exist");
         }
 
         Boolean useSynonyms = false;
@@ -126,70 +125,72 @@ public class VocabularyService {
 
                             } catch (InvalidPropertyTypeException ex) {
                                 response = new LookupResponseObject(requestId,
-                                        ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
-                                        "Invalid property types");
+                                        ResponseObject.StatusCode.invalid_node_property,
+                                        "Invalid node property");
 
                             } catch (KeywordsException ex) {
                                 response = new LookupResponseObject(requestId,
-                                        ResponseObject.StatusCode.error_getting_keywords_from_taxonomy,
+                                        ResponseObject.StatusCode.error_storing_property,
                                         "Could not add properties to keyword");
                             }
                         } else {
-                            response.setErrorMessage("The profile is invalid or does not have read privileges to " + profile.getReviewList().getName());
-                            response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
+                            response.setErrorMessage("The profile is invalid or does not have read privileges to namespace " + profile.getReviewList().getName());
+                            response.setStatusCode(StatusCode.insufficient_namespace_privileges);
                         }
 
                     }
                 }
 
             } else {
-                response.setErrorMessage("Could not create the node in reviewList");
-                response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
+                response.setErrorMessage("The profile is invalid or does not have read privileges to namespace " + profile.getReviewList().getName());
+                response.setStatusCode(StatusCode.insufficient_namespace_privileges);
             }
 
 
-        } else {
+        } else { 
+            /** * create a new node and add to review-list ** */
 
-            // create a new node and add to review-list
+            // Find the reviewList node
             MedicalNode reviewNode = null;
             try {
                 reviewNode = medicalTaxonomyService.findNodes(profile.getReviewList().getName(), namespaceId, false).get(0);
             } catch (DTSException ex) {
-                return new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
-                        "Invalid property types");
+                return new LookupResponseObject(requestId, ResponseObject.StatusCode.error_locating_node,
+                        "Unable to locate the reviewList node");
             }
 
-            try {
-                MedicalNode node = new MedicalNode();
-                node.setName(word);
-                node.setNamespaceId(namespaceId);
-                node = addNodeProperties(node, id, options);
+            // Ensure write privileges to reviewlist
+            if (hasNamespaceWriteAccess(reviewNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
-                // ensure write privileges to reviewlist
-                if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
+                // Create a new node
+                try {
+                    MedicalNode node = new MedicalNode();
+                    node.setName(word);
+                    node.setNamespaceId(namespaceId);
+                    node = addNodeProperties(node, id, options);
                     node.addParent(reviewNode);
                     medicalTaxonomyService.createNewConcept(node);
                     medicalTaxonomyService.setLastChangeNow(node.getNamespaceId());
 
-                } else {
-                    response.setErrorMessage("The profile is invalid or does not have read privileges to " + profile.getReviewList().getName());
-                    response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
+                } catch (InvalidPropertyTypeException ex) {
+                    response = new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
+                            "Invalid property types");
+                } catch (NodeNotFoundException ex) {
+                    response = new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
+                            "Could not find the reviewList");
+                } catch (NodeAlreadyExistsException ex) {
+                    //This should never happen
+                    response = new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
+                            "Node already exists");
+                } catch (KeywordsException ex) {
+                    response = new LookupResponseObject(requestId,
+                            ResponseObject.StatusCode.error_editing_taxonomy,
+                            "Could not create the new keyword, reason: " + ex.getMessage());
                 }
-            } catch (InvalidPropertyTypeException ex) {
-                response = new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
-                        "Invalid property types");
-            } catch (NodeNotFoundException ex) {
-                response = new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
-                        "Could not find the reviewList");
-            } catch (NodeAlreadyExistsException ex) {
-                //This should never happen
-                response = new LookupResponseObject(requestId, ResponseObject.StatusCode.error_editing_taxonomy,
-                        "Node already exists");
-            } catch (KeywordsException ex) {
-                //TODO: new statuscode?
-                response = new LookupResponseObject(requestId,
-                        ResponseObject.StatusCode.error_editing_taxonomy,
-                        "Could not create the new keyword");
+            } else {
+                response.setErrorMessage("The profile is invalid or does not have write privileges to " + profile.getReviewList().getName());
+                response.setStatusCode(StatusCode.insufficient_namespace_privileges);
+                return response;
             }
         }
 
@@ -233,8 +234,8 @@ public class VocabularyService {
             }
             if (n == null) {
                 log.error(MessageFormat.format("{0}:{1}: Invalid path {2}",
-                        requestId, StatusCode.error_getting_keywords_from_taxonomy, path));
-                return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid path '" + path + "'");
+                        requestId, StatusCode.invalid_parameter.code(), path));
+                return new NodeListResponseObject(requestId, StatusCode.invalid_parameter, "Invalid path '" + path + "'");
             }
         }
         nodes = medicalTaxonomyService.getChildNodes(n);
@@ -242,7 +243,7 @@ public class VocabularyService {
         // filter returned nodes by property
         if (nodes.size() > 0 & options != null && options.getFilterByProperties() != null) {
             for (MedicalNode node : nodes) {
-                for (NodeProperty prop : node.getProperties()) {
+                outer: for (NodeProperty prop : node.getProperties()) {
                     for (Entry<String, List<String>> filterEntry : options.getFilterByProperties().entrySet()) {
                         if (filterEntry.getKey().equals(prop.getName())) {
                             for (String filter : filterEntry.getValue()) {
@@ -251,6 +252,10 @@ public class VocabularyService {
                                     // Currently, it's enough that a node matches one filter entry
                                     log.debug("Node matches filter. Adding node " + node.getName() + " to the list of nodes to return");
                                     response.add(node);
+                                    
+                                    // Use labelled break to ensure that a node isn't added more than
+                                    // once which would be the case if several filters matched. 
+                                    break outer;
                                 }
                             }
                         }
@@ -285,7 +290,7 @@ public class VocabularyService {
                 log.info(node.getParents().isEmpty());
                 medicalTaxonomyService.createNewConcept(node);
                 response.setStatusCode(StatusCode.ok);
-                log.info("Created new node");
+                log.info("Created new node " + node.getName());
             } catch (InvalidPropertyTypeException ex) {
                 response.setErrorMessage("Could not create new keyword, the property name is invalid");
                 response.setStatusCode(StatusCode.error_editing_taxonomy);
@@ -301,7 +306,7 @@ public class VocabularyService {
             }
         } else {
             response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
-            response.setStatusCode(StatusCode.error_editing_taxonomy);
+            response.setStatusCode(StatusCode.insufficient_namespace_privileges);
         }
 
         return response;
@@ -320,7 +325,7 @@ public class VocabularyService {
 
         String nameSpaceId = getNamespaceIdByName(namespaceName, requestId);
         if (nameSpaceId == null) {
-            return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Invalid namespace name");
+            return new NodeListResponseObject(requestId, StatusCode.invalid_parameter, "Invalid namespace name");
         }
         Boolean getSynonyms = false;
         if (options != null && options.getUseSynonyms() != null) {
@@ -335,7 +340,8 @@ public class VocabularyService {
                 return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "Could not get the nodes from taxonomy");
             }
         } else {
-            return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, "No read-priviledge in specified namespace");
+            return new NodeListResponseObject(requestId, StatusCode.insufficient_namespace_privileges,
+                    "The profile is invalid or does not have read privileges to target namespace");
         }
 
         return new NodeListResponseObject(requestId, list);
@@ -363,8 +369,8 @@ public class VocabularyService {
                 response.setStatusCode(StatusCode.ok);
 
             } else {
-                response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
-                response.setStatusCode(StatusCode.error_editing_taxonomy);
+                response.setErrorMessage("The profile is invalid or does not have read or write privileges to target namespace");
+                response.setStatusCode(StatusCode.insufficient_namespace_privileges);
             }
 
         } catch (KeywordsException ex) {
@@ -416,12 +422,11 @@ public class VocabularyService {
 
         } else {
             response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
-            response.setStatusCode(StatusCode.error_editing_taxonomy);
+            response.setStatusCode(StatusCode.insufficient_namespace_privileges);
         }
 
 
         return response;
-
     }
 
     /**
@@ -494,7 +499,7 @@ public class VocabularyService {
             }
 
         } else {
-            response.setStatusCode(XMLResponseObject.StatusCode.error_processing_content);
+            response.setStatusCode(XMLResponseObject.StatusCode.insufficient_namespace_privileges);
             response.setErrorMessage("Namespace is not in the list of namespaces authorized for xml export");
 
 
@@ -607,15 +612,15 @@ public class VocabularyService {
 
                 } else {
                     log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
-                            requestId, StatusCode.unknown_error, profileId, namespace));
+                            requestId, StatusCode.insufficient_namespace_privileges.code(), profileId, namespace));
                 }
             } else {
                 log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
-                        requestId, StatusCode.unknown_error, profileId));
+                        requestId, StatusCode.insufficient_namespace_privileges.code(), profileId));
             }
         } else {
             log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
-                    requestId, StatusCode.unknown_error, namespaceId));
+                    requestId, StatusCode.invalid_parameter.code(), namespaceId));
         }
 
         return false;
@@ -641,15 +646,15 @@ public class VocabularyService {
 
                 } else {
                     log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
-                            requestId, StatusCode.unknown_error, profileId, namespace));
+                            requestId, StatusCode.insufficient_namespace_privileges.code(), profileId, namespace));
                 }
             } else {
                 log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
-                        requestId, StatusCode.unknown_error, profileId));
+                        requestId, StatusCode.insufficient_namespace_privileges.code(), profileId));
             }
         } else {
             log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
-                    requestId, StatusCode.unknown_error, namespaceId));
+                    requestId, StatusCode.invalid_parameter.code(), namespaceId));
         }
 
         return false;
@@ -680,9 +685,9 @@ public class VocabularyService {
 
         } catch (NumberFormatException ex) {
             log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId {2} cannot be converted to an integer.",
-                    requestId, StatusCode.unknown_error, namespaceId));
+                    requestId, StatusCode.invalid_parameter.code(), namespaceId));
         } catch (Exception ex) {
-            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.unknown_error), ex);
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.invalid_parameter.code()), ex);
         }
 
         return null;
@@ -711,7 +716,7 @@ public class VocabularyService {
             return namespaceId;
 
         } catch (Exception ex) {
-            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.unknown_error, namespaceName), ex);
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.invalid_parameter.code(), namespaceName), ex);
         }
 
         return null;

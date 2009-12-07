@@ -19,6 +19,13 @@ public class ResponseObject {
         error_processing_content(2001),
         error_getting_keywords_from_taxonomy(3001),
         error_editing_taxonomy(3002),
+        insufficient_namespace_privileges(3003),
+        invalid_parameter(3004),
+        error_locating_namespace(3005),
+        error_resolving_property(3006),
+        invalid_node_property(3007),
+        error_storing_property(3008),
+        error_locating_node(3009),
         unknown_error(6001);
         private final int code;
 
