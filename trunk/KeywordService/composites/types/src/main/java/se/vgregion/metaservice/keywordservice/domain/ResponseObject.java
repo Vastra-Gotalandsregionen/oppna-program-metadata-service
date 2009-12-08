@@ -26,6 +26,7 @@ public class ResponseObject {
         invalid_node_property(3007),
         error_storing_property(3008),
         error_locating_node(3009),
+        error_locating_profile(3010),
         unknown_error(6001);
         private final int code;
 
