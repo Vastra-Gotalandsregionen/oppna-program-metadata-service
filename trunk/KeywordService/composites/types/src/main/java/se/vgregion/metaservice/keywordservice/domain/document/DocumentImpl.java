@@ -1,4 +1,3 @@
-
 package se.vgregion.metaservice.keywordservice.domain.document;
 
 import java.io.InputStream;
@@ -11,12 +10,13 @@ import java.util.Map;
  * easy to use interface of a document. 
  */
 public class DocumentImpl implements Document {
+
     InputStream inputStream = null;
     String filename = null;
     String encoding = null;
     String textContent = null;
     String title = null;
-    Map<String,Object> properties = new HashMap<String, Object>();
+    Map<String, Object> properties = new HashMap<String, Object>();
 
     public String getEncoding() {
         return encoding;
@@ -51,7 +51,7 @@ public class DocumentImpl implements Document {
     }
 
     public String getTitle() {
-        if(title == null) {
+        if (title == null) {
             title = "";
         }
         return title;
@@ -62,17 +62,19 @@ public class DocumentImpl implements Document {
     }
 
     public String getPropertyString(String key) {
-		Object value = properties.get(key);
-		return value == null ? null : value.toString();
-	}
+        Object value = properties.get(key);
+        return value == null ? null : value.toString();
+    }
 
-	public Object getPropertyObject(String key) {
-		return properties.get(key);
-	}
+    public Object getPropertyObject(String key) {
+        return properties.get(key);
+    }
 
-	public void setProperty(String key, Object value) {
-		properties.put(key,value);
-	}
+    public void setProperty(String key, Object value) {
+        properties.put(key, value);
+    }
 
-    
+    public Map<String,Object> getPropertyMap(){
+        return properties;
+    }
 }

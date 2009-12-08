@@ -115,7 +115,7 @@ public class KeyWordService {
                 FileDocument fileDocument = (FileDocument) document;
                 int index = fileDocument.getFilename().lastIndexOf(".");
                 if (index > 0) {
-                    format = fileDocument.getFilename().substring(index);
+                    format = fileDocument.getFilename().substring(index+1);
                 }
                 // if the document is a text
             } else if (document instanceof TextDocument) {
@@ -123,6 +123,7 @@ public class KeyWordService {
             }
             /** * Strip formatting ** */
             log.debug(MessageFormat.format("{0}:Sending title and content to formatProcessor",requestId));
+            log.debug("Format is: " + format);
             FormatProcessor formatProcessor = FormatProcessorFactory.getFormatProcessor(format);
             AnalysisDocument analysisDocument = formatProcessor.process(document);
 
