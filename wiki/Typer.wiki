@@ -125,6 +125,14 @@ En enumerationstyp för statuskoder.
 || 2001 || Error processing content || Ett fel uppstod när indatan processerades ||
 || 3001 || Error getting keywords from taxonomy || Ett fel uppstod när nyckelorden skulle hämtas från taxonomihanteraren ||
 || 3002 || Error editing taxonomy: <detailed message> || Ett fel uppstod när användaren försökte ändra i taxonomin. Det specialiserade meddelandet ger mer info. Ex. Flytta nod, skapa nod. ||
+|| 3003 || insufficient_namespace_privileges || Markerar att användaren inte har läs eller skrivrättigheter till namnrymden, alternativet att namnrymden inte är konfigurerad för export vid funktionsanropet getNamespaceXML. 
+|| 3004 || invalid_parameter || En felaktig inparameter har angivits, t.ex. en ogiltig namnrymd eller sökväg. 
+|| 3005 || error_locating_namespace || Ett fel uppstod när namnrymden för ett namn eller id skulle hämtas. Uppstår om t.ex. fel namnrymd angivits. 
+|| 3006 || error_resolving_property || Ett fel uppstod när en property skulle hämtas. Kan uppstå t.ex. då en property inte finns. 
+|| 3007 || invalid_node_property || Ett fältvärde i en nod är felaktigt
+|| 3008 || error_storing_property || Ett fel uppstod när en property skulle lagras
+|| 3009 || error_locating_node || Det gick inte att hitta begärd nod
+|| 3010 || error_locating_profile || Ett fel uppstod när profilen motsvarande ett visst profilId skulle hämtas. 
 || 6001 || Unknown error occured  || Ett oväntat fel uppstod, kolla loggen för detaljer ||
 
 
