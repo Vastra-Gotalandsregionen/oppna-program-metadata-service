@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -58,7 +57,7 @@ public class VocabularyService {
     public LastChangeResponseObject getLastChange(Identification identification, String requestId, String namespaceName) {
         String namespaceId = getNamespaceIdByName(namespaceName, requestId);
         if (namespaceId == null) {
-            return new LastChangeResponseObject(requestId, StatusCode.invalid_parameter, "Invalid namespace name");
+            return new LastChangeResponseObject(requestId, StatusCode.error_locating_namespace, "Error locating namespaceId by namespace name");
         }
         Long lastChange;
         try {
@@ -79,7 +78,7 @@ public class VocabularyService {
     public LookupResponseObject lookupWord(Identification id, String requestId, String word, Options options) {
         SearchProfile profile = searchProfiles.get(id.getProfileId());
         if (profile == null) {
-            return new LookupResponseObject(requestId, StatusCode.invalid_parameter, "Specified profile does not exist");
+            return new LookupResponseObject(requestId, StatusCode.error_locating_profile, "Error locating profile");
         }
 
         Boolean useSynonyms = false;
@@ -325,7 +324,7 @@ public class VocabularyService {
 
         String nameSpaceId = getNamespaceIdByName(namespaceName, requestId);
         if (nameSpaceId == null) {
-            return new NodeListResponseObject(requestId, StatusCode.invalid_parameter, "Invalid namespace name");
+            return new NodeListResponseObject(requestId, StatusCode.error_locating_namespace, "Error locating namespaceId by namespace name");
         }
         Boolean getSynonyms = false;
         if (options != null && options.getUseSynonyms() != null) {
@@ -687,7 +686,7 @@ public class VocabularyService {
             log.warn(MessageFormat.format("{0}:{1}:Unable to locate namespace name. NamespaceId {2} cannot be converted to an integer.",
                     requestId, StatusCode.invalid_parameter.code(), namespaceId));
         } catch (Exception ex) {
-            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.invalid_parameter.code()), ex);
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace", requestId, StatusCode.error_locating_namespace.code()), ex);
         }
 
         return null;
@@ -716,7 +715,7 @@ public class VocabularyService {
             return namespaceId;
 
         } catch (Exception ex) {
-            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.invalid_parameter.code(), namespaceName), ex);
+            log.warn(MessageFormat.format("{0}:{1}:Error retrieving namespace {2}", requestId, StatusCode.error_locating_namespace.code(), namespaceName), ex);
         }
 
         return null;

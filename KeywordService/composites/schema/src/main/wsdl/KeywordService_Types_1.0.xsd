@@ -223,6 +223,7 @@
                     <jxb:typesafeEnumMember name="invalid_node_property" value="3007" />
                     <jxb:typesafeEnumMember name="error_storing_property" value="3008" />
                     <jxb:typesafeEnumMember name="error_locating_node" value="3009" />
+                    <jxb:typesafeEnumMember name="error_locating_profile" value="3010" />
                     <jxb:typesafeEnumMember name="unknown_error" value="6001" />
                 </jxb:typesafeEnumClass>
             </appinfo>
@@ -242,6 +243,7 @@
             <enumeration value="3007" />
             <enumeration value="3008" />
             <enumeration value="3009" />
+            <enumeration value="3010" />
             <enumeration value="6001" />
         </restriction>
     </simpleType>
