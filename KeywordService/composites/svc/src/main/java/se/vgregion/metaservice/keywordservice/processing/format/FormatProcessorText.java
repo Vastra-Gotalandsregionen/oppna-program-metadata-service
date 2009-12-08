@@ -23,14 +23,15 @@ public class FormatProcessorText implements FormatProcessor {
         TextDocument textDocument = (TextDocument) document;
         AnalysisDocument analysisDocument = new AnalysisDocument();
         if (textDocument.hasTextContent()) {
-            analysisDocument.setTitle(textDocument.getTitle());
+            analysisDocument.setTitle(textDocument.getTextContent());
         } else {
             throw new FormattingException("No textContent in the document");
         }
         if (textDocument.hasTitle()) {
-            analysisDocument.setTextContent(textDocument.getTextContent());
+            analysisDocument.setTextContent(textDocument.getTitle());
         }
         return analysisDocument;
+
     }
 
     /**

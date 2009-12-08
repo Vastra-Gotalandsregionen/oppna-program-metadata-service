@@ -10,7 +10,7 @@
         name="KeywordServices"
 	targetNamespace="urn:KeywordServices:wsdl:metaservice.vgr.se:v2">
     <wsdl:documentation>Versoin: 2.0</wsdl:documentation>
-    <wsdl:types>     
+    <wsdl:types>      
         <xsd:schema  
 			targetNamespace="urn:KeywordServices:wsdl:metaservice.vgr.se:v2">
             <xsd:import schemaLocation="Document_V1.xsd"
@@ -23,7 +23,7 @@
 				namespace="urn:Response.schema.metaservice.vgr.se:v1" />
             
             <!-- There can't be more than one zero-argument operation bound to the same service port. Use dummy-argument to circumvent the restriction -->
-            <xsd:element name="GetKeywordsRequest">
+            <xsd:element name="GetKeywordsRequest"> 
                 <xsd:complexType>
                     <xsd:sequence> 
                         <xsd:element name="identification" type="req:IdentificationType" minOccurs="1" maxOccurs="1" />
@@ -83,7 +83,7 @@
             </xsd:element>
             <xsd:element name="BookmarkKeywordsResponse" type="res:ResponseObjectType" />
         </xsd:schema>
-    </wsdl:types>
+    </wsdl:types> 
 
     <wsdl:message name="GetKeywordsRequest">
         <wsdl:part name="parameters" element="tns:GetKeywordsRequest">

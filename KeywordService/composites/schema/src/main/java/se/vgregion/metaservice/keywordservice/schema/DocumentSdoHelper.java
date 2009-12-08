@@ -41,7 +41,7 @@ public class DocumentSdoHelper {
         FileDocumentType fileDocumentType = new FileDocumentType();
         fileDocumentType.setFilename(document.getFilename());
         fileDocumentType.setEncoding(document.getEncoding());
-        //TODO: Set input stream
+        fileDocumentType.setData(document.getData());
         return fileDocumentType;
     }
 
@@ -67,7 +67,7 @@ public class DocumentSdoHelper {
         FileDocument fileDoc = new FileDocument();
         fileDoc.setFilename(documentType.getFilename());
         fileDoc.setEncoding(documentType.getEncoding());
-        //TODO: Set input stream;
+        fileDoc.setData(documentType.getData());
         return fileDoc;
     }
 

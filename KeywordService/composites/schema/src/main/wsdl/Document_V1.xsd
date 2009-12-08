@@ -17,7 +17,7 @@
                 <sequence>
                     <element name="encoding" type="string" minOccurs="0"/>
                     <element name="filename" type="string" minOccurs="0"/>
-                    <element name="inputStream" type="tns:InputStreamType" minOccurs="0"/>
+                    <element name="data" type="base64Binary" minOccurs="0"/>
                 </sequence>
             </extension>
         </complexContent>
