@@ -2,7 +2,6 @@
 <!--
 This is the Business Component Maven POM.
 
-
 Template version: 1.2-SNAPSHOT
 Generation time : 2009-12-10 10:37:30 CET
 -->
@@ -10,12 +9,14 @@ Generation time : 2009-12-10 10:37:30 CET
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>se.vgr.metaservice</groupId>
-    <artifactId>metaservice-system</artifactId>
+    <groupId>MetaService</groupId>
+    <artifactId>MetaService-CommonPom</artifactId>
+    <!-- this version must ALWAYS be the same as the latest version of the parent -->
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>se.vgr.metaservice</groupId>
-  <artifactId>metaservice-LemmatisationService</artifactId>
+  
+  <groupId>MetaService</groupId>
+  <artifactId>MetaService-LemmatisationService</artifactId>
   <packaging>pom</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>${project.artifactId}</name>
@@ -26,7 +27,6 @@ Generation time : 2009-12-10 10:37:30 CET
     <module>composites/webcomp</module>
     <module>composites/schema</module>
     <module>modules/web</module>
-    <module>modules/portlet</module>
     <module>modules/intsvc</module>
     <module>applications/LemmatisationService</module>
   </modules>
