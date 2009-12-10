@@ -8,14 +8,17 @@ Generation time : 2009-12-10 10:37:30 CET
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>se.vgr.metaservice</groupId>
-    <artifactId>metaservice-LemmatisationService</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <groupId>se.vgr.metaservice</groupId>
-  <artifactId>metaservice-LemmatisationService-composite-types</artifactId>
-  <packaging>jar</packaging>
-  <name>${project.artifactId}</name>
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>MetaService</groupId>
+        <artifactId>MetaService-LemmatisationService</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>MetaService</groupId>
+    <artifactId>MetaService-LemmatisationService-composite-types</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+
 </project>

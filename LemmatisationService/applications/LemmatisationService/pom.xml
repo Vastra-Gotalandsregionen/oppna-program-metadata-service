@@ -8,41 +8,34 @@ Generation time : 2009-12-10 10:37:30 CET
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>se.vgr.metaservice</groupId>
-    <artifactId>metaservice-LemmatisationService</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <groupId>se.vgr.metaservice</groupId>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>MetaService</groupId>
+        <artifactId>MetaService-LemmatisationService</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <groupId>MetaService</groupId>
   <!--
     Use full name qualification (with system name) here to ensure uniqueness
     when deploying in container.
   -->
-  <artifactId>metaservice-LemmatisationService-app</artifactId>
-  <packaging>ear</packaging>
-  <name>${project.artifactId}</name>
+    <artifactId>MetaService-LemmatisationService-app</artifactId>
+    <packaging>ear</packaging>
+    <name>${project.artifactId}</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>metaservice-LemmatisationService-module-web</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MetaService-LemmatisationService-module-web</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
 
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>metaservice-LemmatisationService-module-portlet</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>metaservice-LemmatisationService-module-intsvc</artifactId>
-      <version>${project.version}</version>
-      <type>war</type>
-    </dependency>
-  </dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>MetaService-LemmatisationService-module-intsvc</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+    </dependencies>
 </project>
