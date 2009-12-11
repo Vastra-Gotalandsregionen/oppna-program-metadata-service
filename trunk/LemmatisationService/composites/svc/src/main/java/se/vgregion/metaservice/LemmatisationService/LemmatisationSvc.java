@@ -2,6 +2,7 @@
 package se.vgregion.metaservice.LemmatisationService;
 
 import se.vgregion.metaservice.LemmatisationService.domain.LemmatisedResponse;
+import se.vgregion.metaservice.LemmatisationService.exception.InitializationException;
 
 
 /**
@@ -18,6 +19,11 @@ public interface LemmatisationSvc {
      */
     public LemmatisedResponse getParadigmsObject(String word);
 
-
+    /**
+     * Initialize the lemmatisation service
+     *
+     * @throws InitializationException
+     */
+    public void init() throws InitializationException;
     
 }
