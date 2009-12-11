@@ -20,5 +20,13 @@ Generation time : 2009-12-10 10:37:30 CET
     <artifactId>MetaService-LemmatisationService-composite-types</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-
+    <dependencies>
+        <dependency>
+            <groupId>xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
 </project>
+
