@@ -1,5 +1,7 @@
-package dictionary;
+package se.vgregion.metaservice.LemmatisationService;
 
+import se.vgregion.metaservice.LemmatisationService.model.Trie;
+import se.vgregion.metaservice.LemmatisationService.model.TrieEntry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;

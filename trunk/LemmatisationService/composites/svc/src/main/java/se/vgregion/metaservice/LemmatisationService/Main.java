@@ -2,8 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package dictionary;
+package se.vgregion.metaservice.LemmatisationService;
 
+import se.vgregion.metaservice.LemmatisationService.Dictionary;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;

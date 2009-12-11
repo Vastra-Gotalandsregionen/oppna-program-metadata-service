@@ -1,5 +1,5 @@
 
-package dictionary;
+package se.vgregion.metaservice.LemmatisationService.model;
 
 /**
  * @author sture.svensson
