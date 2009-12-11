@@ -1,6 +1,5 @@
 package se.vgregion.metaservice.LemmatisationService.model;
 
-import se.vgregion.metaservice.LemmatisationService.model.TrieEntry;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
