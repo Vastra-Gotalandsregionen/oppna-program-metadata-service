@@ -1,7 +1,5 @@
-package se.vgregion.metaservice.LemmatisationService;
+package se.vgregion.metaservice.LemmatisationService.model;
 
-import se.vgregion.metaservice.LemmatisationService.model.Trie;
-import se.vgregion.metaservice.LemmatisationService.model.TrieEntry;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
