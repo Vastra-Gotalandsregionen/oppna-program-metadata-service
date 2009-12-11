@@ -20,7 +20,7 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
         URL url = ClassLoader.getSystemResource("saldo.txt");
 
         try {
-            dictionary = new Dictionary(new File(url.getFile()));
+            dictionary = new Dictionary(new File("E:/saldo.txt"));
         } catch (IOException ex) {
             throw new InitializationException("Could not read the wordlist-file");
         }
