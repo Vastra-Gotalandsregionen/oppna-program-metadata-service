@@ -28,6 +28,7 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
      */
     @RequestMapping(value="/{word}", method=RequestMethod.GET)
     public ModelAndView getParadigms(@PathVariable String word) {
+        System.out.println("word: " + word);
         LemmatisedResponse response = lemmationsationSvc.getParadigmsObject(word);
 
         // Include BindingResult.MODEL_KEY_PREFIX due to a bug in MarshallingView.java ?
@@ -46,5 +47,5 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
             ex.printStackTrace();
         }
     }
-
+ 
 }
