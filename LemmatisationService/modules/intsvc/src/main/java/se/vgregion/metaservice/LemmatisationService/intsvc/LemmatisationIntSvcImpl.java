@@ -1,6 +1,7 @@
 
 package se.vgregion.metaservice.LemmatisationService.intsvc;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,8 @@ import se.vgregion.metaservice.LemmatisationService.exception.InitializationExce
  */
 @Controller
 public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
+    private static Logger log = Logger.getLogger(LemmatisationIntSvc.class);
+    private LemmatisationSvc lemmationsationSvc;
 
     /**
      * Returns a XML response containing the lemmatisation and paradigms
@@ -28,15 +31,11 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
      */
     @RequestMapping(value="/{word}", method=RequestMethod.GET)
     public ModelAndView getParadigms(@PathVariable String word) {
-        System.out.println("word: " + word);
         LemmatisedResponse response = lemmationsationSvc.getParadigmsObject(word);
 
         // Include BindingResult.MODEL_KEY_PREFIX due to a bug in MarshallingView.java ?
         return new ModelAndView("xmlView", BindingResult.MODEL_KEY_PREFIX + "paradigmsresponse", response);
     }
-
-    
-    private LemmatisationSvc lemmationsationSvc;
 
     @Autowired(required=true)
     public void setLemmationsationSvc(LemmatisationSvc lemmationsationSvc) {
@@ -44,7 +43,7 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
         try {
             lemmationsationSvc.init();
         } catch (InitializationException ex) {
-            ex.printStackTrace();
+            log.error("Error initializing lemmatisation service", ex);
         }
     }
  

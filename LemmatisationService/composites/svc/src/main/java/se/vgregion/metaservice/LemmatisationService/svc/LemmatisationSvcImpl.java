@@ -1,7 +1,6 @@
 package se.vgregion.metaservice.LemmatisationService.svc;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,24 +11,36 @@ import se.vgregion.metaservice.LemmatisationService.exception.InitializationExce
 import se.vgregion.metaservice.LemmatisationService.model.Dictionary;
 
 public class LemmatisationSvcImpl implements LemmatisationSvc {
-
-    Dictionary dictionary;
+    private Dictionary dictionary;
+    private boolean initialized;
 
     public void init() throws InitializationException {
+        init("/saldo.txt");
+    }
 
-        URL url = ClassLoader.getSystemResource("saldo.txt");
+    public void init(String wordlistLocation) throws InitializationException {
+        URL url = getClass().getResource(wordlistLocation);
 
         try {
-            dictionary = new Dictionary(new File("c:/findwise/saldo/saldo.txt"));
-        } catch (IOException ex) {
-            throw new InitializationException("Could not read the wordlist-file");
+            dictionary = new Dictionary(new File(url.toURI()));
+        } catch (Exception ex) {
+            throw new InitializationException("Error locating wordlist at location '" + wordlistLocation + "'");
         }
 
+        initialized = true;
     }
 
     public LemmatisedResponse getParadigmsObject(String word) {
-
         LemmatisedResponse response = new LemmatisedResponse();
+        response.setStatusCode(LemmatisedResponse.StatusCode.ok);
+        response.setOriginalWord(word);
+
+        if (!initialized) {
+            response.setStatusCode(LemmatisedResponse.StatusCode.error);
+            response.setErrorMessage("Lemmatisation service is not initialized");
+            return response;
+        }
+
         if (dictionary == null) {
             response.setStatusCode(LemmatisedResponse.StatusCode.error);
             response.setErrorMessage("Dictionary not initialized");
@@ -51,10 +62,9 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
             obj.setParadigms(list);
             resultList.add(obj);
         }
-        response.setStatusCode(LemmatisedResponse.StatusCode.ok);
-        response.setOriginalWord(word);
+        
         response.setList(resultList);
-
         return response;
     }
+
 }
