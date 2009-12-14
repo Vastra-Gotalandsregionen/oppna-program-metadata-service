@@ -1,0 +1,41 @@
+#Ord lemmatisering
+
+= REST =
+
+Lemmatiseringstjänsten bygger på ett REST interface och kan därför testas enkelt via t.ex. en webbläsare: 
+
+http://{host}:{port}/{projektnamn}/lemmatisation/{ord}
+
+Där {ord} är det ord som ska lemmatiseras. Ett exempelsvar kan se ut enligt följande: 
+
+{{{
+<se.vgregion.metaservice.LemmatisationService.domain.LemmatisedResponse>
+  <statusCode>ok</statusCode>
+  <originalWord>aporna</originalWord>
+
+  <list class="linked-list">
+
+    <se.vgregion.metaservice.LemmatisationService.domain.LemmatisedObject>
+      <lemma>apa</lemma>
+
+    <paradigms class="linked-list">
+      <string>apas</string>
+      <string>apan</string>
+      <string>apans</string>
+      <string>apor</string>
+      <string>apors</string>
+      <string>aporna</string>
+      <string>apornas</string>
+      <string>ape</string>
+      <string>ap</string>
+    </paradigms>
+    </se.vgregion.metaservice.LemmatisationService.domain.LemmatisedObject>
+  </list>
+</se.vgregion.metaservice.LemmatisationService.domain.LemmatisedResponse>
+}}}
+
+= Klient =
+
+Implementeringstips via spring: 
+ * http://static.springsource.org/spring/docs/3.0.x/spring-framework-reference/html/ch19s09.html
+ * http://blog.springsource.com/2009/03/27/rest-in-spring-3-resttemplate/
