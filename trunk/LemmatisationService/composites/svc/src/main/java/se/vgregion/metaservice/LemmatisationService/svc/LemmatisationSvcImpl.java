@@ -20,7 +20,7 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
         URL url = ClassLoader.getSystemResource("saldo.txt");
 
         try {
-            dictionary = new Dictionary(new File("E:/saldo.txt"));
+            dictionary = new Dictionary(new File("c:/findwise/saldo/saldo.txt"));
         } catch (IOException ex) {
             throw new InitializationException("Could not read the wordlist-file");
         }
@@ -49,6 +49,7 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
             obj.setLemma(list.get(0));
             list.remove(0);
             obj.setParadigms(list);
+            resultList.add(obj);
         }
         response.setStatusCode(LemmatisedResponse.StatusCode.ok);
         response.setOriginalWord(word);
