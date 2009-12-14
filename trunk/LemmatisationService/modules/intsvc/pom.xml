@@ -24,6 +24,7 @@ Generation time : 2009-12-10 10:37:30 CET
     <packaging>war</packaging>
     <name>${project.artifactId}</name>
 
+
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
