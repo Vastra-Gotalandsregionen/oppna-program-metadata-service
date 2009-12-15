@@ -14,6 +14,11 @@ getKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 || options    || Options        || Valfria extra-parametrar ||
 
 
+*Förväntade options-värden*
+ * wordLimit - Max antal nyckelord som skall returneras
+ * includeSourceId - De källor som ska användas  
+
+
 *Returvärde*
 _NodeListResponseObject med requestId, statuskod, felmeddelande och en lista av Node objekt_
 
@@ -86,7 +91,7 @@ getVocabulary returnerar alla direkt underliggande noder till en nod.
 || options || Options || Alternativa parametrar att skicka med requesten. 
 
 *Förväntade options-värden*
- *filterByProperties - Endast returnera noder som har de properties som specificeras. 
+ * filterByProperties - Endast returnera noder som har de properties som specificeras. 
 
 *Returvärde*
 _NodeListResponseObject med statuskod, felmeddelande och en lista av Node objekt_
@@ -106,7 +111,7 @@ lookupWord används för att se om ett ord existerar i någon av de fördefinier
 || options || Options	        || Alternativa parametrar att skicka med requesten ||
 
 *Förväntade options-värden*
- *url - Om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet.
+ * url - Om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet.
 
 *Returvärde*
 _ListType vilken är en enumerationstyp som kan innehålla värdena `whitelist`, `blacklist`, eller `none`. _
