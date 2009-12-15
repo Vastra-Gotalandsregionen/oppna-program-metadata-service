@@ -99,9 +99,15 @@ public class OptionsSdoHelper {
         Options options = new Options();
         if (optionsType != null) {
             options = new Options();
-            options.setWordLimit(optionsType.getWordLimit());
-            options.setIncludeSourceIds(fromIncludeSourceIds(optionsType.getIncludeSourceIds()));
-            options.setUrl(optionsType.getUrl());
+            if (optionsType.getWordLimit() != 0) {
+                options.setWordLimit(optionsType.getWordLimit());
+            }
+            if (optionsType.getIncludeSourceIds() != null) {
+                options.setIncludeSourceIds(fromIncludeSourceIds(optionsType.getIncludeSourceIds()));
+            }
+            if (optionsType.getUrl() != null) {
+                options.setUrl(optionsType.getUrl());
+            }
 
             // Construct a Map<String, List<String>>  from the sequence of entries
             if (optionsType.getFilterByProperties() != null && optionsType.getFilterByProperties().getEntry() != null) {
