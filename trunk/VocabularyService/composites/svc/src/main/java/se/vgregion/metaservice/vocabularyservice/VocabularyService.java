@@ -71,7 +71,7 @@ public class VocabularyService {
             }
         } else {
             response.setStatusCode(StatusCode.error_locating_namespace);
-            response.setErrorMessage("Error locating namespaceId by namespace name");
+            response.setErrorMessage("Error locating namespaceId by namespace name. Note that namespace is case sensitive.");
             log.warn(MessageFormat.format("{0}:{1}: Error locating namespaceId by namespace name {2}",
                         requestId, StatusCode.error_locating_namespace.code(), namespaceName));
         }
@@ -245,69 +245,50 @@ public class VocabularyService {
      * check the statuscode in this object to see if the operation was succesfull
      */
     public NodeListResponseObject getVocabulary(String requestId, String path, Options options) {
+        List<MedicalNode> childNodes = new ArrayList<MedicalNode>();
+        List<MedicalNode> responseChildNodes = new ArrayList<MedicalNode>();
         NodeListResponseObject response = new NodeListResponseObject();
         response.setRequestId(requestId);
         response.setStatusCode(StatusCode.ok);
-        List<MedicalNode> childNodes = new ArrayList<MedicalNode>();
-        List<MedicalNode> responseChildNodes = new ArrayList<MedicalNode>();
-        NodePath nodePath = new NodePath();
-        nodePath.setPath(path);
+        
+        try {
+            MedicalNode node = getNodeByPath(path, requestId);
+            childNodes = medicalTaxonomyService.getChildNodes(node);
 
-        String[] hierarchy = nodePath.getRelativePath().split("/");
-        String namespaceId = getNamespaceIdByName(nodePath.getNamespace(), requestId);
-        LinkedList<String> nodesInPath = new LinkedList<String>(Arrays.asList(hierarchy));
-        MedicalNode n = null;
+            // filter returned nodes by property
+            if (childNodes.size() > 0 & options != null && options.getFilterByProperties() != null) {
+                for (MedicalNode childNode : childNodes) {
+                    outer:
+                    for (NodeProperty prop : childNode.getProperties()) {
+                        for (Entry<String, List<String>> filterEntry : options.getFilterByProperties().entrySet()) {
+                            if (filterEntry.getKey().equals(prop.getName())) {
+                                for (String filter : filterEntry.getValue()) {
+                                    if (filter.equals(prop.getValue())) {
+                                        // Matching properties; add the node to the response
+                                        // Currently, it's enough that a node matches one filter entry
+                                        log.debug("Node matches filter. Adding node " + childNode.getName() + " to the list of nodes to return");
+                                        responseChildNodes.add(childNode);
 
-        // Recurse path until the last node in the path has been found
-        while (!nodesInPath.isEmpty()) {
-            try {
-                n = medicalTaxonomyService.getChildNode(namespaceId, n, nodesInPath.getFirst());
-                nodesInPath.removeFirst();  // Remove it afterwards for logging purposes
-            } catch (DTSException ex) {
-                response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
-                response.setErrorMessage("Error retrieving node from taxonomy, possible incorrect path");
-                log.warn(MessageFormat.format("{0}:{1}: Error retrieving node {2} when traversing the path {3}",
-                    requestId, StatusCode.error_getting_keywords_from_taxonomy.code(), nodesInPath.getFirst(), nodesInPath.getFirst(), path));
-                return response;
-            }
-            if (n == null) {
-                response.setStatusCode(StatusCode.invalid_parameter);
-                response.setErrorMessage("Invalid path");
-                log.error(MessageFormat.format("{0}:{1}: Invalid path {2}",
-                    requestId, StatusCode.invalid_parameter.code(), path));
-                return response;
-            }
-        }
-        childNodes = medicalTaxonomyService.getChildNodes(n);
-
-        // filter returned nodes by property
-        if (childNodes.size() > 0 & options != null && options.getFilterByProperties() != null) {
-            for (MedicalNode node : childNodes) {
-                outer: for (NodeProperty prop : node.getProperties()) {
-                    for (Entry<String, List<String>> filterEntry : options.getFilterByProperties().entrySet()) {
-                        if (filterEntry.getKey().equals(prop.getName())) {
-                            for (String filter : filterEntry.getValue()) {
-                                if (filter.equals(prop.getValue())) {
-                                    // Matching properties; add the node to the response
-                                    // Currently, it's enough that a node matches one filter entry
-                                    log.debug("Node matches filter. Adding node " + node.getName() + " to the list of nodes to return");
-                                    responseChildNodes.add(node);
-                                    
-                                    // Use labelled break to ensure that a node isn't added more than
-                                    // once which would be the case if several filters matched. 
-                                    break outer;
+                                        // Use labelled break to ensure that a node isn't added more than
+                                        // once which would be the case if several filters matched.
+                                        break outer;
+                                    }
                                 }
                             }
                         }
                     }
                 }
+
+                // Return only the nodes matching the filters
+                response.setNodeList(responseChildNodes);
+            } else {
+                // Return all child nodes
+                response.setNodeList(childNodes);
             }
 
-            // Return only the nodes matching the filters
-            response.setNodeList(responseChildNodes);
-        } else {
-            // Return all child nodes
-            response.setNodeList(childNodes);
+        } catch (DTSException ex) {
+            response.setErrorMessage(ex.getMessage());
+            response.setStatusCode(StatusCode.error_locating_node);
         }
 
         return response;
@@ -382,7 +363,7 @@ public class VocabularyService {
 
         if (nameSpaceId == null) {
             response.setStatusCode(StatusCode.error_locating_namespace);
-            response.setErrorMessage("Error locating namespaceId by namespace name");
+            response.setErrorMessage("Error locating namespaceId by namespace name. Note that namespace is case sensitive.");
             log.warn(MessageFormat.format("{0}:{1}: Error locating namespaceId by namespace {2}",
                 requestId, StatusCode.error_locating_namespace.code(), namespaceName));
             return response;
@@ -413,49 +394,56 @@ public class VocabularyService {
         return response;
     }
 
+
     /**
      * Move a node in a vocabulary, that is: change the parent of the node
      * @param id the identification of the user that moves the node
      * @param requestId the unique request id
      * @param nodeId the id of the node to move
-     * @param destNodeId the id of the new parent
+     * @param destNodeId The path to the new parent
      * @return a ResponseObject, check the statuscode in this object to see
      * if the operation was succesfull
      */
-    public ResponseObject moveVocabularyNode(Identification id, String requestId, MedicalNode node, MedicalNode destNode) {
+    public ResponseObject moveVocabularyNode(Identification id, String requestId, MedicalNode node, String destNodePath) {
         ResponseObject response = new ResponseObject(requestId);
+        response.setStatusCode(StatusCode.ok);
+        MedicalNode destNode = null;
 
         try {
+            destNode = getNodeByPath(destNodePath, requestId);
 
             if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId) &&
                     hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
                 medicalTaxonomyService.moveNode(node, destNode);
                 medicalTaxonomyService.setLastChangeNow(destNode.getNamespaceId());
-                response.setStatusCode(StatusCode.ok);
 
             } else {
                 response.setErrorMessage("The profile is invalid or does not have read or write privileges to target namespace");
                 response.setStatusCode(StatusCode.insufficient_namespace_privileges);
                 log.warn(MessageFormat.format("{0}:{1}: The profileId {2} is invalid or does not have read privileges to namespace with id {3}",
-                    requestId, StatusCode.insufficient_namespace_privileges.code(), id.getProfileId(), node.getNamespaceId()));
+                        requestId, StatusCode.insufficient_namespace_privileges.code(), id.getProfileId(), node.getNamespaceId()));
             }
 
+        } catch (DTSException ex) {
+            response.setStatusCode(StatusCode.error_editing_taxonomy);
+            response.setErrorMessage(requestId); // error already logged
         } catch (KeywordsException ex) {
             response.setStatusCode(StatusCode.error_editing_taxonomy);
             response.setErrorMessage("Error editing taxonomy: Node could not be moved");
             log.error(MessageFormat.format("{0}:{1}: Node ({2}) could not be moved to parent {{3}}",
-                requestId, StatusCode.error_editing_taxonomy.code(), node.getInternalId(), destNode.getInternalId()), ex);
+                    requestId, StatusCode.error_editing_taxonomy.code(), node.getInternalId(), destNode.getInternalId()), ex);
+
         } catch (NodeNotFoundException ex) {
             response.setStatusCode(StatusCode.error_editing_taxonomy);
             response.setErrorMessage("Error editing taxonomy: Node could not be found");
-            log.error(MessageFormat.format("{0}:{1}:{2}", 
-                requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
+            log.error(MessageFormat.format("{0}:{1}:{2}",
+                    requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
         } catch (Exception ex) {
             response.setStatusCode(StatusCode.error_editing_taxonomy);
             response.setErrorMessage("Error editing taxonomy: Node could not be found");
             log.error(MessageFormat.format("{0}:{1}:{2}",
-                requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
+                    requestId, StatusCode.error_editing_taxonomy.code(), ex.getMessage()), ex);
         }
 
         return response;
@@ -699,7 +687,7 @@ public class VocabularyService {
                         requestId, StatusCode.insufficient_namespace_privileges.code(), profileId));
             }
         } else {
-            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}. Note that namespace is case sensitive",
                     requestId, StatusCode.invalid_parameter.code(), namespaceId));
         }
 
@@ -733,7 +721,7 @@ public class VocabularyService {
                         requestId, StatusCode.insufficient_namespace_privileges.code(), profileId));
             }
         } else {
-            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}",
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespace for namespaceId {2}. Note that namespace is case sensitive.",
                     requestId, StatusCode.invalid_parameter.code(), namespaceId));
         }
 
@@ -801,6 +789,54 @@ public class VocabularyService {
 
         return null;
     }
+
+
+    /**
+     * Helper routine to retrieve a node by it's path.
+     * @see #getNodeByPath(se.vgregion.metaservice.keywordservice.domain.NodePath, java.lang.String)
+     */
+    private MedicalNode getNodeByPath(String path, String requestId) throws DTSException {
+        NodePath nodePath = new NodePath();
+        nodePath.setPath(path);
+        return getNodeByPath(nodePath, requestId);
+    }
+
+    /**
+     * Helper routine to retrieve a node by it's path. A path is
+     * constructed accordion to: <code>namespace/path/to/node</code>.
+     *
+     * @param nodePath The path to the node to locate
+     * @param requestId Request identifier
+     * @return The medical node at the given path
+     * @throws DTSException If the medical node could not be located
+     */
+    private MedicalNode getNodeByPath(NodePath nodePath, String requestId) throws DTSException {
+        if (nodePath.getNamespace() == null) { throw new DTSException("Path parameter can not be empty"); }
+        String namespaceId = getNamespaceIdByName(nodePath.getNamespace(), requestId);
+        LinkedList<String> pathList = new LinkedList(Arrays.asList(nodePath.getRelativePath().split("/")));
+        MedicalNode node = null;
+
+        // Recurse the pathList until the last node in the path has been found
+        while (!pathList.isEmpty()) {
+            try {
+                node = medicalTaxonomyService.getChildNode(namespaceId, node, pathList.getFirst());
+                pathList.removeFirst();  // Remove it afterwards for logging purposes
+            } catch (Exception ex) {
+                log.warn(MessageFormat.format("{0}:{1}: Error retrieving node {2} when traversing the path {3}",
+                    requestId, StatusCode.error_getting_keywords_from_taxonomy.code(), pathList.getFirst(), pathList.getFirst(), nodePath.getPath()));
+                throw new DTSException("Error retrieving node from taxonomy, possible incorrect path parameter");
+            }
+            if (node == null) {
+                log.error(MessageFormat.format("{0}:{1}: Invalid path {2}",
+                    requestId, StatusCode.invalid_parameter.code(), nodePath.getPath()));
+                throw new DTSException("Invalid path");
+            }
+        }
+
+        
+        return node;
+    }
+
 
     public void setSearchProfiles(List<SearchProfile> searchProfiles) {
         // Simplify spring configuration by creating list instead of map
