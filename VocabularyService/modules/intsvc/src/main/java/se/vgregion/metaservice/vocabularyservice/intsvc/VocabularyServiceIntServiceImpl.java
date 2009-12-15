@@ -99,7 +99,7 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
                 NodeSdoHelper.fromNodeType(parameters.getNode()),
-                NodeSdoHelper.fromNodeType(parameters.getDestParentNode()));
+                parameters.getDestNodePath());
 
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
