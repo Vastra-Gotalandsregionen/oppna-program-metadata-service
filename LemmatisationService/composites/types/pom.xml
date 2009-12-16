@@ -20,13 +20,52 @@ Generation time : 2009-12-10 10:37:30 CET
     <artifactId>MetaService-LemmatisationService-composite-types</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <dependencies>
-        <dependency>
-            <groupId>xstream</groupId>
-            <artifactId>xstream</artifactId>
-            <version>1.2</version>
-            <type>jar</type>
-        </dependency>
-    </dependencies>
+    
+   <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <!-- Configure eclipse plug-in to generate a context root that does not have the version number on it -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <configuration>
+                    <wtpContextName>${project.artifactId}</wtpContextName>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <!-- Generate xml schema from annotated java classes -->
+                <groupId>com.sun.tools.jxc.maven2</groupId>
+                <artifactId>maven-jaxb-schemagen-plugin</artifactId>
+                <version>1.2</version>  
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <srcdir>src/main/java/se/vgregion/metaservice/LemmatisationService/domain</srcdir>
+                    <verbose>false</verbose>
+                    <destdir>target/classes</destdir>
+                     <!-- default filename: schema1.xsd -->
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <pluginRepositories>
+        <!-- Repository for the maven-jaxb-schemage-plugin -->
+        <pluginRepository>
+            <id>javanet</id>
+            <name>Maven java net repo</name>
+            <url>http://download.java.net/maven/2/</url>
+            <layout>default</layout>
+        </pluginRepository>
+    </pluginRepositories>
+
 </project>
 

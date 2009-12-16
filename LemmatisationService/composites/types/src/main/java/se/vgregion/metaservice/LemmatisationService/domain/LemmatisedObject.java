@@ -1,20 +1,17 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package se.vgregion.metaservice.LemmatisationService.domain;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- *
- * @author sture.svensson
+ * LemmatisedObject
  */
-public class LemmatisedObject {
-
+@XmlRootElement
+public class LemmatisedObject implements Serializable {
     private String lemma = null;
-
     private List<String> paradigms = null;
 
     public LemmatisedObject() {

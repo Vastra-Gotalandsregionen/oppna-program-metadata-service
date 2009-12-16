@@ -34,7 +34,7 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
         LemmatisedResponse response = lemmationsationSvc.getParadigmsObject(word);
 
         // Include BindingResult.MODEL_KEY_PREFIX due to a bug in MarshallingView.java ?
-        return new ModelAndView("xmlView", BindingResult.MODEL_KEY_PREFIX + "paradigmsresponse", response);
+        return new ModelAndView("jaxbView", BindingResult.MODEL_KEY_PREFIX + "paradigmsresponse", response);
     }
 
     @Autowired(required=true)

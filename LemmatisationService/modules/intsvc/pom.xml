@@ -23,8 +23,6 @@ Generation time : 2009-12-10 10:37:30 CET
     <artifactId>MetaService-LemmatisationService-module-intsvc</artifactId>
     <packaging>war</packaging>
     <name>${project.artifactId}</name>
-
-
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
@@ -36,6 +34,35 @@ Generation time : 2009-12-10 10:37:30 CET
                     <wtpContextName>${project.artifactId}</wtpContextName>
                 </configuration>
             </plugin>
+
+            <!-- unpack -types plugin and put schema1.xsd in the classpath for spring to find -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>MetaService</groupId>
+                                    <artifactId>MetaService-LemmatisationService-composite-types</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                                    <includes>schema1.xsd</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -94,20 +121,18 @@ Generation time : 2009-12-10 10:37:30 CET
             <version>${spring-version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.9.1</version>
+        </dependency>
 
-    <!--
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>-->
-        <!--
-        <dependency>
-            <groupId>com.stupidjavatricks.spring</groupId>
-            <artifactId>spring-rest-example-model</artifactId>
-            <version>1.0</version>
-        </dependency>-->
+            <groupId>xstream</groupId>
+            <artifactId>xstream</artifactId>
+            <version>1.2</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <repositories>
