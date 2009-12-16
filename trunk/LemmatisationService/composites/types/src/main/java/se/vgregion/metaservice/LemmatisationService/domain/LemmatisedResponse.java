@@ -1,11 +1,19 @@
 package se.vgregion.metaservice.LemmatisationService.domain;
 
+import java.io.Serializable;
 import java.util.List;
+import javax.xml.bind.annotation.XmlRootElement;
 
-public class LemmatisedResponse {
-
+/**
+ * LemmatisedResponse
+ */
+@XmlRootElement
+public class LemmatisedResponse implements Serializable{
+    private String errorMessage = null;
+    private StatusCode statusCode = null;
+    private String originalWord = null;
+    private List<LemmatisedObject> list;
     public enum StatusCode {
-
         ok(200),
         no_word_found(404),
         error(500);
@@ -23,10 +31,7 @@ public class LemmatisedResponse {
             return code;
         }
     }
-    private String errorMessage = null;
-    private StatusCode statusCode = null;
-    private String originalWord = null;
-    private List<LemmatisedObject> list;
+
 
     public LemmatisedResponse() {
     }
