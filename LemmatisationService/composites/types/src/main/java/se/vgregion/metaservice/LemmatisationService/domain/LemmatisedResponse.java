@@ -12,7 +12,7 @@ public class LemmatisedResponse implements Serializable{
     private String errorMessage = null;
     private StatusCode statusCode = null;
     private String originalWord = null;
-    private List<LemmatisedObject> list;
+    private List<LemmatisedObject> lemmatisedObjects;
     public enum StatusCode {
         ok(200),
         no_word_found(404),
@@ -37,11 +37,11 @@ public class LemmatisedResponse implements Serializable{
     }
 
     public List<LemmatisedObject> getList() {
-        return list;
+        return lemmatisedObjects;
     }
 
     public void setList(List<LemmatisedObject> list) {
-        this.list = list;
+        this.lemmatisedObjects = list;
     }
 
     public String getOriginalWord() {
