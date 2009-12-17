@@ -36,6 +36,6 @@
 
         <servlet-mapping>
             <servlet-name>lemmatisation</servlet-name>
-            <url-pattern>/lemmatisation/*</url-pattern>
+            <url-pattern>/*</url-pattern>
         </servlet-mapping>
 </web-app>
