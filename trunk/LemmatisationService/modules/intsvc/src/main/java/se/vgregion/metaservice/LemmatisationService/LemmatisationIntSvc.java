@@ -2,6 +2,7 @@
 package se.vgregion.metaservice.LemmatisationService;
 
 import java.io.Writer;
+import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -22,5 +23,5 @@ public interface LemmatisationIntSvc {
      *
      * @return
      */
-    public void getXMLSchema(Writer writer);
+    public void getXMLSchema(Writer writer, HttpServletResponse response);
 }
