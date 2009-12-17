@@ -134,6 +134,12 @@ Generation time : 2009-12-10 10:37:30 CET
             <type>jar</type>
         </dependency>
 
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
     </dependencies>
 
     <repositories>

@@ -10,6 +10,11 @@
     <!-- Scan for HTTP/REST controllers -->
     <context:component-scan base-package="se.vgregion.metaservice.LemmatisationService.intsvc" />
 
+    <!-- Bean to inject XSD file into controller -->
+    <bean id="xsdResource" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="schema1.xsd" />
+    </bean>
+
     <!-- Resolve views based on string names -->
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 
