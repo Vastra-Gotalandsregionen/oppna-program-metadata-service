@@ -16,7 +16,7 @@ Generation time : 2009-12-10 10:37:30 CET
     </parent>
 
     <properties>
-        <spring-version>3.0.0.RC3</spring-version>
+        <spring-version>3.0.0.RELEASE</spring-version>
     </properties>
 
     <groupId>MetaService</groupId>
@@ -99,20 +99,20 @@ Generation time : 2009-12-10 10:37:30 CET
 
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>org.springframework.oxm</artifactId>
+            <artifactId>spring-oxm</artifactId>
             <version>${spring-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web</artifactId>
-            <version>${spring-version}</version>
+            <version>3.0.0.RC3</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>org.springframework.web.servlet</artifactId>
-            <version>${spring-version}</version>
+            <version>3.0.0.RC3</version>
         </dependency>
 
         <dependency>
