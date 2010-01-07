@@ -22,6 +22,10 @@
         <version>2.0-SNAPSHOT</version>
     </parent>
 
+    <properties>
+        <spring-version>3.0.0.RELEASE</spring-version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -42,18 +46,17 @@
             <version>0.4-SNAPSHOT</version>
         </dependency>
 
-
         <dependency>
             <groupId>MetaService</groupId>
             <artifactId>
-				MetaService-KeywordService-composite-types
+                MetaService-KeywordService-composite-types
             </artifactId>
-			<!-- version IS DEFINED BY PARENT -->
+            <!-- version IS DEFINED BY PARENT -->
             <version>${pom.version}</version>
             <scope>compile</scope>
         </dependency>
 
-    <!-- APELON DEPENDENCIES -->
+        <!-- APELON DEPENDENCIES -->
 
         <dependency>
             <groupId>com.apelon.apelonbeans</groupId>
@@ -61,6 +64,7 @@
             <version>1.5.3</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.apelon.apelonmessage</groupId>
             <artifactId>apelonmessage</artifactId>
@@ -77,18 +81,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>com.apelon.apelonserver</groupId>
             <artifactId>apelonserver</artifactId>
             <version>1.2.2</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.apelon.apelonsoap</groupId>
             <artifactId>apelonsoap</artifactId>
             <version>1.1.0</version>
             <scope>compile</scope>
         </dependency>
+
         <dependency>
             <groupId>com.apelon.common</groupId>
             <artifactId>common</artifactId>
@@ -101,6 +108,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
         <dependency>
             <groupId>com.apelon.dtscore</groupId>
             <artifactId>dtscore</artifactId>
@@ -137,42 +145,45 @@
                 </exclusion>
             </exclusions>
         </dependency>
-  <!-- SPRING AND PERSISTENT DEPENDENCIES -->
+
+        <!-- SPRING AND PERSISTENT DEPENDENCIES -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>2.5.4</version>
+            <version>${spring-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>2.5.4</version>
+            <version>${spring-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>2.5.4</version>
+            <version>${spring-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>2.5.4</version>
+            <version>${spring-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>2.5.4</version>
+            <version>${spring-version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.apache.openjpa</groupId>
             <artifactId>openjpa</artifactId>
             <version>1.2.1</version>
         </dependency>
+        
         <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
