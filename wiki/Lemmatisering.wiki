@@ -1,4 +1,6 @@
+#summary Ord lemmatisering
 #labels Lemmatisering,REST
+
 Tjänsten är konstruerad för att från ett ord ta fram dess grundform och alla dess böjningar. 
 
 = REST =
