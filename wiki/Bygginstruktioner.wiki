@@ -77,13 +77,11 @@ VocabularyService använder sig av en tjänst för att lemmatisera ord. Denna kr
 
 # The URL to where the lemmatisation service is located.
 #
-# This URL is used both to access the schema.xsd file,
-# which is used to generate sources in maven, and
-# in spring to formulate the URL to the REST service.
-#
 lemmatisation.baseurl=http://localhost:8080/MetaService-LemmatisationService-module-intsvc
 
 }}}
+
+Ovanstående property används både i spring för intsvc-projektet, samt för maven i när svc-projektet byggs. Alltså kräver kompileringen av VocabularyService-svc att Lemmatisation-intsvc körs. Ett alternativ är att manuellt kopiera [http://code.google.com/p/oppna-program-metadata-service/wiki/Lemmatisering schema.xsd] till resources-mappen i VocabularyService-svc och ersätta värder på fältet "schemaFiles" i pom-filen. 
 
 
 = Instruktioner för SitemapGenerator =
