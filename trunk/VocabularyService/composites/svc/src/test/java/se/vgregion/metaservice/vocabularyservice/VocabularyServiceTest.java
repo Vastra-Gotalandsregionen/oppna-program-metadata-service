@@ -22,7 +22,7 @@ public class VocabularyServiceTest extends BaseSpringDependencyInjectionTest {
 
 	public void testGetVocabulary() {
 		String path = "Dokumenttyper/MIME/";
-		NodeListResponseObject response = vocabularyService.getVocabulary("m123",path);
+		NodeListResponseObject response = vocabularyService.getVocabulary("m123",path,null);
         List<MedicalNode> nodes = response.getNodeList();
 		// assertNotNull(nodes);
 		if (nodes != null) {
