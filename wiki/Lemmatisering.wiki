@@ -34,7 +34,8 @@ Där {ord} är det ord som ska lemmatiseras. Ett exempelsvar kan se ut enligt f�
 
 Schemat för ovanstående XML-svar ser ut enligt följande:
 {{{
-<xs:schema version="1.0">
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="lemmatisedObject" type="lemmatisedObject"/>
   <xs:element name="lemmatisedResponse" type="lemmatisedResponse"/>
   <xs:complexType name="lemmatisedObject">
@@ -65,4 +66,4 @@ Schemat för ovanstående XML-svar ser ut enligt följande:
 
 = Klient =
 
-En klient-implementation finns tillgänlig via VocabularyService projektet, där den används för att berika ord med synonymer när de läggs till eller flyttas i Appelon.
+En klient-implementation finns tillgänlig via VocabularyService projektet, där den används för att berika ord med synonymer när de läggs till eller flyttas i Apelon.
