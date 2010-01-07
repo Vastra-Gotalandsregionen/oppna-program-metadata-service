@@ -81,8 +81,6 @@ lemmatisation.baseurl=http://localhost:8080/MetaService-LemmatisationService-mod
 
 }}}
 
-Ovanstående property används både i spring för intsvc-projektet, samt för maven i när svc-projektet byggs. Alltså kräver kompileringen av VocabularyService-svc att Lemmatisation-intsvc körs. Ett alternativ är att manuellt kopiera [http://code.google.com/p/oppna-program-metadata-service/wiki/Lemmatisering schema.xsd] till resources-mappen i VocabularyService-svc och ersätta värder på fältet "schemaFiles" i pom-filen. 
-
 
 = Instruktioner för SitemapGenerator =
 SitemapGenerator är en standalone applikation i metaservice projektet. Applikationen genererar en sitemap för varje angiven namnrymd. Rekomenderad körning är att applikationen startas via en enkel .bat fil, schemalagd enligt operativsystemet inbyggda schemaläggninigresurser. 
