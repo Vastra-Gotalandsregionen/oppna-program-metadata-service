@@ -71,8 +71,7 @@ vgr.profileid=hard_to_guess_profileId
 
 
 = Lemmatisering =
-VocabularyService använder sig av en tjänst för att lemmatisera ord. Denna kräver en att en propertes-fil finns tillgänglig i resources-mappen. 
-lemmatisation.properties:
+VocabularyService använder sig av en tjänst för att lemmatisera ord. Denna kräver en att en propertes-fil finns tillgänglig i resources-mappen för svc-projektet; lemmatisation.properties:
 
 {{{
 
