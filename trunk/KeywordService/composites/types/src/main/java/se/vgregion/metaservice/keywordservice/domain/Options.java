@@ -12,7 +12,7 @@ public class Options {
     /** Max number of keywords to return */
     private int wordLimit = 10;
 
-    /** ? */
+    /** If set, adds the url as a property in lookupword if a node is created */
     private String url = "";
 
     /** A map of includeSourceIds to include for each namespace */
@@ -21,8 +21,11 @@ public class Options {
     /** Used to filter returned nodes from VocabularyService.getVocabulary by property */
     private Map<String, List<String>> filterByProperties = null;
 
-    /** Used by findNodesByName*/
-    private Boolean useSynonyms;
+    /** Used by findNodesByName to match synonyms when searching for a node name */
+    private boolean matchSynonyms = false;
+
+    /** Used in addVocabularyNode and moveVocabularyNode to enrich node with synonyms */
+    private boolean synonymize = false;
 
     /**
      * Empty Constructor, uses the default values
@@ -66,13 +69,23 @@ public class Options {
         this.filterByProperties = filterProperties;
     }
 
-    public Boolean getUseSynonyms() {
-        return useSynonyms;
+    public boolean matchSynonyms() {
+        return matchSynonyms;
     }
 
-    public void setUseSynonyms(Boolean useSynonyms) {
-        this.useSynonyms = useSynonyms;
+    public void setMatchSynonyms(boolean useSynonyms) {
+        this.matchSynonyms = useSynonyms;
     }
+
+    public boolean synonymize() {
+        return synonymize;
+    }
+
+    public void setSynonymize(boolean synonymize) {
+        this.synonymize = synonymize;
+    }
+
+
 
 
 }

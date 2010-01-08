@@ -9,58 +9,51 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<!--<groupId> groupId IS DEFINED BY PARENT </groupId>-->
-	<artifactId>MetaService-VocabularyService-module-intsvc</artifactId>
-	<packaging>war</packaging>
-	<name>MetaService-VocabularyService-module-intsvc</name>
-	<!--<version> version IS DEFINED BY PARENT </version>-->
 
-	<dependencies>
-		<dependency>
-			<groupId>MetaService</groupId>
-			<artifactId>
-				MetaService-VocabularyService-composite-svc
-			</artifactId>
-			<!-- version IS DEFINED BY PARENT -->
-			<version>${pom.version}</version>
-			<scope>compile</scope>
-		</dependency>
+    <!--<groupId> groupId IS DEFINED BY PARENT </groupId>-->
+    <!--<version> version IS DEFINED BY PARENT </version>-->
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>MetaService-VocabularyService-module-intsvc</artifactId>
+    <packaging>war</packaging>
+    <name>MetaService-VocabularyService-module-intsvc</name>
 
-		<dependency>
-			<groupId>MetaService</groupId>
-			<artifactId>
-				MetaService-VocabularyService-composite-schema
-			</artifactId>
-			<!-- version IS DEFINED BY PARENT -->
-			<version>${pom.version}</version>
-			<scope>compile</scope>
-		</dependency>
+    <properties>
+        <spring-version>3.0.0.RELEASE</spring-version>
+    </properties>
 
-		<dependency>
-			<groupId>MetaService</groupId>
-			<artifactId>
-				MetaService-KeywordService-composite-schema
-			</artifactId>
-			<!-- version IS DEFINED BY PARENT -->
-			<version>2.0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
+    <dependencies>
+        <dependency>
+            <groupId>MetaService</groupId>
+            <artifactId>MetaService-VocabularyService-composite-svc</artifactId>
+            <version>${pom.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>2.5.4</version>
-		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>MetaService</groupId>
+            <artifactId>MetaService-VocabularyService-composite-schema</artifactId>
+            <version>${pom.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>MetaService</groupId>
+            <artifactId>MetaService-KeywordService-composite-schema</artifactId>
+            <version>2.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
 
-	<parent>
-		<groupId>MetaService</groupId>
-		<artifactId>MetaService-VocabularyService</artifactId>
-		<version>2.0-SNAPSHOT</version>
-	</parent>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+    </dependencies>
 
-
+    <parent>
+        <groupId>MetaService</groupId>
+        <artifactId>MetaService-VocabularyService</artifactId>
+        <version>2.0-SNAPSHOT</version>
+    </parent>
 
 </project>

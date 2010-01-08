@@ -98,16 +98,11 @@ public class VocabularyService {
             return new LookupResponseObject(requestId, StatusCode.error_locating_profile, "Error locating profile");
         }
 
-        Boolean useSynonyms = false;
-        if (options != null && options.getUseSynonyms() != null) {
-            useSynonyms = options.getUseSynonyms();
-        }
-
         String namespace = profile.getWhiteList().getNamespace(); //TODO: No support for having different namespaces. Only looks in the whitelist-namespaceId
         String namespaceId = getNamespaceIdByName(namespace, requestId);
         List<MedicalNode> nodes = null;
         try {
-            nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, useSynonyms);
+            nodes = medicalTaxonomyService.findNodesWithParents(word, namespaceId, options.matchSynonyms());
         } catch (DTSException ex) {
             log.warn(MessageFormat.format("{0}:{1}: Could not get keywords from taxonomy, reason: {2} ",
                     requestId, StatusCode.error_getting_keywords_from_taxonomy.code(), ex.getMessage()));
@@ -304,14 +299,21 @@ public class VocabularyService {
      * @return a ResponeObject, check the statuscode in this object to see
      * if the operation was succesfull
      */
-    public ResponseObject addVocabularyNode(Identification id, String requestId, MedicalNode node) {
+    public ResponseObject addVocabularyNode(Identification id, String requestId, MedicalNode node, Options options) {
         ResponseObject response = new ResponseObject();
         response.setRequestId(requestId);
 
         // Check if the profile has write-access to the namespaceId of the node
         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
             try {
-                this.enrichNodeWithSynonyms(requestId, node);
+                if (options != null && options.synonymize()) {
+                    try {
+                        this.enrichNodeWithSynonyms(requestId, node);
+                    } catch (Exception ex) {
+                        log.warn(MessageFormat.format("{0}:{1}: Error communicating with Lemmatisation service",
+                                requestId, StatusCode.unknown_error.code()));
+                    }
+                }
                 medicalTaxonomyService.createNewConcept(node);
 
                 response.setStatusCode(StatusCode.ok);
@@ -362,7 +364,6 @@ public class VocabularyService {
         response.setStatusCode(StatusCode.ok);
         String nameSpaceId = getNamespaceIdByName(namespaceName, requestId);
         List<MedicalNode> list = null;
-        Boolean getSynonyms = false;
 
         if (nameSpaceId == null) {
             response.setStatusCode(StatusCode.error_locating_namespace);
@@ -372,14 +373,9 @@ public class VocabularyService {
             return response;
         }
 
-        if (options != null && options.getUseSynonyms() != null) {
-            getSynonyms = options.getUseSynonyms();
-        }
-
-
         if (hasNamespaceReadAccess(nameSpaceId, id.getProfileId(), requestId)) {
             try {
-                list = medicalTaxonomyService.findNodes(name, nameSpaceId, getSynonyms);
+                list = medicalTaxonomyService.findNodes(name, nameSpaceId, options.matchSynonyms());
                 response.setNodeList(list);
             } catch (DTSException ex) {
                 response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
@@ -406,7 +402,7 @@ public class VocabularyService {
      * @return a ResponseObject, check the statuscode in this object to see
      * if the operation was succesfull
      */
-    public ResponseObject moveVocabularyNode(Identification id, String requestId, MedicalNode node, String destNodePath) {
+    public ResponseObject moveVocabularyNode(Identification id, String requestId, MedicalNode node, String destNodePath, Options options) {
         ResponseObject response = new ResponseObject(requestId);
         response.setStatusCode(StatusCode.ok);
         MedicalNode destNode = null;
@@ -417,7 +413,14 @@ public class VocabularyService {
             if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId) &&
                     hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
-                this.enrichNodeWithSynonyms(requestId, node);
+                if (options != null && options.synonymize()) {
+                    try {
+                        this.enrichNodeWithSynonyms(requestId, node);
+                    } catch (Exception ex) {
+                        log.warn(MessageFormat.format("{0}:{1}: Error communicating with Lemmatisation service",
+                                requestId, StatusCode.unknown_error.code()));
+                    }
+                }
                 medicalTaxonomyService.moveNode(node, destNode);
                 medicalTaxonomyService.setLastChangeNow(destNode.getNamespaceId());
 
@@ -459,12 +462,19 @@ public class VocabularyService {
      * @param node the updated node, the id of the node must not be changed.
      * @return ResponseObject with status information.
      */
-    public ResponseObject updateVocabularyNode(Identification id, String requestId, MedicalNode node) {
+    public ResponseObject updateVocabularyNode(Identification id, String requestId, MedicalNode node, Options options) {
         ResponseObject response = new ResponseObject(requestId);
 
         if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)) {
             try {
-                this.enrichNodeWithSynonyms(requestId, node);
+                if (options != null && options.synonymize()) {
+                    try {
+                        this.enrichNodeWithSynonyms(requestId, node);
+                    } catch (Exception ex) {
+                        log.warn(MessageFormat.format("{0}:{1}: Error communicating with Lemmatisation service",
+                                requestId, StatusCode.unknown_error.code()));
+                    }
+                }
                 medicalTaxonomyService.updateConcept(node);
                 response.setStatusCode(StatusCode.ok);
             } catch (NodeNotFoundException ex) {
@@ -877,19 +887,29 @@ public class VocabularyService {
      *
      * @param requestId Request identifier
      * @param node The node to enrich with synonyms
+     * @throws Exception If the communcation with the LemmatisationService failed
      */
-    private void enrichNodeWithSynonyms(String requestId, MedicalNode node) {
+    private void enrichNodeWithSynonyms(String requestId, MedicalNode node) throws Exception {
         LemmatisedResponse lemmas = lemmatisationRestClient.getLemmatisedResponse(node.getName());
         if (lemmas.getStatusCode() == se.vgregion.metaservice.lemmatisation.generated.StatusCode.OK) {
-            for (LemmatisedObject lemmaObj : lemmas.getList()) {
-                for (String paradigm : lemmaObj.getParadigms()) {
+            if (lemmas.getList().size() == 1) {
+                for (LemmatisedObject lemmaObj : lemmas.getList()) {
+                    int numSynonyms = 0;
+                    for (String paradigm : lemmaObj.getParadigms()) {
 
-                    // Avoid duplicates
-                    if (!node.getSynonyms().contains(paradigm)) {
-                        log.info("Added " + lemmas.getList().size() + " synonyms to word " + node.getName());
-                        node.addSynonym(paradigm);
+                        // Avoid duplicate synonyms
+                        if (!node.getSynonyms().contains(paradigm)) {
+                            node.addSynonym(paradigm);
+                            numSynonyms++;
+                        }
                     }
+                    log.info("Added " + numSynonyms + " synonyms to node " + node.getName());
                 }
+
+            } else if (lemmas.getList().size() > 1) {
+                // More than one lemma exist. Since we don't know which lemma is correct
+                // for the user, we skip adding lemmas completely for now.
+                log.debug("Skipping synomizing node " + node.getName() + ", more than one lemma matches");
             }
         } else {
             log.warn(MessageFormat.format("{0}{1}Unable to add synonyms to node, reason: {2}",

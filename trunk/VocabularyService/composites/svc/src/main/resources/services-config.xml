@@ -19,7 +19,9 @@
             <list>
                 <value>classpath:vocabularyservice-svc.properties</value>
                 <value>classpath:searchprofiles.properties</value>
-                <value>classpath:lemmatisation.properties</value>
+
+                <!-- Located in VocabularyService-composite-svc project -->
+                <value>classpath*:lemmatisation.properties</value>
             </list>
         </property>
     </bean>
@@ -82,8 +84,9 @@
 
     <!-- The marshaller to use with the REST service -->
     <bean id="xmlMarshaller" class="org.springframework.oxm.jaxb.Jaxb2Marshaller" >
-        <property name="contextPath" value="generated" />
-        <property name="schema" value="http://localhost:8080/MetaService-LemmatisationService-module-intsvc/schema.xsd" />
+        <property name="contextPath" value="se.vgregion.metaservice.lemmatisation.generated" />
+        <!-- Uncomment to use schema validation: 
+        <property name="schema" value="${lemmatisation.baseurl}/schema.xsd" /> -->
     </bean>
 
 </beans>
