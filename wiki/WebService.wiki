@@ -129,6 +129,7 @@ Lägger till en ny vokabulärnod som undernod till en existerande nod.
 || id || Identification || Objekt som identifierar användare och profil ||
 || requestId || String || Unik anrops-identifierare ||
 || node || Node || Ett nytt nod-objekt som innehåller en förälder relation ||
+|| options || Options || Om värdet synonymize är satt till true kommer lemmatiseringstjänsten anropas för att försöka berika den lagrade noden med synonymer. ||
 
 *Returvärde*
 _ResponseObject statuskod och ev. felmeddelande_
@@ -145,6 +146,7 @@ Flyttar en vokabulärnod från en nod till en annan.
 || requestId || String || Unik anrops-identifierare ||
 || nodeId || String || Id för den nod som ska flyttas ||
 || destParentNodeId || String || Id till den nod som ska bli ny föräldernod, prefixat av namnutrymmet (namespace) ||
+|| options || Options || Om värdet synonymize är satt till true kommer lemmatiseringstjänsten anropas för att försöka berika den lagrade noden med synonymer. ||
 
 *Returvärde*
 _ResponseObject statuskod och ev. felmeddelande_
@@ -160,6 +162,7 @@ Uppdaterar innehållet i en vokabulärnod.
 || id || Identification || Objekt som identifierar användare och profil ||
 || requestId || String || Unik anrops-identifierare ||
 || node || Node || Den uppdaterade noden (med oförändrat nodeId) ||
+|| options || Options || Om värdet synonymize är satt till true kommer lemmatiseringstjänsten anropas för att försöka berika den lagrade noden med synonymer. ||
 
 *Returvärde*
 _ResponseObject statuskod och ev. felmeddelande_
