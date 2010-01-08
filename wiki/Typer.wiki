@@ -92,6 +92,8 @@ Options är ett object som anger valbara parametrar för en request.
 || includeSourceIds || Map<Integer,List<String>> || Används för att begränsa sökresultatet till en delmängd av ett namespace.  En map med namespaceId som nyckel och en lista av sourceIds som sökningen ska begränsas till för det angivna namespaceId:t ||
 || url || String || Url som requesten kommer ifrån. Kan användas med VocabularyService.LookupWord; om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet ||
 || filterByProperties || Map<String, List<String>> || En map med en lista av filter. Kan användas med VocabularyService.getVocabulary för att endast returnera de noder som har en property som matchar en av strängarna i listan.  ||
+|| matchSynonyms || boolean || Om synonymer ska matcha när sökning görs i Apelon. Används i VocabularyService.lookupWord. ||
+|| synomize || boolean || Satt till true kommer lemmatiseringstjänsten användas för att berika ett ord med synonymer. Används i VocabularyService.addVocabularyNode och VocabularyService.moveVocabularyNode ||
 
 <br><br>
 
