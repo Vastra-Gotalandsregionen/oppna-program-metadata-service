@@ -20,7 +20,7 @@ public class LemmatisationRestClient {
      * @param word The word to lemmatise
      * @return A lemmatised response object fo the word
      */
-    public LemmatisedResponse getLemmatisedResponse(String word) {
+    public LemmatisedResponse getLemmatisedResponse(String word) throws Exception {
         return (LemmatisedResponse) restTemplate.getForObject(restUrl, JAXBElement.class, word).getValue();
     }
 

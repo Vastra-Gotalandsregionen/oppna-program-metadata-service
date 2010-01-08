@@ -54,9 +54,8 @@ public class OptionsSdoHelper {
             }
 
             optionsType.setFilterByProperties(props);
-            if (options.getUseSynonyms() != null) {
-                optionsType.setUseSynonyms(options.getUseSynonyms());
-            }
+            optionsType.setMatchSynonyms(options.matchSynonyms());
+            optionsType.setSynomize(options.synonymize());
         }
         return optionsType;
     }
@@ -121,7 +120,8 @@ public class OptionsSdoHelper {
                 options.setFilterByProperties(filterMap);
             }
 
-            options.setUseSynonyms(optionsType.isUseSynonyms());
+            options.setMatchSynonyms(optionsType.isMatchSynonyms());
+            options.setSynonymize(optionsType.isSynomize());
 
         }
         return options;

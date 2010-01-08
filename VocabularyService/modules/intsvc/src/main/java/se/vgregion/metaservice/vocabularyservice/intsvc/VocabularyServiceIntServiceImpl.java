@@ -83,7 +83,8 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
         ResponseObject responseObject = vocabularyService.addVocabularyNode(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                node);
+                node,
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
 
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
@@ -99,7 +100,8 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
                 NodeSdoHelper.fromNodeType(parameters.getNode()),
-                parameters.getDestNodePath());
+                parameters.getDestNodePath(),
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
 
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }
@@ -113,7 +115,8 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
         ResponseObject responseObject = vocabularyService.updateVocabularyNode(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
-                NodeSdoHelper.fromNodeType(parameters.getNode()));
+                NodeSdoHelper.fromNodeType(parameters.getNode()),
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
 
         return ResponseObjectSdoHelper.toRepsonseObjectType(responseObject);
     }

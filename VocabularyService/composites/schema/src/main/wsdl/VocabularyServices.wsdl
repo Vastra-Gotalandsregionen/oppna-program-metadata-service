@@ -78,6 +78,7 @@
                         <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="node" type="node:NodeType" />
+                        <xsd:element name="options" type="req:OptionsType"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
@@ -88,7 +89,8 @@
                         <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="node" type="node:NodeType" />
-                        <xsd:element name="destNodePath" type="xsd:string" />                        
+                        <xsd:element name="destNodePath" type="xsd:string" />
+                        <xsd:element name="options" type="req:OptionsType"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
@@ -99,6 +101,7 @@
                         <xsd:element name="identification" type="req:IdentificationType" />
                         <xsd:element name="requestId" type="xsd:string" />
                         <xsd:element name="node" type="node:NodeType" />
+                        <xsd:element name="options" type="req:OptionsType"/>
                     </xsd:sequence>
                 </xsd:complexType>
             </xsd:element>
