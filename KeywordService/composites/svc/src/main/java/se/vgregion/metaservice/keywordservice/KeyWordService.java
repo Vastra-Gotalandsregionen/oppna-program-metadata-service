@@ -513,7 +513,7 @@ public class KeyWordService {
             return namespaceId;
 
         } catch (Exception ex) {
-            log.warn(MessageFormat.format("{1}:Error retrieving namespaceId {2} by name", StatusCode.error_locating_namespace.code(), namespaceName), ex);
+            log.warn(MessageFormat.format("{0}:Error retrieving namespaceId {1} by name", StatusCode.error_locating_namespace.code(), namespaceName), ex);
         }
 
         return null;
