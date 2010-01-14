@@ -40,17 +40,19 @@ public class OptionsSdoHelper {
             optionsType.setUrl(options.getUrl());
 
             FilterByProperties props = new FilterByProperties();
-            for (java.util.Map.Entry<String, List<String>> entry : options.getFilterByProperties().entrySet()) {
-                FilterByProperties.Entry sdoEntry = new FilterByProperties.Entry();
-                sdoEntry.setKey(entry.getKey());
+            if (options.getFilterByProperties() != null) {
+                for (java.util.Map.Entry<String, List<String>> entry : options.getFilterByProperties().entrySet()) {
+                    FilterByProperties.Entry sdoEntry = new FilterByProperties.Entry();
+                    sdoEntry.setKey(entry.getKey());
 
-                FilterByPropertiesListType sdoEntryVal = new FilterByPropertiesListType();
-                for (String val : entry.getValue()) {
-                    sdoEntryVal.getFilter().add(val);
+                    FilterByPropertiesListType sdoEntryVal = new FilterByPropertiesListType();
+                    for (String val : entry.getValue()) {
+                        sdoEntryVal.getFilter().add(val);
+                    }
+
+                    sdoEntry.setValue(sdoEntryVal);
+                    props.getEntry().add(sdoEntry);
                 }
-
-                sdoEntry.setValue(sdoEntryVal);
-                props.getEntry().add(sdoEntry);
             }
 
             optionsType.setFilterByProperties(props);
@@ -67,10 +69,12 @@ public class OptionsSdoHelper {
      */
     private static IncludeSourceIds toIncludeSourceIds(Map<Integer, String[]> sourceIdsMap) {
         IncludeSourceIds sourceIds = new IncludeSourceIds();
-        for (Integer namespaceId : sourceIdsMap.keySet()) {
-            IncludeSourceIds.Entry entry = new IncludeSourceIds.Entry();
-            entry.setKey(namespaceId);
-            entry.setValue(toIncludeSourceIdsListType(sourceIdsMap.get(namespaceId)));
+        if (sourceIdsMap != null) {
+            for (Integer namespaceId : sourceIdsMap.keySet()) {
+                IncludeSourceIds.Entry entry = new IncludeSourceIds.Entry();
+                entry.setKey(namespaceId);
+                entry.setValue(toIncludeSourceIdsListType(sourceIdsMap.get(namespaceId)));
+            }
         }
         return sourceIds;
     }

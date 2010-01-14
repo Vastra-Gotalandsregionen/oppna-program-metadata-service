@@ -881,23 +881,29 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return this.sourceIdPropertyKey;
     }
 
-    public String findNamespaceById(
-            int namespaceId) throws Exception {
+    public String findNamespaceById(int namespaceId) throws Exception {
         if (nameQuery != null) {
-            return nameQuery.findNamespaceById(namespaceId).getName();
+            //return nameQuery.findNamespaceById(namespaceId).getName();
+            Namespace n = nameQuery.findNamespaceById(namespaceId);
+            if (n != null) {
+                return n.getName();
+            }
+            throw new DTSException("Error locating namespace");
         }
-// not initialized
-
+        // not initialized
         throw new DTSException("Error finding namespaceById. MedicalTaxonomyService.initConnection() has not been invoked.");
     }
 
-    public String findNamespaceIdByName(
-            String namespaceName) throws Exception {
+    public String findNamespaceIdByName(String namespaceName) throws Exception {
         if (nameQuery != null) {
-            return "" + nameQuery.findNamespaceByName(namespaceName).getId();
+            Namespace n = nameQuery.findNamespaceByName(namespaceName);
+            if (n != null) {
+                return "" + n.getId();
+            }
+            throw new DTSException("Error locating namespace");
         }
-// not initialized
 
+        // not initialized
         throw new DTSException("Error finding namespaceIdByName. MedicalTaxonomyService.initConnection() has not been invoked.");
     }
 }
