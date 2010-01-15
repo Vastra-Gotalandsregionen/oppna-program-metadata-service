@@ -19,7 +19,9 @@
     <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
 
      <!-- The actual lemmatisationservice implementation -->
-    <bean id="lemmationsationSvc" class="se.vgregion.metaservice.LemmatisationService.svc.LemmatisationSvcImpl"/>
+    <bean id="lemmationsationSvc" class="se.vgregion.metaservice.LemmatisationService.svc.LemmatisationSvcImpl" init-method="init">
+        <property name="wordlistLocation" value="/saldo.txt" />
+    </bean>
         
     <!-- XML view using XStream mashaller-->
     <bean id="xstreamView" class="org.springframework.web.servlet.view.xml.MarshallingView">

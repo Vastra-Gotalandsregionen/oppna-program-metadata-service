@@ -11,14 +11,13 @@ import se.vgregion.metaservice.LemmatisationService.exception.InitializationExce
 import se.vgregion.metaservice.LemmatisationService.model.Dictionary;
 
 public class LemmatisationSvcImpl implements LemmatisationSvc {
+    private static final String DEFAULT_WORDLISTLOCATION = "/saldo.txt";
+    private String wordlistLocation = null;
     private Dictionary dictionary;
     private boolean initialized;
 
     public void init() throws InitializationException {
-        init("/saldo.txt");
-    }
-
-    public void init(String wordlistLocation) throws InitializationException {
+        if (wordlistLocation == null) wordlistLocation = DEFAULT_WORDLISTLOCATION;
         URL url = getClass().getResource(wordlistLocation);
 
         try {
@@ -67,4 +66,11 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
         return response;
     }
 
+    public String getWordlistLocation() {
+        return wordlistLocation;
+    }
+
+    public void setWordlistLocation(String wordlistLocation) {
+        this.wordlistLocation = wordlistLocation;
+    }
 }

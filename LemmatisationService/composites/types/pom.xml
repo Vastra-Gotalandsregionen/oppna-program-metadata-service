@@ -21,7 +21,7 @@ Generation time : 2009-12-10 10:37:30 CET
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     
-   <build>
+    <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
@@ -37,7 +37,7 @@ Generation time : 2009-12-10 10:37:30 CET
                 <!-- Generate xml schema from annotated java classes -->
                 <groupId>com.sun.tools.jxc.maven2</groupId>
                 <artifactId>maven-jaxb-schemagen-plugin</artifactId>
-                <version>1.2</version>  
+                <version>1.2</version>
                 <executions>
                     <execution>
                         <phase>generate-resources</phase>
@@ -53,6 +53,17 @@ Generation time : 2009-12-10 10:37:30 CET
                      <!-- default filename: schema1.xsd -->
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.0.2</version>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
 
         </plugins>
     </build>
