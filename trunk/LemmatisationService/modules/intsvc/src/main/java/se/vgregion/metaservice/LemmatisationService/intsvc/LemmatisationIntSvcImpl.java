@@ -2,7 +2,6 @@
 package se.vgregion.metaservice.LemmatisationService.intsvc;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Writer;
@@ -19,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 import se.vgregion.metaservice.LemmatisationService.LemmatisationIntSvc;
 import se.vgregion.metaservice.LemmatisationService.LemmatisationSvc;
 import se.vgregion.metaservice.LemmatisationService.domain.LemmatisedResponse;
-import se.vgregion.metaservice.LemmatisationService.exception.InitializationException;
 
 /**
  * LemmatisationIntSvcImpl
@@ -41,7 +39,6 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
     public ModelAndView getParadigms(@PathVariable String word) {
         LemmatisedResponse response = lemmationsationSvc.getParadigmsObject(word);
 
-        // Include BindingResult.MODEL_KEY_PREFIX due to a bug in MarshallingView.java ?
         return new ModelAndView("jaxbView", BindingResult.MODEL_KEY_PREFIX + "paradigmsresponse", response);
     }
 
@@ -76,11 +73,6 @@ public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
     @Autowired(required=true)
     public void setLemmationsationSvc(LemmatisationSvc lemmationsationSvc) {
         this.lemmationsationSvc = lemmationsationSvc;
-        try {
-            lemmationsationSvc.init();
-        } catch (InitializationException ex) {
-            log.error("Error initializing lemmatisation service", ex);
-        }
     }
 
     @Autowired(required=true)

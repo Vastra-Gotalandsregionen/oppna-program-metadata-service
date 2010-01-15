@@ -27,12 +27,7 @@ public interface LemmatisationSvc {
      */
     public void init() throws InitializationException;
 
-    /**
-     * Initialize the lemmatisation service with a custom
-     * location for the wordlist.
-     *
-     * @param wordlistLocation Location of the wordlist
-     */
-    public void init(String wordlistLocation) throws InitializationException;
+    public String getWordlistLocation();
+    public void setWordlistLocation(String wordlistLocation);
 
 }
