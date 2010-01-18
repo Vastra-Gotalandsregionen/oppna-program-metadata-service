@@ -36,7 +36,8 @@ public class OptionsSdoHelper {
         OptionsType optionsType = new OptionsType();
         if (options != null) {
             optionsType.setIncludeSourceIds(toIncludeSourceIds(options.getIncludeSourceIds()));
-            optionsType.setWordLimit(options.getWordLimit());
+            optionsType.setInputWords(options.getInputWords());
+            optionsType.setWordsToReturn(options.getWordsToReturn());
             optionsType.setUrl(options.getUrl());
 
             FilterByProperties props = new FilterByProperties();
@@ -102,8 +103,11 @@ public class OptionsSdoHelper {
         Options options = new Options();
         if (optionsType != null) {
             options = new Options();
-            if (optionsType.getWordLimit() != 0) {
-                options.setWordLimit(optionsType.getWordLimit());
+            if (optionsType.getInputWords() != 0) {
+                options.setInputWords(optionsType.getInputWords());
+            }
+            if (optionsType.getWordsToReturn() != 0) {
+                options.setWordsToReturn(optionsType.getWordsToReturn());
             }
             if (optionsType.getIncludeSourceIds() != null) {
                 options.setIncludeSourceIds(fromIncludeSourceIds(optionsType.getIncludeSourceIds()));

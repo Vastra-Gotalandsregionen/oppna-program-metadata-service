@@ -23,7 +23,7 @@ public class AnalysisServiceImpl extends AnalysisService {
 	 * by setResultLimit is returned. Returned keywords is taken from the content and title field in the Document.
 	 */
 	@Override
-	public String[] extractWords(AnalysisDocument document,int wordLimit) throws ProcessingException{
+	public String[] extractWords(AnalysisDocument document,int inputWords) throws ProcessingException{
 
             //TODO:Make this method throw ProcessingException
 
@@ -61,7 +61,7 @@ public class AnalysisServiceImpl extends AnalysisService {
 			}
 			words = tempWords.toArray(new String[0]);
 		}
-		String[] returnWords = new String[Math.min(words.length,wordLimit)];
+		String[] returnWords = new String[Math.min(words.length,inputWords)];
 		System.arraycopy(words, 0, returnWords, 0, returnWords.length);
 		
 		return returnWords;
