@@ -88,7 +88,8 @@ FileDocument representerar en fil som t.ex. file.html, file.pdf, file.odt etc.
 Options är ett object som anger valbara parametrar för en request. 
 
 || *Namn* || *Typ* || *Förklaring* ||
-|| wordLimit || int || Antal ord som ska returneras. Default värde är 10 ||
+|| inputWords || int || Antal ord som getKeywords baserar sin nyckelordsgenerering på. Default värde är 10 ||
+|| wordsToReturn || int || Antal ord som ska returneras från getKeywords. Default värde är 10 ||
 || includeSourceIds || Map<Integer,List<String>> || Används för att begränsa sökresultatet till en delmängd av ett namespace.  En map med namespaceId som nyckel och en lista av sourceIds som sökningen ska begränsas till för det angivna namespaceId:t ||
 || url || String || Url som requesten kommer ifrån. Kan användas med VocabularyService.LookupWord; om ordet läggs till i taxonomin, sparas url:en som en egenskap för ordet ||
 || filterByProperties || Map<String, List<String>> || En map med en lista av filter. Kan användas med VocabularyService.getVocabulary för att endast returnera de noder som har en property som matchar en av strängarna i listan.  ||
