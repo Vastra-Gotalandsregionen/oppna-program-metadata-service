@@ -15,7 +15,7 @@ public abstract class AnalysisService {
 		this.processors = processors;
 	}
 	
-	public abstract String[] extractWords(AnalysisDocument document,int wordLimit) throws ProcessingException;
+	public abstract String[] extractWords(AnalysisDocument document,int inputWords) throws ProcessingException;
 
 	public void setMinWordLength(int minWordLength) {
 		this.minWordLength = minWordLength;

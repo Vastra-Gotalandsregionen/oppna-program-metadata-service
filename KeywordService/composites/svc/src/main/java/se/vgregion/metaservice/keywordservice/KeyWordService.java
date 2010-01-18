@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -129,11 +130,20 @@ public class KeyWordService {
 
             /** * Extract keywords ** */
             log.debug(MessageFormat.format("{0}:Getting keywords",requestId));
-            String[] keywords = analysisService.extractWords(analysisDocument, options.getWordLimit());
+            String[] keywords = analysisService.extractWords(analysisDocument, options.getInputWords());
 
             /** * Find medical keywords ** */
             log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
-            List<MedicalNode> nodes = findMedicalNodes(keywords, id, options.getIncludeSourceIds());
+            List<MedicalNode> allNodes = findMedicalNodes(keywords, id, options.getIncludeSourceIds());
+            List<MedicalNode> nodes = new LinkedList<MedicalNode>();
+            // create a new list with the X first nodes
+            int maxNodes = Math.min(options.getWordsToReturn(),allNodes.size());
+            for (int i =0; i< maxNodes; i++){
+                nodes.add(allNodes.get(i));
+            }
+
+            System.out.println("wtr:" + options.getWordsToReturn() + ", iw:" + options.getInputWords());
+
 
             /** * Ensure user has read access to the namespace ** */
             if (!nodes.isEmpty()) {
