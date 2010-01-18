@@ -15,7 +15,8 @@ getKeywords är huvudoperationen, där man skickar in en artikel och får tillba
 
 
 *Förväntade options-värden*
- * wordLimit - Max antal ord ur texten som skall användas för att generera nyckelord
+ * inputWords - Max antal ord ur texten som skall användas för att generera nyckelord
+ * wordsToReturn - Max antal ord som skall returneras
  * includeSourceId - De källor som ska användas  
 
 
