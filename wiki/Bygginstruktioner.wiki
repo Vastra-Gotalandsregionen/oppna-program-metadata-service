@@ -81,6 +81,8 @@ lemmatisation.baseurl=http://localhost:8080/MetaService-LemmatisationService-mod
 
 }}}
 
+När lemmatiseringstjänsten körs på en linux server så måste text-filen "saldo.txt" manuellt kopieras till "classes"-mappen. Filen finns tillgänglig som default som en dependency till svc-projektet. 
+
 
 = Instruktioner för SitemapGenerator =
 SitemapGenerator är en standalone applikation i metaservice projektet. Applikationen genererar en sitemap för varje angiven namnrymd. Rekomenderad körning är att applikationen startas via en enkel .bat fil, schemalagd enligt operativsystemet inbyggda schemaläggninigresurser. 
