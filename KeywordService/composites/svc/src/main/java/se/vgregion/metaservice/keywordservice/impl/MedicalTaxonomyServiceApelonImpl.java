@@ -351,7 +351,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 for (NodeProperty prop : node.getProperties()) {
                     DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
                     if (pType == null) {
-                        throw new InvalidPropertyTypeException("No such property type");
+                        throw new InvalidPropertyTypeException("No property type with name "+prop.getName()+" found in taxonomy");
+                    }
+
+                    if(prop.getValue() == null || prop.getValue().trim().isEmpty()) {
+                        //Not allowed to set empty values in Apelon. return
+                        log.info("Property "+prop.getName()+" is empty. It will not be added to concept");
+                        continue;
                     }
 
                     DTSProperty property = new DTSProperty(pType, prop.getValue());
