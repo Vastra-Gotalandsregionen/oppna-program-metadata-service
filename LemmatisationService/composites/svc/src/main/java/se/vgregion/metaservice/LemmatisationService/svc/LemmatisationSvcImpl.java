@@ -2,34 +2,55 @@ package se.vgregion.metaservice.LemmatisationService.svc;
 
 import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import se.vgregion.metaservice.LemmatisationService.LemmatisationSvc;
 import se.vgregion.metaservice.LemmatisationService.domain.LemmatisedObject;
 import se.vgregion.metaservice.LemmatisationService.domain.LemmatisedResponse;
 import se.vgregion.metaservice.LemmatisationService.exception.InitializationException;
 import se.vgregion.metaservice.LemmatisationService.model.Dictionary;
+import se.vgregion.metaservice.LemmatisationService.model.FilesystemDictionary;
 
+/**
+ * @author johan.sjoberg
+ */
 public class LemmatisationSvcImpl implements LemmatisationSvc {
-    private static final String DEFAULT_WORDLISTLOCATION = "/saldo.txt";
-    private String wordlistLocation = null;
-    private Dictionary dictionary;
-    private boolean initialized;
+    private List<FilesystemDictionary> filesystemDictionaries;
+    private Map<String, Dictionary> dictionaries;
+    private String defaultDictionary = null;
+    private boolean initialized = false;
 
     public void init() throws InitializationException {
-        if (wordlistLocation == null) wordlistLocation = DEFAULT_WORDLISTLOCATION;
-        URL url = getClass().getResource(wordlistLocation);
+        dictionaries = new HashMap<String, Dictionary>();
+        String location = null;
+        File file;
+        URL url;
 
         try {
-            dictionary = new Dictionary(new File(url.toURI()));
-        } catch (Exception ex) {
-            throw new InitializationException("Error locating wordlist at location '" + wordlistLocation + "'");
-        }
+            for (FilesystemDictionary w : filesystemDictionaries) {
+                // Parse each file as either a jar-resource file or
+                // as an external filesystem path.
 
-        initialized = true;
+                location = w.getLocation();
+                url = getClass().getResource(location);
+                file = (url == null) ? new File(location) : new File(url.toURI());
+                dictionaries.put(w.getIdentifier(), new Dictionary(file));
+            }
+            
+            initialized = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            throw new InitializationException("Error locating dictionary at location: " + location);
+        }
     }
 
     public LemmatisedResponse getParadigmsObject(String word) {
+        return getParadigmsObject(word, defaultDictionary);
+    }
+
+    public LemmatisedResponse getParadigmsObject(String word, String identifier) {
         LemmatisedResponse response = new LemmatisedResponse();
         response.setStatusCode(LemmatisedResponse.StatusCode.ok);
         response.setOriginalWord(word);
@@ -39,7 +60,8 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
             response.setErrorMessage("Lemmatisation service is not initialized");
             return response;
         }
-
+        
+        Dictionary dictionary = dictionaries.get(identifier);
         if (dictionary == null) {
             response.setStatusCode(LemmatisedResponse.StatusCode.error);
             response.setErrorMessage("Dictionary not initialized");
@@ -61,16 +83,24 @@ public class LemmatisationSvcImpl implements LemmatisationSvc {
             obj.setParadigms(list);
             resultList.add(obj);
         }
-        
+
         response.setList(resultList);
         return response;
     }
 
-    public String getWordlistLocation() {
-        return wordlistLocation;
+    public String getDefaultDictionary() {
+        return defaultDictionary;
     }
 
-    public void setWordlistLocation(String wordlistLocation) {
-        this.wordlistLocation = wordlistLocation;
+    public void setDefaultDictionary(String defaultDictionary) {
+        this.defaultDictionary = defaultDictionary;
+    }
+
+    public List<FilesystemDictionary> getFilesystemDictionaries() {
+        return filesystemDictionaries;
+    }
+
+    public void setFilesystemDictionaries(List<FilesystemDictionary> filesystemDictionaries) {
+        this.filesystemDictionaries = filesystemDictionaries;
     }
 }
