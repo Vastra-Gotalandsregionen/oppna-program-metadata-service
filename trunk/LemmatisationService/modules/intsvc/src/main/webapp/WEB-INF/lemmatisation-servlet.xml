@@ -20,10 +20,10 @@
 
      <!-- The actual lemmatisationservice implementation -->
     <bean id="lemmationsationSvc" class="se.vgregion.metaservice.LemmatisationService.svc.LemmatisationSvcImpl" init-method="init">
-        <property name="defaultWordlist" value="se" />
+        <property name="defaultDictionary" value="se" />
         <property name="filesystemDictionaries">
             <list>
-                <bean class="se.vgregion.metaservice.LemmatisationService.model.Wordlist">
+                <bean class="se.vgregion.metaservice.LemmatisationService.model.FilesystemDictionary">
                     <property name="location" value="/saldo.txt" />
                     <property name="identifier" value="se" />
                 </bean>
