@@ -1,5 +1,6 @@
 #summary In- och ut- parametrar i Nyckelord- och Vokabulär- tjänsten
 = Web Service Nyckelordtjänst =
+WSDL-url: http://metadataservice.vgregion.se/keywordservice/KeywordService?wsdl
 <hr>
 == getKeywords ==
 
@@ -75,6 +76,7 @@ _ResponseObject med statuskod och ev. felmeddelande_
 <br><br>
 
 = Web Service Vokabulärtjänst =
+WSDL-url: http://metadataservice.vgregion.se/vocabularyservice/VocabularyService?wsdl
 <hr>
 Vokabulärtjänsten exponeras i dagsläget som en Web Service. Nedan beskrivs den operation som är exponerad. De egenutvecklade typerna som används är definierade i avsnittet Typer.
 
