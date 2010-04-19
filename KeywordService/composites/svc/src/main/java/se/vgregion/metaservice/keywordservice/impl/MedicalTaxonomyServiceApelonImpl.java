@@ -300,7 +300,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     }
 
     private DTSConcept getConceptByInternalId(String internalId, String namespaceId) throws DTSException {
-        setFetchParents(ca, namespace.getId());
+        setFetchParents(ca, Integer.parseInt(namespaceId));
         DTSConcept concept = searchQuery.findConceptById(Integer.parseInt(internalId),
                 Integer.parseInt(namespaceId), ca);
         return concept;
@@ -317,7 +317,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     private List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, boolean fetchParents) throws DTSException {
         List<MedicalNode> nodes = new ArrayList<MedicalNode>(100);
-        setFetchParents(ca, namespace.getId());
+        setFetchParents(ca, Integer.parseInt(namespaceId));
         try {
             DTSSearchOptions options = new DTSSearchOptions(100, Integer.parseInt(namespaceId), ca);
             log.debug(MessageFormat.format("Searching for concepts with name {0}", nodeName));
@@ -393,13 +393,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
             if (synonyms != null) {
                 for (String synonymName : synonyms) {
-                    AssociationType aType = getSynonymAssociationType();
-                    Term term = getExistingTerm(synonymName);
+                    AssociationType aType = getSynonymAssociationType(node.getNamespaceId());
+                    Term term = getExistingTerm(synonymName,concept.getNamespaceId());
                     if (term != null) {
                         log.info("Term " + synonymName + " exists, using existing");
                     } else {
                         log.info("Creating term " + synonymName);
-                        term = termQuery.addTerm(new Term(synonymName, namespace.getId()));
+                        term = termQuery.addTerm(new Term(synonymName, Integer.parseInt(node.getNamespaceId())));
                     }
                     Synonym syn = new Synonym(aType, term);
                     syn.setConcept(concept);
@@ -412,13 +412,13 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         }
     }
 
-    private AssociationType getSynonymAssociationType() throws DTSException {
-        AssociationType type = assocQuery.findAssociationTypeByName("Synonym", namespace.getId());
+    private AssociationType getSynonymAssociationType(String namespaceId) throws DTSException {
+        AssociationType type = assocQuery.findAssociationTypeByName("Synonym", Integer.parseInt(namespaceId));
         return type;
     }
 
-    private Term getExistingTerm(String name) throws DTSException {
-        Term[] terms = termQuery.findTermsByName(name, namespace.getId(), TermAttributeSetDescriptor.NO_ATTRIBUTES);
+    private Term getExistingTerm(String name, int namespaceId) throws DTSException {
+        Term[] terms = termQuery.findTermsByName(name, namespaceId, TermAttributeSetDescriptor.NO_ATTRIBUTES);
         if (terms.length > 0) {
             return terms[0];
         }
@@ -449,7 +449,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 throw new NodeNotFoundException("Destination parent node " + " not found");
             }
 
-            AssociationType parentRelation = getParentAssociation();
+            AssociationType parentRelation = getParentAssociation(parentConcept.getNamespaceId());
             ConceptAssociation oldParentAssociation = getParentAssociationForConcept(concept);
             ConceptAssociation newParentAssociation = new ConceptAssociation(parentConcept, parentRelation, concept);
             if (oldParentAssociation == null) // No previous parent, add parent
@@ -470,7 +470,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     private ConceptAssociation getParentAssociationForConcept(DTSConcept concept) throws DTSException {
         ConceptAssociation[] associations = concept.getFetchedInverseConceptAssociations();
         for (ConceptAssociation assoc : associations) {
-            if (assoc.getAssociationType().equals(getParentAssociation())) {
+            if (assoc.getAssociationType().equals(getParentAssociation(concept.getNamespaceId()))) {
                 return assoc;
             }
 
@@ -478,8 +478,8 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         return null;
     }
 
-    private AssociationType getParentAssociation() throws DTSException {
-        AssociationType parentType = assocQuery.findAssociationTypeByName("Parent Of", namespace.getId());
+    private AssociationType getParentAssociation(int namespaceId) throws DTSException {
+        AssociationType parentType = assocQuery.findAssociationTypeByName("Parent Of", namespaceId);
         return parentType;
     }
 
@@ -541,7 +541,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             log.info(MessageFormat.format("Trying to get child {0} from node {1}", childName, node.getName()));
             try {
                 DTSConcept concept = searchQuery.findConceptById(Integer.parseInt(node.getInternalId()),
-                        namespace.getId(), ca);
+                        Integer.parseInt(namespaceId), ca);
                 log.debug(MessageFormat.format("Corresponding concept for node is {0}", concept.getName()));
                 ConceptChild[] conceptChildren = getChildren(concept);
                 log.debug(MessageFormat.format("{0} children found for concept", conceptChildren.length));
@@ -565,14 +565,15 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
     public List<MedicalNode> getChildNodes(MedicalNode node) {
         List<MedicalNode> nodes = new ArrayList<MedicalNode>();
+        int namespaceId = Integer.parseInt(node.getNamespaceId());
         DTSConcept concept;
 
         try {
-            AssociationType fetchAss = assocQuery.findAssociationTypeByName("Parent Of", namespace.getId());
+            AssociationType fetchAss = assocQuery.findAssociationTypeByName("Parent Of", namespaceId);
             ca.addConceptAssociationType(fetchAss);
             concept =
                     searchQuery.findConceptById(Integer.parseInt(node.getInternalId()),
-                    namespace.getId(), ca);
+                    namespaceId, ca);
 
             // Add all first-level children to MedicalNode
             ConceptAssociation[] children = concept.getFetchedConceptAssociations();
@@ -583,7 +584,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 DTSConcept child;
                 try {
                     child = searchQuery.findConceptById(lazyChild.getId(),
-                            namespace.getId(), ca);
+                            namespaceId, ca);
 
                     String parentName = getName(child);
                     MedicalNode childMedNode = createMedicalNode(child,
@@ -602,7 +603,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     }
 
     private ConceptChild[] getChildren(DTSConcept concept) throws DTSException {
-        AssociationType fetchAss = assocQuery.findAssociationTypeByName("Parent Of", namespace.getId());
+        AssociationType fetchAss = assocQuery.findAssociationTypeByName("Parent Of", concept.getNamespaceId());
         ca.addConceptAssociationType(fetchAss);
         NavChildContext childContext = navQuery.getNavChildContext(concept, ca, fetchAss);
         return childContext.getChildren();
@@ -826,7 +827,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
                 try {
                     parent = searchQuery.findConceptById(lazyParent.getId(),
-                            namespace.getId(), ca);
+                            lazyParent.getNamespaceId(), ca);
 
                     String parentName = getName(parent);
                     MedicalNode parentMedNode = createMedicalNode(parent,
