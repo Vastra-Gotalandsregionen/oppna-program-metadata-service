@@ -76,7 +76,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * @see MedicalTaxonomyService
      */
     public boolean initConnection() {
-        log.info("Initiating connection to server " + host);
+        log.info("Initiating connection to server " + host+":"+port);
         boolean retval = true;
         try {
             ServerConnection serverConnection = new ServerConnectionSecureSocket(
