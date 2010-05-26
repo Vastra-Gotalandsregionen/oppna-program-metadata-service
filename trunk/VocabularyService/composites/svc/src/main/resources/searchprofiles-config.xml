@@ -89,5 +89,33 @@
             </bean>
         </property>
     </bean>
+    <bean id="searchProfile.vgr_regcal" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_regcal.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value>VGR</value>
+            </set>
+        </property>
+        <property name="blackList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/UserGeneratedKeywords/Blacklist" />
+            </bean>
+        </property>
+        <property name="whiteList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/UserGeneratedKeywords/Whitelist" />
+            </bean>
+        </property>
+        <property name="reviewList">
+            <bean class="se.vgregion.metaservice.keywordservice.domain.NodePath">
+                <property name="path" value="VGR/UserGeneratedKeywords/Reviewlist" />
+            </bean>
+        </property>
+    </bean>
 
 </beans>

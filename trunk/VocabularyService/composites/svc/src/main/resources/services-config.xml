@@ -40,6 +40,8 @@
             <list>
                 <ref bean="searchProfile.vgr"/>
                 <ref bean="searchProfile.vgr_epi" />
+                <ref bean="searchProfile.vgr_openpipeline" />
+                <ref bean="searchProfile.vgr_regcal" />
             </list>
         </property>
     </bean>
