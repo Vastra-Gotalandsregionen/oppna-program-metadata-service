@@ -40,6 +40,17 @@
                 </xsd:complexType>
             </xsd:element>
             <xsd:element name="FindNodesByNameResponse" type="res:NodeListResponseObjectType" />
+            <xsd:element name="FindNodesRequest">
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="identification" type="req:IdentificationType" />
+                        <xsd:element name="requestId" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="nameSpaceName" type="xsd:string" minOccurs="1" maxOccurs="1" />
+                        <xsd:element name="options" type="req:OptionsType"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="FindNodesResponse" type="res:NodeListResponseObjectType" />
             <xsd:element name="GetNamespaceXmlRequest">
                 <xsd:complexType>
                     <xsd:sequence>
@@ -125,6 +136,14 @@
         <wsdl:part element="tns:FindNodesByNameResponse" name="parameters">
         </wsdl:part>
     </wsdl:message>
+        <wsdl:message name="FindNodesRequest">
+        <wsdl:part element="tns:FindNodesRequest" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
+    <wsdl:message name="FindNodesResponse">
+        <wsdl:part element="tns:FindNodesByNameResponse" name="parameters">
+        </wsdl:part>
+    </wsdl:message>
     <wsdl:message name="GetVocabularyRequest">
         <wsdl:part name="parameters" element="tns:GetVocabularyRequest">
         </wsdl:part>
@@ -174,6 +193,10 @@
         <wsdl:operation name="FindNodesByName">
             <wsdl:input message="tns:FindNodesByNameRequest" />
             <wsdl:output message="tns:FindNodesByNameResponse" />
+        </wsdl:operation>
+         <wsdl:operation name="FindNodes">
+            <wsdl:input message="tns:FindNodesRequest" />
+            <wsdl:output message="tns:FindNodesResponse" />
         </wsdl:operation>
         <wsdl:operation name="GetVocabulary">
             <wsdl:input message="tns:GetVocabularyRequest" />

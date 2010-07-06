@@ -253,28 +253,7 @@ public class VocabularyService {
 
             // filter returned nodes by property
             if (childNodes.size() > 0 & options != null && options.getFilterByProperties() != null) {
-                for (MedicalNode childNode : childNodes) {
-                    outer:
-                    for (NodeProperty prop : childNode.getProperties()) {
-                        for (Entry<String, List<String>> filterEntry : options.getFilterByProperties().entrySet()) {
-                            if (filterEntry.getKey().equals(prop.getName())) {
-                                for (String filter : filterEntry.getValue()) {
-                                    if (filter.equals(prop.getValue())) {
-                                        // Matching properties; add the node to the response
-                                        // Currently, it's enough that a node matches one filter entry
-                                        log.debug("Node matches filter. Adding node " + childNode.getName() + " to the list of nodes to return");
-                                        responseChildNodes.add(childNode);
-
-                                        // Use labelled break to ensure that a node isn't added more than
-                                        // once which would be the case if several filters matched.
-                                        break outer;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
+                responseChildNodes = filterByProperty(childNodes, options);
                 // Return only the nodes matching the filters
                 response.setNodeList(responseChildNodes);
             } else {
@@ -364,6 +343,7 @@ public class VocabularyService {
         response.setStatusCode(StatusCode.ok);
         String nameSpaceId = getNamespaceIdByName(namespaceName, requestId);
         List<MedicalNode> list = null;
+        List<MedicalNode> filteredNodes = new ArrayList<MedicalNode>();
 
         if (nameSpaceId == null) {
             response.setStatusCode(StatusCode.error_locating_namespace);
@@ -375,7 +355,16 @@ public class VocabularyService {
 
         if (hasNamespaceReadAccess(nameSpaceId, id.getProfileId(), requestId)) {
             try {
-                list = medicalTaxonomyService.findNodes(name, nameSpaceId, options.matchSynonyms());
+                list = medicalTaxonomyService.findNodes(name, nameSpaceId, options.matchSynonyms(), options.getWordsToReturn());
+                /*
+                if (list.size() > 0 & options != null && options.getFilterByProperties() != null) {
+                filteredNodes = filterByProperty(list, options);
+                response.setNodeList(filteredNodes);
+                } else {
+                // Return all child nodes
+                response.setNodeList(list);
+                }
+                 */
                 response.setNodeList(list);
             } catch (DTSException ex) {
                 response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
@@ -391,6 +380,94 @@ public class VocabularyService {
         }
 
         return response;
+    }
+
+    public NodeListResponseObject findNodes(Identification id, String namespaceName, String requestId, Options options) {
+        NodeListResponseObject response = new NodeListResponseObject();
+        response.setStatusCode(StatusCode.ok);
+        String nameSpaceId = getNamespaceIdByName(namespaceName, requestId);
+        List<MedicalNode> list = null;
+
+
+        if (nameSpaceId == null) {
+            response.setStatusCode(StatusCode.error_locating_namespace);
+            response.setErrorMessage("Error locating namespaceId by namespace name. Note that namespace is case sensitive.");
+            log.warn(MessageFormat.format("{0}:{1}: Error locating namespaceId by namespace {2}",
+                    requestId, StatusCode.error_locating_namespace.code(), namespaceName));
+            return response;
+        }
+
+        Map<String, List<String>> properties = options.getFilterByProperties();
+        Set<String> propertySet = properties.keySet();
+        String propertyKey = "";
+        String propertyValue = "";
+        for (Entry<String, List<String>> propertyEntry : properties.entrySet()) {
+            propertyKey = propertyEntry.getKey();
+            propertyValue = propertyEntry.getValue().get(0);
+            break;
+        }
+
+        /**
+         * IMPLEMENT the check for Searchable property and existence!!!
+         */
+
+
+        if (hasNamespaceReadAccess(nameSpaceId, id.getProfileId(), requestId)) {
+            try {
+                list = medicalTaxonomyService.findNodesByProperty(nameSpaceId, propertyKey, propertyValue, options.getWordsToReturn());
+                response.setNodeList(list);
+            } catch (KeywordsException ex) {
+                response.setStatusCode(StatusCode.error_getting_keywords_from_taxonomy);
+                response.setErrorMessage(ex.getMessage());
+                log.warn(MessageFormat.format("{0}:{1}: Unable to retrieve nodes from taxonomy, reason: {2}",
+                        requestId, StatusCode.error_getting_keywords_from_taxonomy.code(), ex.getMessage()));
+            }
+        } else {
+            response.setStatusCode(StatusCode.insufficient_namespace_privileges);
+            response.setErrorMessage("The profile is invalid or does not have read privileges to target namespace");
+            log.warn(MessageFormat.format("{0}:{1}: The profileId {2} is invalid or does not have read privileges to namespace {3}",
+                    requestId, StatusCode.insufficient_namespace_privileges.code(), id.getProfileId(), namespaceName));
+        }
+
+        return response;
+    }
+
+    /**
+     * Return all nodes that are filtered out after the FilterByProperty is applied
+     * to the full list of nodes
+     * @param list - full list of medical nodes
+     * @param options - Options object to filter on property. Only nodes which match
+     * at least one of the filters will be returned.
+     * @return a list of Medical Nodes
+     */
+    private List<MedicalNode> filterByProperty(List<MedicalNode> list, Options options) {
+
+        List<MedicalNode> filteredNodes = new ArrayList<MedicalNode>();
+
+        // filter returned nodes by property
+        for (MedicalNode node : list) {
+            outer:
+            for (NodeProperty prop : node.getProperties()) {
+                for (Entry<String, List<String>> filterEntry : options.getFilterByProperties().entrySet()) {
+                    if (filterEntry.getKey().equals(prop.getName())) {
+                        for (String filter : filterEntry.getValue()) {
+                            if (filter.equals(prop.getValue())) {
+                                // Matching properties; add the node to the response
+                                // Currently, it's enough that a node matches one filter entry
+                                log.debug("Node matches filter. Adding node " + node.getName() + " to the list of nodes to return");
+                                filteredNodes.add(node);
+
+                                // Use labelled break to ensure that a node isn't added more than
+                                // once which would be the case if several filters matched.
+                                break outer;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return filteredNodes;
     }
 
     /**
@@ -410,8 +487,8 @@ public class VocabularyService {
         try {
             destNode = getNodeByPath(destNodePath, requestId);
 
-            if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId) &&
-                    hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
+            if (hasNamespaceWriteAccess(node.getNamespaceId(), id.getProfileId(), requestId)
+                    && hasNamespaceWriteAccess(destNode.getNamespaceId(), id.getProfileId(), requestId)) {
 
                 if (options != null && options.synonymize()) {
                     try {

@@ -117,5 +117,33 @@
             </bean>
         </property>
     </bean>
+    <bean id="searchProfile.vgr_barium" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_barium.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+                <value>Regionarkivet</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value></value>
+            </set>
+        </property>
+    </bean>
 
+    <bean id="searchProfile.vgr_alfresco" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_alfresco.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+                <value>Regionarkivet</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value></value>
+            </set>
+        </property>
+    </bean>
 </beans>
