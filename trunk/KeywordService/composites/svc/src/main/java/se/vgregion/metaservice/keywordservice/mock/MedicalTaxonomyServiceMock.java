@@ -1,5 +1,6 @@
 package se.vgregion.metaservice.keywordservice.mock;
 
+import com.apelon.dts.client.DTSException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -116,6 +117,16 @@ public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
 
     @Override
     public void updateConcept(MedicalNode node) throws NodeNotFoundException, KeywordsException, InvalidPropertyTypeException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, int numberNodes) throws DTSException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public List<MedicalNode> findNodesByProperty(String namespaceId, String propertyKey, String propertyValue, int numberNodes) throws KeywordsException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
