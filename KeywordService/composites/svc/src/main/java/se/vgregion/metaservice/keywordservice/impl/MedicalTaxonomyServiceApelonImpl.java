@@ -23,6 +23,7 @@ import com.apelon.dts.client.association.ConceptAssociation;
 import com.apelon.dts.client.association.Synonym;
 import com.apelon.dts.client.attribute.DTSProperty;
 import com.apelon.dts.client.attribute.DTSPropertyType;
+import com.apelon.dts.client.attribute.PropertyValueSize;
 import com.apelon.dts.client.common.DTSHeader;
 import com.apelon.dts.client.concept.ConceptAttributeSetDescriptor;
 import com.apelon.dts.client.concept.ConceptChild;
@@ -76,7 +77,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * @see MedicalTaxonomyService
      */
     public boolean initConnection() {
-        log.info("Initiating connection to server " + host+":"+port);
+        log.info("Initiating connection to server " + host + ":" + port);
         boolean retval = true;
         try {
             ServerConnection serverConnection = new ServerConnectionSecureSocket(
@@ -307,19 +308,27 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     }
 
     public List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms) throws DTSException {
-        return findNodes(nodeName, namespaceId, matchSynonyms, false);
+        return findNodes(nodeName, namespaceId, matchSynonyms, 100, false);
 
+    }
+
+    public List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, int numberNodes) throws DTSException {
+        return findNodes(nodeName, namespaceId, matchSynonyms, numberNodes, false);
     }
 
     public List<MedicalNode> findNodesWithParents(String nodeName, String namespaceId, boolean matchSynonyms) throws DTSException {
-        return findNodes(nodeName, namespaceId, matchSynonyms, true);
+        return findNodes(nodeName, namespaceId, matchSynonyms, 100, true);
     }
 
-    private List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, boolean fetchParents) throws DTSException {
-        List<MedicalNode> nodes = new ArrayList<MedicalNode>(100);
+    private List<MedicalNode> findNodes(String nodeName, String namespaceId, boolean matchSynonyms, int numberNodes, boolean fetchParents) throws DTSException {
+
+        // If numberNodes is greater than 0 then use this otherwise default is 100
+        int numberOfResults = (numberNodes > 0) ? numberNodes : 100;
+
+        List<MedicalNode> nodes = new ArrayList<MedicalNode>(numberOfResults);
         setFetchParents(ca, Integer.parseInt(namespaceId));
         try {
-            DTSSearchOptions options = new DTSSearchOptions(100, Integer.parseInt(namespaceId), ca);
+            DTSSearchOptions options = new DTSSearchOptions(numberOfResults, Integer.parseInt(namespaceId), ca);
             log.debug(MessageFormat.format("Searching for concepts with name {0}", nodeName));
             OntylogConcept[] concepts = searchQuery.findConceptsWithNameMatching(nodeName, options, matchSynonyms);
             log.debug(MessageFormat.format("Found {0} concepts", concepts.length));
@@ -332,6 +341,50 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         }
 
         return nodes;
+    }
+
+    public List<MedicalNode> findNodesByProperty(String namespaceId, String propertyKey, String propertyValue, int numberNodes) throws KeywordsException {
+
+        int numberOfResults = (numberNodes > 0) ? numberNodes : 100;
+        List<MedicalNode> nodes = new ArrayList<MedicalNode>(numberOfResults);
+
+        DTSSearchOptions options = new DTSSearchOptions(numberOfResults, Integer.parseInt(namespaceId), ca);
+        log.debug(MessageFormat.format("Searching for concepts with property {0}", propertyKey));
+        try {
+            DTSPropertyType dtspt = getPropertyType(propertyKey, namespaceId);
+            validateSearchablePropertyType(dtspt);
+            OntylogConcept[] concepts = searchQuery.findConceptsWithPropertyMatching(dtspt, propertyValue, options);
+            log.debug(MessageFormat.format("Found {0} concepts", concepts.length));
+            for (OntylogConcept concept : concepts) {
+                MedicalNode node = createMedicalNode(concept, getSourceIdPropertyKey(), true);
+                nodes.add(node);
+            }
+        } catch (DTSException ex) {
+            throw new KeywordsException(ex);
+        }
+
+        return nodes;
+    }
+
+    private DTSPropertyType getPropertyType(String propertyKey, String namespaceIdString) throws DTSException {
+        try {
+            int namespaceId = Integer.parseInt(namespaceIdString);
+            DTSPropertyType dtspt = searchQuery.findPropertyTypeByName(propertyKey, namespaceId);
+            if (dtspt == null) {
+                throw new IllegalArgumentException("Property with name " + propertyKey + " does not exist");
+            }
+
+            return dtspt;
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Namespace id needs to be a valid integer", ex);
+        }
+    }
+
+    private void validateSearchablePropertyType(DTSPropertyType propertyType) throws KeywordsException {
+        PropertyValueSize valueSize = propertyType.getValueSize();
+        if (valueSize.equals(PropertyValueSize.BIG)) {
+            throw new KeywordsException("The property with name " + propertyType.getName() + " is not searchable");
+        }
     }
 
     /**
@@ -351,12 +404,12 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
                 for (NodeProperty prop : node.getProperties()) {
                     DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
                     if (pType == null) {
-                        throw new InvalidPropertyTypeException("No property type with name "+prop.getName()+" found in taxonomy");
+                        throw new InvalidPropertyTypeException("No property type with name " + prop.getName() + " found in taxonomy");
                     }
 
-                    if(prop.getValue() == null || prop.getValue().trim().isEmpty()) {
+                    if (prop.getValue() == null || prop.getValue().trim().isEmpty()) {
                         //Not allowed to set empty values in Apelon. return
-                        log.info("Property "+prop.getName()+" is empty. It will not be added to concept");
+                        log.info("Property " + prop.getName() + " is empty. It will not be added to concept");
                         continue;
                     }
 
@@ -394,7 +447,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             if (synonyms != null) {
                 for (String synonymName : synonyms) {
                     AssociationType aType = getSynonymAssociationType(node.getNamespaceId());
-                    Term term = getExistingTerm(synonymName,concept.getNamespaceId());
+                    Term term = getExistingTerm(synonymName, concept.getNamespaceId());
                     if (term != null) {
                         log.info("Term " + synonymName + " exists, using existing");
                     } else {
@@ -496,7 +549,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     }
 
     public MedicalNode getChildNode(String namespaceId,
-            MedicalNode node, String childName) throws DTSException{
+            MedicalNode node, String childName) throws DTSException {
 
         if (node == null) {
             log.info(MessageFormat.format("Trying to get root node {0}", childName));
