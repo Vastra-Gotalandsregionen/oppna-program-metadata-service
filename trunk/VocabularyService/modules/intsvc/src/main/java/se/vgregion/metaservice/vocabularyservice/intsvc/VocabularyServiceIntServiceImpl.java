@@ -18,6 +18,7 @@ import se.vgregion.metaservice.schema.domain.ResponseObjectType;
 import se.vgregion.metaservice.schema.domain.XMLResponseObjectType;
 import se.vgregion.metaservice.vocabularyservice.VocabularyService;
 import se.vgregion.metaservice.wsdl.vocabularyservices.AddVocabularyNodeRequest;
+import se.vgregion.metaservice.wsdl.vocabularyservices.FindNodesRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.GetNamespaceXmlRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.GetVocabularyRequest;
 import se.vgregion.metaservice.wsdl.vocabularyservices.LastChangeRequest;
@@ -66,6 +67,20 @@ public class VocabularyServiceIntServiceImpl implements se.vgregion.metaservice.
         NodeListResponseObject nodeListResponseObject = vocabularyService.findNodesByName(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getNameSpaceName(),parameters.getName(),parameters.getRequestId(),
+                OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
+
+        return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
+    }
+
+    /**
+     * Interface to findNodes in vocabularyService
+     * @param parameters
+     * @return
+     */
+    public NodeListResponseObjectType findNodes(FindNodesRequest parameters) {
+        NodeListResponseObject nodeListResponseObject = vocabularyService.findNodes(
+                IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
+                parameters.getNameSpaceName(), parameters.getRequestId(),
                 OptionsSdoHelper.fromOptionsType(parameters.getOptions()));
 
         return ResponseObjectSdoHelper.toNodeListRepsonseObjectType(nodeListResponseObject);
