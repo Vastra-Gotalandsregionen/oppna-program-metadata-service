@@ -23,7 +23,7 @@
     </parent>
 
     <properties>
-        <spring-version>3.0.0.RELEASE</spring-version>
+        <spring.version>3.0.0.RELEASE</spring.version>
     </properties>
 
     <dependencies>
@@ -42,9 +42,22 @@
 
         <dependency>
             <groupId>org.apache.tika</groupId>
-            <artifactId>tika</artifactId>
-            <version>0.4-SNAPSHOT</version>
+            <artifactId>tika-core</artifactId>
+            <version>0.7</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.tika</groupId>
+            <artifactId>tika-parsers</artifactId>
+            <version>0.7</version>
+        </dependency>
+
+		<dependency>
+			<groupId>se.findwise.vgr</groupId>
+			<artifactId>keyword-extraction</artifactId>
+			<version>1.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
 
         <dependency>
             <groupId>MetaService</groupId>
@@ -150,31 +163,31 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>${spring-version}</version>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
 

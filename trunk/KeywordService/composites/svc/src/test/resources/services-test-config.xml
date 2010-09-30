@@ -63,6 +63,14 @@
     <bean id="wordsSorterProcessor"
 		class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorSortWordsByFrequencyImpl" />
 
+	<bean id="keywordExtractorProcessor" class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorKeywordExtractorImpl">
+		<property name="nrKeywordsProperty"	value="nrKeywords" />
+		<property name="outputProperty"		value="keywords" />
+		<property name="language"			value="SWEDISH" />
+		<property name="candidates"			value="NPCHUNK" />
+		<property name="algorithm"			value="NBC" />
+	</bean>
+
     <!-- FORMAT PROCESSORS -->
     <bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
     <bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
@@ -79,6 +87,8 @@
 		class="se.vgregion.metaservice.keywordservice.impl.AnalysisServiceImpl">
         <property name="textProcessors">
             <list>
+				<ref bean="keywordExtractorProcessor" />
+				<!--
                 <ref bean="normalizerProcessor" />
                 <ref bean="stopwordProcessor" />
                 <ref bean="stemmingProcessor" />
@@ -86,9 +96,12 @@
                 <ref bean="wordCounterProcessor" />
                 <ref bean="blacklistedWordsProcessor" />
                 <ref bean="wordRemoverProcessor" />
+				-->
             </list>
         </property>
         <property name="minWordLength" value="0" />
+		<property name="nrKeywordsProperty"		value="nrKeywords" />
+		<property name="finalResultProperty"	value="keywords" />
     </bean>
 
 	
