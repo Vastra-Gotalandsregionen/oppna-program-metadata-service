@@ -13,7 +13,7 @@ public abstract class TextProcessor {
 
 	public abstract ProcessorStatus process(AnalysisDocument document);
 	public abstract void setInitDependencies(Map<String,String> args);
-
+	
 	
 	public static enum ProcessorStatus {OK,FAILED};
 }

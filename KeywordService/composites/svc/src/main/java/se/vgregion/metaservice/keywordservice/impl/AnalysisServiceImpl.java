@@ -1,8 +1,6 @@
 package se.vgregion.metaservice.keywordservice.impl;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -15,8 +13,17 @@ import se.vgregion.metaservice.keywordservice.processing.text.TextProcessor.Proc
 public class AnalysisServiceImpl extends AnalysisService {
 
 	private static Logger log = Logger.getLogger(AnalysisServiceImpl.class);
+	private String nrKeywordsProperty = "";
+	private String finalResultProperty = "";
 	
 	/**
+	 * The new chain of text processors work in a different way than the old
+	 * described at the bottom. It does not alter the text of a document, but
+	 * rather adds properties of documents with names that are configurable.
+	 * The name of the property with the final result is also configurable
+	 * through spring and used by this class to retrieve the result.
+	 *
+	 * OLD:
 	 * Overrides the extractWords method in super abstract class. This implementation sends the Document through each
 	 * of the TextProcessors provided by the setTextProcessors method. After the document has been processed, short words are removed if a minWordLenght has been
 	 * provided by the setMinWordLength method. After the short words have been removed, an array of keywords with maximum size given
@@ -25,21 +32,21 @@ public class AnalysisServiceImpl extends AnalysisService {
 	@Override
 	public String[] extractWords(AnalysisDocument document,int inputWords) throws ProcessingException{
 
-            //TODO:Make this method throw ProcessingException
+		document.setProperty(nrKeywordsProperty, inputWords);
 
-
+		// TODO: Make this method throw ProcessingException
 		for(TextProcessor processor : processors) {
 			log.info(MessageFormat.format("Calling processor {0}",processor.getClass().getSimpleName()));
 			try {
-			ProcessorStatus status = processor.process(document);
-			log.debug(MessageFormat.format("### {0} ###",processor.getClass().getSimpleName()));
-			log.debug(MessageFormat.format("Title: {0} ",document.getTitle()));
-			log.debug(MessageFormat.format("Content: {0} ",document.getTextContent()));
-			
-			if(status.equals(ProcessorStatus.FAILED)) {
-				log.warn("Processing failed, aborting");
-				return new String[0];
-			}
+				ProcessorStatus status = processor.process(document);
+				log.debug(MessageFormat.format("### {0} ###",processor.getClass().getSimpleName()));
+				log.debug(MessageFormat.format("Title: {0} ",document.getTitle()));
+				log.debug(MessageFormat.format("Content: {0} ",document.getTextContent()));
+
+				if(status.equals(ProcessorStatus.FAILED)) {
+					log.warn("Processing failed, aborting");
+					return new String[0];
+				}
 			}
 			catch(RuntimeException e) {
 				log.error("Exception occured in Processor, aborting");
@@ -47,24 +54,17 @@ public class AnalysisServiceImpl extends AnalysisService {
 				//TODO: Catch and throw new exception that propagates up to response
 			}
 		}
-		String newContent = document.getTextContent()+document.getTitle();
-		
-		if(newContent.trim().equals(""))
-			return new String[0];
-		
-		String[] words = newContent.split(" ");
-		if(minWordLength > 0) {
-			List<String> tempWords = new ArrayList<String>();
-			for(String word : words) {
-				if(word.length() >= minWordLength)
-					tempWords.add(word);
-			}
-			words = tempWords.toArray(new String[0]);
-		}
-		String[] returnWords = new String[Math.min(words.length,inputWords)];
-		System.arraycopy(words, 0, returnWords, 0, returnWords.length);
-		
-		return returnWords;
+
+		return (String[])document.getPropertyObject(finalResultProperty);
 	}
-	
+
+	public void setNrKeywordsProperty(String nrKeywordsProperty)
+	{
+		this.nrKeywordsProperty = nrKeywordsProperty;
+	}
+
+	public void setFinalResultProperty(String finalResultProperty)
+	{
+		this.finalResultProperty = finalResultProperty;
+	}
 }
