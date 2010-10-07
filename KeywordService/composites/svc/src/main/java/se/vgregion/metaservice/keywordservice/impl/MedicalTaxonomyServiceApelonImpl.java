@@ -46,6 +46,8 @@ import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 import com.apelon.dts.client.term.TermQuery;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.TreeMap;
 import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
 import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
@@ -182,11 +184,36 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
             for (DTSSearchOptions options : optionsCache.values()) {
 
                 try {
-                    log.debug("Searching for word " + word + " in namespace " + options.getNamespaceId());
-                    OntylogConcept[] concepts = searchQuery.findConceptsWithNameMatching(word + "*", options, true);
-                    log.info(MessageFormat.format(
-                            "Found {0} hits for search term {1}", concepts.length,
-                            word));
+
+					// A list of all matches from the apelon taxonomy for the current keyword
+					List<OntylogConcept> concepts = new LinkedList<OntylogConcept>();
+					// Split the keyword in tokens and call apelon for each one
+					String[] tokens = word.split(" ");
+
+					for(int i = 0; i < tokens.length; i++) {
+						// A list of concepts starting at token i
+						List<OntylogConcept> tokenConcepts = new LinkedList<OntylogConcept>();
+
+						// First search for: "{token} *" then "{token}"
+						// Make sure there are more tokens after when searching with *
+						if(i + 1 < tokens.length) {
+							OntylogConcept[] unfiltered = searchQuery.findConceptsWithNameMatching(tokens[i] + " *", options, true);
+							// Remove the concepts that doesn't match
+							List<OntylogConcept> filtered = filterConcepts(tokens, i, unfiltered);
+
+							if(!filtered.isEmpty())
+								tokenConcepts.addAll(filtered);
+						}
+
+						// Uncomment this if statement to search for both multiple and single tokens
+						if(tokenConcepts.isEmpty()) {
+							OntylogConcept[] unfiltered = searchQuery.findConceptsWithNameMatching(tokens[i], options, true);
+							// No need to filter these concepts since the search didn't include wildcards
+							tokenConcepts.addAll(Arrays.asList(unfiltered));
+						}
+
+						concepts.addAll(tokenConcepts);
+					}
 
                     // Translate each concept to MedicalNode
                     for (OntylogConcept concept : concepts) {
@@ -213,6 +240,62 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
         return allKeywords;
     }
+
+	/**
+	 * Removes the concepts that doesn't match the keyword from the given
+	 * starting token.
+	 * @param tokens The tokens of the current keyword.
+	 * @param i The index of the starting token.
+	 * @param concepts The concepts to filter.
+	 * @return A list of matching concepts.
+	 */
+	private List<OntylogConcept> filterConcepts(String[] tokens, int i, OntylogConcept[] concepts) {
+		// List of concepts that matches
+		List<OntylogConcept> purged = new LinkedList<OntylogConcept>();
+		
+		for(OntylogConcept concept : concepts) {
+			// Check the name and synonyms for each concept if it is a match
+			if(isMatch(tokens, i, concept.getName()))
+				purged.add(concept);
+			else {
+				Synonym[] synonyms = concept.getFetchedSynonyms();
+				for(Synonym synonym : synonyms) {
+					// TODO: Make sure this is the correct way to get the string representation of a synonym
+					// Check with Tobias
+					if(isMatch(tokens, i, synonym.getName())) {
+						purged.add(concept);
+						break;
+					}
+				}
+			}
+		}
+
+		return purged;
+	}
+
+	/**
+	 * Check if a given concept matches a given keyword.
+	 * @param tokens The tokens of the keyword.
+	 * @param i The index of the starting token in the keyword.
+	 * @param concept The concept to compare with.
+	 * @return Whether the concept matches the keyword or not.
+	 */
+	private boolean isMatch(String[] tokens, int i, String concept) {
+		String[] cTokens = concept.split(" ");
+
+		// All tokens in the concept must match the keyword
+		// which means it's length has to be atleast the number
+		// of remaining keyword tokens
+		if(cTokens.length > tokens.length - i) {
+			return false;
+		} else {
+			for(int j = 0; j < cTokens.length; j++)
+				if(!cTokens[j].equals(tokens[j+i]))
+					return false;
+		}
+
+		return true;
+	}
 
     public ConceptChild[] getNamespaceRoots(int namespaceId) {
         ConceptChild[] roots = null;
