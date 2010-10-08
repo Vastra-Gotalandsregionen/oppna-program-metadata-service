@@ -59,7 +59,7 @@
         <property name="username" value="${taxonomyservice.username}" />
         <property name="password" value="${taxonomyservice.password}" />
         <property name="namespaceName" value="VGR" />
-        <property name="resultKeywordsLimit" value="100" />
+        <property name="resultKeywordsLimit" value="2000" />
         <property name="sourceIdPropertyKey" value="ID" />
     </bean>
 
