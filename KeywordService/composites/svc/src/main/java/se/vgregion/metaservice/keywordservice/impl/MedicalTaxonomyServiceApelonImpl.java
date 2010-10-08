@@ -262,7 +262,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 				for(Synonym synonym : synonyms) {
 					// TODO: Make sure this is the correct way to get the string representation of a synonym
 					// Check with Tobias
-					if(isMatch(tokens, i, synonym.getName())) {
+					if(isMatch(tokens, i, synonym.getValue())) {
 						purged.add(concept);
 						break;
 					}
