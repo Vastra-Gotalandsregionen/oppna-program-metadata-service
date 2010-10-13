@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/tx
+		http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context-2.5.xsd" >
+
+
+    <!--  Property file reader -->
+	<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:keywordservice-svc.properties</value>
+				<value>classpath:searchprofiles.properties</value>
+			</list>
+		</property>
+	</bean>
+    <!-- Properties bundles -->
+    <!--<context:property-placeholder location="classpath:searchprofiles.properties, classpath:keywordservice-svc.properties" /> -->
+
+    <!-- Import searchprofiles -->
+    <import resource="classpath*:searchprofiles-config.xml" />
+
+    <bean id="blacklistedWordsProcessor" class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorRemoveBlacklistedWords">
+        <property name="blacklistedWordDao" ref="blacklistedWordDao" />
+    </bean>
+
+
+	<bean id="keywordExtractorProcessor" class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorKeywordExtractorImpl">
+		<property name="nrKeywordsProperty"	value="nrKeywords" />
+		<property name="outputProperty"		value="keywords" />
+		<property name="language"			value="SWEDISH" />
+		<property name="candidates"			value="NPCHUNK" />
+		<property name="algorithm"			value="NBC" />
+	</bean>
+
+    <!-- FORMAT PROCESSORS -->
+    <bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
+    <bean id="formatProcessorHtml" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorHtml" />
+    <bean id="formatProcessorTika" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorTika" />
+
+	<!--  SERVICE DEFINITIONS -->
+
+    <bean id="metaservice.analysisService" class="se.vgregion.metaservice.keywordservice.impl.AnalysisServiceImpl">
+        <property name="textProcessors">
+            <list>
+				<ref bean="keywordExtractorProcessor" />
+            </list>
+        </property>
+        <property name="minWordLength"			value="0" />
+		<property name="nrKeywordsProperty"		value="nrKeywords" />
+		<property name="finalResultProperty"	value="keywords" />
+    </bean>
+
+	<!-- Connection to Apelon -->
+
+    <bean id="metaservice.medicalTaxonomyService"
+                class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
+		init-method="initConnection">
+        <property name="host" value="${taxonomyservice.host}" />
+        <property name="port" value="${taxonomyservice.port}" />
+        <property name="username" value="${taxonomyservice.username}" />
+        <property name="password" value="${taxonomyservice.password}" />
+        <property name="namespaceName" value="SweMESH" />
+        <property name="resultKeywordsLimit" value="10" />
+        <property name="sourceIdPropertyKey" value="MN" />
+    </bean>
+
+    <bean id="metaservice.keywordService" class="se.vgregion.metaservice.keywordservice.KeyWordService">
+        <property name="analysisService" ref="metaservice.analysisService" />
+        <property name="medicalTaxonomyService" ref="metaservice.medicalTaxonomyService" />
+        <property name="userProfileService" ref = "metaservice.userProfileService"/>
+        <property name="blacklistedWordDao" ref="blacklistedWordDao" />
+        <!-- List of searchprofiles defined in searchprofiles-config.xml -->
+        <property name="searchProfiles">
+            <list>
+                <ref bean="searchProfile.vgr"/>
+                <ref bean="searchProfile.vgr_epi" />
+                <ref bean="searchProfile.vgr_semsys" />
+                <ref bean="searchProfile.vgr_barium" />
+                <ref bean="searchProfile.vgr_alfresco" />
+            </list>
+        </property>
+    </bean>
+
+	<bean id="metaservice.userProfileService" class="se.vgregion.metaservice.keywordservice.impl.UserProfileServiceEmptyImpl" />
+
+    <bean id="myFormatProcessorFactoryManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="staticMethod" value="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorFactory.setFormatProcessors" />
+        <property name="arguments">
+            <map>
+                <entry key="text" value-ref="formatProcessorText" />
+                <entry key="html" value-ref="formatProcessorHtml" />
+                <entry key="pdf" value-ref="formatProcessorTika" />
+                <entry key="odf" value-ref="formatProcessorTika" />
+                <entry key="doc" value-ref="formatProcessorTika" />
+                <entry key="docx" value-ref="formatProcessorTika" />
+                <entry key="xls" value-ref="formatProcessorTika" />
+                <entry key="xlsx" value-ref="formatProcessorTika" />
+                <entry key="ppt" value-ref="formatProcessorTika" />
+                <entry key="pptx" value-ref="formatProcessorTika" />
+            </map>
+        </property>
+    </bean>
+
+	<!-- DAO:S -->
+
+	<bean id="blacklistedWordDao" class="se.vgregion.metaservice.keywordservice.dao.BlacklistedWordEmptyImpl" />
+
+	<!-- bean post-processor for JPA annotations -->
+
+    <bean class="org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor" />
+
+    <tx:annotation-driven />
+
+	<bean id="metaservice.keywordServiceIntService"
+		class="se.vgregion.metaservice.keywordservice.intsvc.KeywordServiceIntServiceImpl">
+		<property name="keywordService" ref="metaservice.keywordService" />
+	</bean>
+
+</beans>

@@ -8,9 +8,11 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
 
+@Transactional
 public class BlacklistedWordJpaDao implements BlacklistedWordDao{
 
 	EntityManager em;

@@ -1,12 +1,9 @@
 package se.vgregion.metaservice.keywordservice.dao;
 
 import java.util.List;
-
-import org.springframework.transaction.annotation.Transactional;
-
 import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
 
-@Transactional
+
 /**
  * Provides methods to access blacklisted words stored in database. Persistence-specific classes should
  * implement this interface.
