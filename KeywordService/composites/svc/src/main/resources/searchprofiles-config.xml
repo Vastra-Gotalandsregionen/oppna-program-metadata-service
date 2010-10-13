@@ -58,6 +58,15 @@
             <set>
                 <value>VGR</value>
                 <value>Regionarkivet</value>
+                <value>SweMeSH</value>
+                <value>Dokumenttyp VGR</value>
+                <value>Handlingstyp</value>
+                <value>Språk</value>
+                <value>Verksamhetskod</value>
+                <value>Dokumentstatus</value>
+                <value>HosPersKat</value>
+                <value>Legitimerade yrken</value>
+                <value>Specialistutbildningar</value>
             </set>
         </property>
         <property name="writeableNamespaces">
@@ -73,6 +82,15 @@
             <set>
                 <value>VGR</value>
                 <value>Regionarkivet</value>
+                <value>SweMeSH</value>
+                <value>Dokumenttyp VGR</value>
+                <value>Handlingstyp</value>
+                <value>Språk</value>
+                <value>Verksamhetskod</value>
+                <value>Dokumentstatus</value>
+                <value>HosPersKat</value>
+                <value>Legitimerade yrken</value>
+                <value>Specialistutbildningar</value>
             </set>
         </property>
         <property name="writeableNamespaces">
