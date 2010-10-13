@@ -2,6 +2,7 @@ package se.vgregion.metaservice.keywordservice.processing.text;
 
 import java.util.Map;
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.findwise.thesis.keywordextraction.KeyEx;
 import se.findwise.thesis.keywordextraction.candidateselection.SelectionMethods;
@@ -16,7 +17,7 @@ import se.findwise.thesis.keywordextraction.keywordselection.Algorithms;
  */
 public class TextProcessorKeywordExtractorImpl extends TextProcessor
 {
-	private Logger log = org.apache.log4j.LogManager.getLogger(TextProcessorKeywordExtractorImpl.class);
+	private Logger log = Logger.getLogger(TextProcessorKeywordExtractorImpl.class);
 	private KeyEx kx = null;
 	private boolean initialized = false;
 
@@ -68,6 +69,9 @@ public class TextProcessorKeywordExtractorImpl extends TextProcessor
 			String[] keywords = kx.classify(nrKeywords, doc, algorithm, candidates, true);
 
 			document.setProperty(outputProperty, keywords);
+
+			String kws = StringUtils.arrayToDelimitedString(keywords, ", ");
+			log.debug("Extracted keywords: " + kws);
 		}
 		catch(Exception e)
 		{

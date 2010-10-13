@@ -281,7 +281,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 	 * @return Whether the concept matches the keyword or not.
 	 */
 	private boolean isMatch(String[] tokens, int i, String concept) {
-		String[] cTokens = concept.split(" ");
+		String[] cTokens = concept.toLowerCase().split(" ");
 
 		// All tokens in the concept must match the keyword
 		// which means it's length has to be atleast the number
@@ -289,9 +289,12 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 		if(cTokens.length > tokens.length - i) {
 			return false;
 		} else {
-			for(int j = 0; j < cTokens.length; j++)
-				if(!cTokens[j].equals(tokens[j+i]))
+			for(int j = 0; j < cTokens.length; j++) {
+				String lhs = cTokens[j], rhs = tokens[j+i].toLowerCase();
+				if(!lhs.equals(rhs)) {
 					return false;
+				}
+			}
 		}
 
 		return true;
