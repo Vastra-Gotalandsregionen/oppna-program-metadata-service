@@ -47,7 +47,9 @@ import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
 import com.apelon.dts.client.term.TermQuery;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.TreeMap;
 import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
 import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
@@ -192,7 +194,7 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
 					for(int i = 0; i < tokens.length; i++) {
 						// A list of concepts starting at token i
-						List<OntylogConcept> tokenConcepts = new LinkedList<OntylogConcept>();
+						Set<OntylogConcept> tokenConcepts = new HashSet<OntylogConcept>();
 
 						// First search for: "{token} *" then "{token}"
 						// Make sure there are more tokens after when searching with *
