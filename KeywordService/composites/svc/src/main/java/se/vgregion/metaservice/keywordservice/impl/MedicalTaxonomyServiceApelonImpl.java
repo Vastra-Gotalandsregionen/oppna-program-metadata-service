@@ -940,6 +940,9 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
         // Add synonyms to MedicalNode
         for (Synonym synonym : synonyms) {
             node.addSynonym(synonym.getValue());
+            if(synonym.isPreferred()) {
+                node.addProperty("preferredSynonym",synonym.getValue());
+            }
         }
 
         DTSProperty[] properties = concept.getFetchedProperties();
@@ -999,18 +1002,9 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
      * Retrieves name from concept
      */
     private static String getName(DTSConcept concept) {
-        Synonym preferredSynonym = concept.getFetchedPreferredTerm();
-        String nodeName = null;
-        if (preferredSynonym == null) {
-            // Remove [a-z0-9] portion of node name.
-            String[] splitName = concept.getName().split("\\[");
-            nodeName =
-                    splitName[0].trim();
-        } else {
-            nodeName = concept.getFetchedPreferredTerm().getValue();
-
-        }
-
+        // Remove [a-z0-9] portion of node name.
+        String[] splitName = concept.getName().split("\\[");
+        String nodeName = splitName[0].trim();
         return nodeName;
     }
 
