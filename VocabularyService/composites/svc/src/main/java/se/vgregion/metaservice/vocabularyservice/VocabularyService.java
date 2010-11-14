@@ -252,7 +252,7 @@ public class VocabularyService {
             childNodes = medicalTaxonomyService.getChildNodes(node);
 
             // filter returned nodes by property
-            if (childNodes.size() > 0 & options != null && options.getFilterByProperties() != null) {
+            if (childNodes.size() > 0 & options != null && options.getFilterByProperties() != null && !options.getFilterByProperties().isEmpty()) {
                 responseChildNodes = filterByProperty(childNodes, options);
                 // Return only the nodes matching the filters
                 response.setNodeList(responseChildNodes);
