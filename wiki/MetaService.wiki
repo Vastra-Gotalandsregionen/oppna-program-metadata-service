@@ -1,8 +1,19 @@
 #summary Beskrivning av Metadatatjänsten
 
+= Introduction = 
+
+The metadata service is a collection of web services for managing metadata based on a taxonomy. Currently, three services are available within the metadata service scope; Keyword service, Vocabulary service and Lemmatisation service.
+
+= Keyword service = 
+
+The keyword service suggests keywords to a text based on its content. Input to the service can be ordinary text asa well as pdf and office documents. It's used by publishing systems to aid content creators to tag their information with relevant keywords. Simply put, the keyword extraction process first extract uncontrolled keywords from the text. The extracted keywords are looked up against a taxonomy and only keywords represented in the taxonomy is returned from the service. This enforces a controlled vocabulary for the keyword tagging.
+
+The taxonomy used for lookups can be altered, as well as the functionality of the keyword extraction process. 
+
 = Introduction =
 
-Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
+Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
+
 Nyckelordstjänsten används för att föreslå nyckelord till medicinska artiklar. Publiceringssystem kan anropa tjänsten för att få nyckelordsförslag till artiklar baserat på deras innehåll. Nyckelorden kommer från en medicinsk taxonomi (MeSH), samt en svensk version av denna med namn SweMeSH.
 
 Vokabulärtjänsten används för att hämta information om noder i en existerande namnrymd. Den är främst tänkt att användas för taxonomier som är skapade av VGR själva.
@@ -58,4 +69,3 @@ Orden sorteras i fallande ordning baserat på dess frekvens i dokumentet.
 = Vokabulärtjänst =
 
 Vokabulärtjänsten (Vocabulary Service) används för att hämta information om en namnrymd lagrad i den underliggande taxonominhanteraren. Tjänsten tar in en sökväg till en nod i taxonomin och returnerar alla direkt underliggande noder. Användningsområdet är att t.ex kunna lista alla dokumenttyper i VGR:s vokabulär. Varje dokumenttyp är då en egen nod med den gemensamma föräldranoden ”Dokumenttyper”.
-
