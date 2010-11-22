@@ -56,3 +56,7 @@ The profile service can be used to personalize the result from the keyword servi
 = Vocabulary Service =
 
 The vocabulary service is a web service interface to a taxonomy server. At VGR, the taxonomy server is Apelon DTS. The web service contains method for retrieving data from the stored taxonomies as well as manipulating the data (renaming, updating, adding and moving nodes). An overview of the available taxonomies deployed at VGR are found at http://apelon.vgregion.se/dtstreebrowser . Documentation of the web service methods are available at [WebService]
+
+= Lemmatisation service =
+
+The lemmatisation service is a service that returns the base form and all inflicted form for an input word. It can be used as a library from java code and as a rest service.
