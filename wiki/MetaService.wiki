@@ -10,6 +10,10 @@ The keyword service suggests keywords to a text based on its content. Input to t
 
 The taxonomy used for lookups can be altered, as well as the functionality of the keyword extraction process. 
 
+== Modules ==
+
+The keyword service consists of four modules which can be configured and turned on/off to alter the behaviour of the keyword extraction process.
+
 = Introduction =
 
 Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
