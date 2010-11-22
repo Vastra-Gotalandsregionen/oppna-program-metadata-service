@@ -30,7 +30,13 @@ The format stripper supports the following formats:
   * PDF
   * Office file format
 
-=== 
+=== Analysis service === 
+
+The analysis service processes the text and extracts uncontrolled keywords from the text. The analysis service consists of a set of modules that performs different processing on the text. The modules can be configured to alter the keyword extraction process. The deployed configuration at VGR is using a module called KeywordExtractor which is a module that extracts keywords based on sophisticated algorithms.
+
+==== Keyword extractor ====
+
+
 
 = Introduction =
 
