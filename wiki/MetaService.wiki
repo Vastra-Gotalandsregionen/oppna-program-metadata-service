@@ -51,7 +51,8 @@ In the installation deployed at VGR, SweMeSH is the taxonomy used when looking u
 
 === Profile service ===
 
-The profile service can be used to personalize the result from the keyword service. 
+The profile service can be used to personalize the result from the keyword service. At the current deployed installation at VGR, this service is disabled.
+
 = Introduction =
 
 Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
