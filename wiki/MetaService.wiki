@@ -39,7 +39,7 @@ The analysis service processes the text and extracts uncontrolled keywords from 
 The keyword extractor is performing a set of tasks to extract keywords from text content. The process consists of the following steps:
   # Sentence and word extractor. The incoming text is split into sentences and words. In this process, the content is also normalised (punctuation, diactrics, etc are removed)
   # Lemmatisation. The words in the text are reduced to their base form by performing lemmatisation. If no base form is found, stemming is performed.
-  # Candidate extraction. Keyword candidates are extracted based on different algorithtms. Available algorithms are n-grams, word class patterns, np-chunks. The deployed installation at VGR uses np-chunks, which means that nouns are extracted together with their modifiers like adjectives. I.e in the text "The quick brown fox jumps over the lazy dog", candidates would be "fox", "brown fox", "quick brown fox", "dog", "lazy dog". In this process, stop words are removed
+  # Candidate extraction. Keyword candidates are extracted based on different algorithtms. Available algorithms are n-grams, word class patterns, np-chunks. The deployed installation at VGR uses np-chunks, which means that nouns are extracted together with their modifiers like adjectives. I.e in the text *The quick brown fox jumps over the lazy dog*, candidates would be *fox*, *brown fox*, *quick brown fox*, *dog*, *lazy dog*. In this process, stop words are removed.
 
 = Introduction =
 
