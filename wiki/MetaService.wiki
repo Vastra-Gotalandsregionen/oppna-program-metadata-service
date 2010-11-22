@@ -32,7 +32,7 @@ The format stripper supports the following formats:
 
 === Analysis service === 
 
-The analysis service processes the text and extracts uncontrolled keywords from the text. The analysis service consists of a set of modules that performs different processing on the text. The modules can be configured to alter the keyword extraction process. The deployed configuration at VGR is using a module called KeywordExtractor which is a module that extracts keywords based on sophisticated algorithms.
+The analysis service processes the text and extracts uncontrolled keywords from the text. Keywords can consists of either a single or multiple words. The analysis service consists of a set of modules that performs different processing on the text. The modules can be configured to alter the keyword extraction process. The deployed configuration at VGR is using a module called KeywordExtractor which is a module that extracts keywords based on sophisticated algorithms.
 
 ==== Keyword extractor ====
 
@@ -43,6 +43,15 @@ The keyword extractor is performing a set of tasks to extract keywords from text
   # Keyword selection. From the candidates, keywords are selected. The selection is performed using statistical models and probability. In this process, the selection can take advantage of a corpus that's been pre-processed to extract statistics about the content. Using this statistics, the selection process uses tf/idf to determine if a candidate is a keyword. I.e if a candidate is common in the incoming text, but rare in the complete corpus it is a good candidate for a keyword.
   # De-lemmatisation. As a last step, the extracted keywords are brought back to it's inflicted form and the most common form is returned as a keyword.
 
+=== Taxonomy service ===
+
+The extracted keywords are looked up against a taxonomy to get the controlled version of the keywords. Extracted keywords that does not exist in the taxonomy are also discarded.
+
+In the installation deployed at VGR, SweMeSH is the taxonomy used when looking up keywords.
+
+=== Profile service ===
+
+The profile service can be used to personalize the result from the keyword service. 
 = Introduction =
 
 Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
