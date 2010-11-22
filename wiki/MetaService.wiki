@@ -36,7 +36,8 @@ The analysis service processes the text and extracts uncontrolled keywords from 
 
 ==== Keyword extractor ====
 
-
+The keyword extractor is performing a set of tasks to extract keywords from text content. The process consists of the following steps:
+  # Sentence and word extractor. The incoming text is split into sentences and words. In this process, the content is also normalised (punctuation, diactrics, etc are removed)
 
 = Introduction =
 
