@@ -1,4 +1,4 @@
-#summary Beskrivning av Metadatatjänsten
+#summary Summary of the Metadata-service
 
 = Introduction = 
 
