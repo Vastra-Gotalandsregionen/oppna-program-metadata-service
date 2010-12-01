@@ -13,7 +13,7 @@
     <!-- OPTIONS -->
     <complexType name="OptionsType">
         <sequence>
-            <element name="includeSourceIds">
+            <element name="includeSourceIds" nillable="true">
                 <complexType>
                     <sequence>
                         <element name="entry" minOccurs="0" maxOccurs="unbounded">
@@ -27,7 +27,7 @@
                     </sequence>
                 </complexType>
             </element>
-            <element name="filterByProperties">
+            <element name="filterByProperties" nillable="true">
                 <complexType>
                     <sequence>
                         <element name="entry" minOccurs="0" maxOccurs="unbounded">
@@ -41,11 +41,11 @@
                     </sequence>
                 </complexType>
             </element>
-            <element name="wordsToReturn" type="int"/>
-            <element name="inputWords" type="int"/>
-            <element name="url" type="string" />
-            <element name="matchSynonyms" type="boolean"/>
-            <element name="synomize" type="boolean"/>
+            <element name="wordsToReturn" type="int" nillable="true"/>
+            <element name="inputWords" type="int" nillable="true"/>
+            <element name="url" type="string" nillable="true"/>
+            <element name="matchSynonyms" type="boolean" nillable="true"/>
+            <element name="synomize" type="boolean" nillable="true"/>
         </sequence>
     </complexType>
 
