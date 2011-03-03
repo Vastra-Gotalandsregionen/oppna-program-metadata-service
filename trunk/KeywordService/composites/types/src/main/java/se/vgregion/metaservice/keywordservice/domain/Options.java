@@ -32,6 +32,7 @@ public class Options {
         Map<Integer, String[]> defaultSourceIds = new HashMap<Integer, String[]>();
         defaultSourceIds.put(32769, new String[]{"A", "B", "C"}); //TODO: Correct sweMesh id
         setIncludeSourceIds(defaultSourceIds);
+        filterByProperties = new HashMap<String, List<String>>();
     }
 
     public void setIncludeSourceIds(Map<Integer, String[]> includeSourceIds) {
