@@ -36,5 +36,6 @@ Generation time : 2008-04-23 12:41:48 CEST
 
   <modules>
     <module>KeywordService</module>
+    <module>VocabularyService</module>
   </modules>
 </project>
