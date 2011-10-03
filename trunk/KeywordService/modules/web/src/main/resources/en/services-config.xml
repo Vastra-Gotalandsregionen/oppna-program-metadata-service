@@ -12,14 +12,14 @@
 
 
     <!--  Property file reader -->
-	<bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="locations">
-			<list>
-				<value>classpath:keywordservice-svc.properties</value>
-				<value>classpath:searchprofiles.properties</value>
-			</list>
-		</property>
-	</bean>
+    <bean id="propertyPlaceholder" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:keywordservice-svc.properties</value>
+                <value>classpath:searchprofiles.properties</value>
+            </list>
+        </property>
+    </bean>
     <!-- Properties bundles -->
     <!--<context:property-placeholder location="classpath:searchprofiles.properties, classpath:keywordservice-svc.properties" /> -->
 
@@ -31,13 +31,13 @@
     </bean>
 
 
-	<bean id="keywordExtractorProcessor" class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorKeywordExtractorImpl">
-		<property name="nrKeywordsProperty"	value="nrKeywords" />
-		<property name="outputProperty"		value="keywords" />
-		<property name="language"			value="SWEDISH" />
-		<property name="candidates"			value="NPCHUNK" />
-		<property name="algorithm"			value="NBC" />
-	</bean>
+    <bean id="keywordExtractorProcessor" class="se.vgregion.metaservice.keywordservice.processing.text.TextProcessorKeywordExtractorImpl">
+        <property name="nrKeywordsProperty"	value="nrKeywords" />
+        <property name="outputProperty"		value="keywords" />
+        <property name="language"			value="ENGLISH" />
+        <property name="candidates"			value="NPCHUNK" />
+        <property name="algorithm"			value="NBC" />
+    </bean>
 
     <!-- FORMAT PROCESSORS -->
     <bean id="formatProcessorText" class="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorText" />
@@ -49,12 +49,12 @@
     <bean id="metaservice.analysisService" class="se.vgregion.metaservice.keywordservice.impl.AnalysisServiceImpl">
         <property name="textProcessors">
             <list>
-				<ref bean="keywordExtractorProcessor" />
+                <ref bean="keywordExtractorProcessor" />
             </list>
         </property>
         <property name="minWordLength"			value="0" />
-		<property name="nrKeywordsProperty"		value="nrKeywords" />
-		<property name="finalResultProperty"	value="keywords" />
+        <property name="nrKeywordsProperty"		value="nrKeywords" />
+        <property name="finalResultProperty"	value="keywords" />
     </bean>
 
 	<!-- Connection to Apelon -->
@@ -89,7 +89,7 @@
         </property>
     </bean>
 
-	<bean id="metaservice.userProfileService" class="se.vgregion.metaservice.keywordservice.impl.UserProfileServiceEmptyImpl" />
+    <bean id="metaservice.userProfileService" class="se.vgregion.metaservice.keywordservice.impl.UserProfileServiceEmptyImpl" />
 
     <bean id="myFormatProcessorFactoryManager" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod" value="se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorFactory.setFormatProcessors" />
@@ -111,7 +111,7 @@
 
 	<!-- DAO:S -->
 
-	<bean id="blacklistedWordDao" class="se.vgregion.metaservice.keywordservice.dao.BlacklistedWordEmptyImpl" />
+    <bean id="blacklistedWordDao" class="se.vgregion.metaservice.keywordservice.dao.BlacklistedWordEmptyImpl" />
 
 	<!-- bean post-processor for JPA annotations -->
 
@@ -119,9 +119,9 @@
 
     <tx:annotation-driven />
 
-	<bean id="metaservice.keywordServiceIntService"
-		class="se.vgregion.metaservice.keywordservice.intsvc.KeywordServiceIntServiceImpl">
-		<property name="keywordService" ref="metaservice.keywordService" />
-	</bean>
+    <bean id="metaservice.keywordServiceIntService"
+		class="se.vgregion.metaservice.keywordservice.web.UserBean">
+        <property name="keywordService" ref="metaservice.keywordService" />
+    </bean>
 
 </beans>

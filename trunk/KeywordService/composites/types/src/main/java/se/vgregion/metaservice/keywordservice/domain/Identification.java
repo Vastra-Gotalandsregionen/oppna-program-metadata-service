@@ -1,12 +1,15 @@
 
 package se.vgregion.metaservice.keywordservice.domain;
 
+import java.io.Serializable;
+
 /**
  * Identification holds information to identify a user.
  * It has two id's matching a user and a profile in the
- * Appelon system. 
+ * Appelon system.
  */
-public class Identification {
+public class Identification implements Serializable{
+
 
     //No default values allowed?
     String userId;

@@ -133,6 +133,7 @@
                 <ref bean="searchProfile.vgr"/>
                 <ref bean="searchProfile.vgr_epi" />
                 <ref bean="searchProfile.vgr_semsys" />
+                <ref bean="searchProfile.vgr_regcal" />
                 <ref bean="searchProfile.vgr_barium" />
                 <ref bean="searchProfile.vgr_alfresco" />
             </list>

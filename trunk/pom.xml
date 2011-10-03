@@ -33,9 +33,14 @@ Generation time : 2008-04-23 12:41:48 CEST
     <!-- this version must ALWAYS be the same as the latest version of the parent -->
     <version>1.0-SNAPSHOT</version>
   </parent>
+  <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
   <modules>
     <module>KeywordService</module>
+    <module>LemmatisationService</module>
+    <module>SitemapGenerator</module>
     <module>VocabularyService</module>
   </modules>
 </project>

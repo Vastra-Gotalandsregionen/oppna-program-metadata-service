@@ -37,9 +37,9 @@ import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorF
 /**
  * Service for finding keywords in text content. Uses several helper classes to
  * extract all relevant information.
- * 
+ *
  * @author tobias
- * 
+ *
  */
 public class KeyWordService {
 
@@ -60,7 +60,7 @@ public class KeyWordService {
 
     /** Map of searchprofiles indexed by profileId */
     private Map<String, SearchProfile> searchProfiles;
-    
+
 
     /**
      * Sets the medicalTaxonomyService that is used at the backend to retrieve
@@ -99,7 +99,7 @@ public class KeyWordService {
      * @param requestId The unique id that is to be associated with this request
      * @param document The content to classify
      * @param options Additional options
-     * @return A NodeListResponseObject that contains a list of MedicalNodes 
+     * @return A NodeListResponseObject that contains a list of MedicalNodes
      * which are hits in the medicalTaxonomyService for the input content.
      * Check the responseObjects statusCode to see if the operation
      * was successful.
@@ -210,11 +210,11 @@ public class KeyWordService {
         log.debug(MessageFormat.format(
                 "Keywords extracted from AnalysisService: {0}. Nodes from TaxonomyService: {1}",
                 keywords.length, nodes.size()));
-        
+
         /** ********************* */
 
         // Examine results from TaxonomyService and blacklist
-        // words and mark their user status 
+        // words and mark their user status
         Set<Map.Entry<String, List<MedicalNode>>> nodesSet = nodes.entrySet();
         Map.Entry<String, List<MedicalNode>> nodeEntry;
         Set<MedicalNode> addedNodes = new HashSet<MedicalNode>();
@@ -242,7 +242,7 @@ public class KeyWordService {
             }
 
         }
-        
+
         /** *********************************** */
         return nodesList;
 
@@ -316,7 +316,7 @@ public class KeyWordService {
         return response;
     }
 
-  
+
 
     /**
      * Adds a list of keywords as tagged. Should be called by the GUI to tell
@@ -393,7 +393,7 @@ public class KeyWordService {
         }
     }
 
-    
+
    /**
      * Check if a used has read access to the given namespace. This routine
      * makes use of the namespace cache and updates it where neccessary.
@@ -430,7 +430,7 @@ public class KeyWordService {
         return false;
     }
 
-    
+
     /**
      * Check if a used has write access to the given namespace. This routine
      * makes use of the namespace cache and updates it where neccessary.
@@ -465,7 +465,7 @@ public class KeyWordService {
         return false;
     }
 
-    
+
     /**
      * A utility routine to get the namespace name from a namespaceId.
      * This routine initially checks the namespaceCache. If no match is
@@ -483,7 +483,7 @@ public class KeyWordService {
             log.debug("Namespace with id "+namespaceId+" has name "+namespace);
             return namespace;
         }
-        
+
         try {
             // Query the MedicaTaxonomyService for the namespace and update the cache
             namespace = medicalTaxonomyService.findNamespaceById(Integer.parseInt(namespaceId));
