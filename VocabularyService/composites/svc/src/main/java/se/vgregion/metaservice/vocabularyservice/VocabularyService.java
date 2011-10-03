@@ -236,7 +236,7 @@ public class VocabularyService {
      * @param requestId the unique request id
      * @param path the path to the node
      * @param options Options object to filter on property. Only nodes which matches
-     * at least one of the filters will be rutned. 
+     * at least one of the filters will be rutned.
      * @return a NodeListResponeObject that contains a list of all the childrenNodes
      * check the statuscode in this object to see if the operation was succesfull
      */

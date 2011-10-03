@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
 import com.apelon.dts.client.concept.ConceptChild;
-import se.vgregion.metaservice.keywordservice.domain.Identification;
 import se.vgregion.metaservice.keywordservice.exception.InvalidPropertyTypeException;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeAlreadyExistsException;
@@ -26,19 +25,18 @@ public abstract class MedicalTaxonomyService {
     protected String password;
     protected String host;
     protected int port;
-    /*******			******/
+
     /** QUERY PROPERTIES **/
     protected String namespaceName;
     protected int resultKeywordsLimit;
     protected String sourceIdPropertyKey = "";
 
-    /*******			******/
     /**
      * Initiates a connection to the Medical Taxonomy system. This involves connecting to the system
      * and setting up required parameters. Needs to be called prior to any other calls to the system
      * @return true on success, false otherwise
      */
-    public abstract boolean initConnection();
+    public abstract boolean initConnection() throws Exception;
 
     /**
      * Finds keywords in the Medical Taxonomy system based on the array of input words.
@@ -110,7 +108,7 @@ public abstract class MedicalTaxonomyService {
     public abstract MedicalNode getChildNode(String namespaceId, MedicalNode node, String childName) throws DTSException;
 
     public abstract List<MedicalNode> getChildNodes(MedicalNode node);
-
+    
     public abstract MedicalNode createNewConcept(MedicalNode node) throws KeywordsException, NodeAlreadyExistsException, InvalidPropertyTypeException, NodeNotFoundException;
 
     public abstract void updateConcept(MedicalNode node) throws NodeNotFoundException, KeywordsException, InvalidPropertyTypeException, ParentNotFoundException;

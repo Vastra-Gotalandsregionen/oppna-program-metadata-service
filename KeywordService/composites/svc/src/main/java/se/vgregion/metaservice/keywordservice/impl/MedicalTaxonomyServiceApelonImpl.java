@@ -80,61 +80,47 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     /**
      * @see MedicalTaxonomyService
      */
-    public boolean initConnection() {
+    public boolean initConnection() throws ApelonException, ClassNotFoundException, DTSException{
         log.info("Initiating connection to server " + host + ":" + port);
         boolean retval = true;
-        try {
-            ServerConnection serverConnection = new ServerConnectionSecureSocket(
-                    host, port, username, password);
-            serverConnection.setQueryServer(Class.forName("com.apelon.dts.server.SearchQueryServer"),
-                    DTSHeader.SEARCHSERVER_HEADER);
-            serverConnection.setQueryServer(
-                    com.apelon.dts.server.OntylogConceptServer.class,
-                    DTSHeader.ONTYLOGCONCEPTSERVER_HEADER);
-            serverConnection.setQueryServer(
-                    com.apelon.dts.server.NamespaceServer.class,
-                    DTSHeader.NAMESPACESERVER_HEADER);
 
-            searchQuery = (SearchQuery) SearchQuery.createInstance(serverConnection);
+        ServerConnection serverConnection = new ServerConnectionSecureSocket(
+                host, port, username, password);
+        serverConnection.setQueryServer(Class.forName("com.apelon.dts.server.SearchQueryServer"),
+                DTSHeader.SEARCHSERVER_HEADER);
+        serverConnection.setQueryServer(
+                com.apelon.dts.server.OntylogConceptServer.class,
+                DTSHeader.ONTYLOGCONCEPTSERVER_HEADER);
+        serverConnection.setQueryServer(
+                com.apelon.dts.server.NamespaceServer.class,
+                DTSHeader.NAMESPACESERVER_HEADER);
 
-            nameQuery = NamespaceQuery.createInstance(serverConnection);
-            namespace = nameQuery.findNamespaceByName(namespaceName);
+        searchQuery = (SearchQuery) SearchQuery.createInstance(serverConnection);
 
-            thesaurusConceptQuery = ThesaurusConceptQuery.createInstance(serverConnection);
+        nameQuery = NamespaceQuery.createInstance(serverConnection);
+        namespace = nameQuery.findNamespaceByName(namespaceName);
 
-            assocQuery = AssociationQuery.createInstance(serverConnection);
-            navQuery = NavQuery.createInstance(serverConnection);
+        thesaurusConceptQuery = ThesaurusConceptQuery.createInstance(serverConnection);
 
-            termQuery = TermQuery.createInstance(serverConnection);
+        assocQuery = AssociationQuery.createInstance(serverConnection);
+        navQuery = NavQuery.createInstance(serverConnection);
 
-            subsetQuery = SubsetQuery.createInstance(serverConnection);
+        termQuery = TermQuery.createInstance(serverConnection);
 
-            ca = new ConceptAttributeSetDescriptor("Defined View ASD",
-                    resultKeywordsLimit);
-            ca.setAllSynonymTypes(true);
-            ca.setAllPropertyTypes(true);
+        subsetQuery = SubsetQuery.createInstance(serverConnection);
 
-            DTSConceptQuery conceptQuery = DTSConceptQuery.createInstance(serverConnection);
-            DTSPropertyType propertyType = conceptQuery.findPropertyTypeByName(
-                    getSourceIdPropertyKey(), namespace.getId());
-            if (propertyType != null) {
-                ca.addPropertyType(propertyType);
-            } else {
-                log.warn(MessageFormat.format("Specified property {0} could not be found in taxonomy", getSourceIdPropertyKey()));
-            }
+        ca = new ConceptAttributeSetDescriptor("Defined View ASD",
+                resultKeywordsLimit);
+        ca.setAllSynonymTypes(true);
+        ca.setAllPropertyTypes(true);
 
-        } catch (ApelonException e) {
-            // TODO Auto-generated catch block
-            retval = false;
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            retval = false;
-            e.printStackTrace();
-        } catch (DTSException e) {
-            // TODO Auto-generated catch block
-            retval = false;
-            e.printStackTrace();
+        DTSConceptQuery conceptQuery = DTSConceptQuery.createInstance(serverConnection);
+        DTSPropertyType propertyType = conceptQuery.findPropertyTypeByName(
+                getSourceIdPropertyKey(), namespace.getId());
+        if (propertyType != null) {
+            ca.addPropertyType(propertyType);
+        } else {
+            log.warn(MessageFormat.format("Specified property {0} could not be found in taxonomy", getSourceIdPropertyKey()));
         }
 
         return retval;
@@ -187,35 +173,36 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
                 try {
 
-					// A list of all matches from the apelon taxonomy for the current keyword
-					List<OntylogConcept> concepts = new LinkedList<OntylogConcept>();
-					// Split the keyword in tokens and call apelon for each one
-					String[] tokens = word.split(" ");
+                    // A list of all matches from the apelon taxonomy for the current keyword
+                    List<OntylogConcept> concepts = new LinkedList<OntylogConcept>();
+                    // Split the keyword in tokens and call apelon for each one
+                    String[] tokens = word.split(" ");
 
-					for(int i = 0; i < tokens.length; i++) {
-						// A list of concepts starting at token i
-						Set<OntylogConcept> tokenConcepts = new HashSet<OntylogConcept>();
+                    for (int i = 0; i < tokens.length; i++) {
+                        // A list of concepts starting at token i
+                        Set<OntylogConcept> tokenConcepts = new HashSet<OntylogConcept>();
 
-						// First search for: "{token} *" then "{token}"
-						// Make sure there are more tokens after when searching with *
-						if(i + 1 < tokens.length) {
-							OntylogConcept[] unfiltered = searchQuery.findConceptsWithNameMatching(tokens[i] + " *", options, true);
-							// Remove the concepts that doesn't match
-							List<OntylogConcept> filtered = filterConcepts(tokens, i, unfiltered);
+                        // First search for: "{token} *" then "{token}"
+                        // Make sure there are more tokens after when searching with *
+                        if (i + 1 < tokens.length) {
+                            OntylogConcept[] unfiltered = searchQuery.findConceptsWithNameMatching(tokens[i] + " *", options, true);
+                            // Remove the concepts that doesn't match
+                            List<OntylogConcept> filtered = filterConcepts(tokens, i, unfiltered);
 
-							if(!filtered.isEmpty())
-								tokenConcepts.addAll(filtered);
-						}
+                            if (!filtered.isEmpty()) {
+                                tokenConcepts.addAll(filtered);
+                            }
+                        }
 
-						// Uncomment this if statement to search for both multiple and single tokens
-						if(tokenConcepts.isEmpty()) {
-							OntylogConcept[] unfiltered = searchQuery.findConceptsWithNameMatching(tokens[i], options, true);
-							// No need to filter these concepts since the search didn't include wildcards
-							tokenConcepts.addAll(Arrays.asList(unfiltered));
-						}
+                        // Uncomment this if statement to search for both multiple and single tokens
+                        if (tokenConcepts.isEmpty()) {
+                            OntylogConcept[] unfiltered = searchQuery.findConceptsWithNameMatching(tokens[i], options, true);
+                            // No need to filter these concepts since the search didn't include wildcards
+                            tokenConcepts.addAll(Arrays.asList(unfiltered));
+                        }
 
-						concepts.addAll(tokenConcepts);
-					}
+                        concepts.addAll(tokenConcepts);
+                    }
 
                     // Translate each concept to MedicalNode
                     for (OntylogConcept concept : concepts) {

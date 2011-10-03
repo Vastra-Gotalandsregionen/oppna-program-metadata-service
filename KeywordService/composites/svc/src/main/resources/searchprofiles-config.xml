@@ -51,7 +51,21 @@
             </set>
         </property>
     </bean>
-
+        <bean id="searchProfile.vgr_regcal" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_regcal.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+                <value>SweMESH</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value>VGR</value>
+                <value>vgr</value>
+            </set>
+        </property>
+    </bean>
     <bean id="searchProfile.vgr_barium" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
         <property name="profileId" value="${vgr_barium.profileid}" />
         <property name="searchableNamespaces">
