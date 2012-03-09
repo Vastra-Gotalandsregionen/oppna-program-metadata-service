@@ -58,7 +58,9 @@
     </bean>
 
 	<!-- Connection to Apelon -->
+    <import resource="classpath*:spring-config.xml" />
 
+<!-- 
     <bean id="metaservice.medicalTaxonomyService"
                 class="se.vgregion.metaservice.keywordservice.impl.MedicalTaxonomyServiceApelonImpl"
 		init-method="initConnection">
@@ -76,7 +78,7 @@
         <property name="medicalTaxonomyService" ref="metaservice.medicalTaxonomyService" />
         <property name="userProfileService" ref = "metaservice.userProfileService"/>
         <property name="blacklistedWordDao" ref="blacklistedWordDao" />
-        <!-- List of searchprofiles defined in searchprofiles-config.xml -->
+        <!- - List of searchprofiles defined in searchprofiles-config.xml - ->
         <property name="searchProfiles">
             <list>
                 <ref bean="searchProfile.vgr"/>
@@ -88,6 +90,7 @@
             </list>
         </property>
     </bean>
+    -->
 
     <bean id="metaservice.userProfileService" class="se.vgregion.metaservice.keywordservice.impl.UserProfileServiceEmptyImpl" />
 
