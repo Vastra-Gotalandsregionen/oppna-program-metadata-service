@@ -49,6 +49,7 @@ public class KeyWordService {
     private MedicalTaxonomyService medicalTaxonomyService;
     private UserProfileService userProfileService;
     private BlacklistedWordDao bwd;
+    private SolrKeywordService solrKeywordService;
     private static Logger log = Logger.getLogger(KeyWordService.class);
     
     /** If an input word to apelon results in more hits than the
@@ -134,7 +135,12 @@ public class KeyWordService {
 
             /** * Find medical keywords ** */
             log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
-            List<MedicalNode> allNodes = findMedicalNodes(keywords, id, options.getIncludeSourceIds());
+
+            List<MedicalNode> allNodes = new LinkedList<MedicalNode>();
+            if(keywords != null) {
+            	allNodes = findMedicalNodes(keywords, id, options.getIncludeSourceIds());
+            }
+            
             List<MedicalNode> nodes = new LinkedList<MedicalNode>();
             // create a new list with the X first nodes
             int maxNodes = Math.min(options.getWordsToReturn(),allNodes.size());
@@ -195,7 +201,6 @@ public class KeyWordService {
         //TODO:Make so this method actualy throws a KeywordsException!
 
         List<Map<String, List<MedicalNode>>> allNodes = new ArrayList<Map<String, List<MedicalNode>>>();
-        Map<String, List<MedicalNode>> nodes = new HashMap<String,List<MedicalNode>>();
         SearchProfile profile = searchProfiles.get(identification.getProfileId());
         if(profile == null) {
             throw new KeywordsException("Specified profile "+identification.getProfileId()+" does not exist");
@@ -206,7 +211,13 @@ public class KeyWordService {
             if(namespaceId != null)
                 namespaceIds.add(namespaceId);
         }
-        nodes = (medicalTaxonomyService.findKeywords(namespaceIds, keywords, sourceIds));
+        
+        Map<String, List<MedicalNode>> nodes = new HashMap<String,List<MedicalNode>>();
+        if(solrKeywordService != null) {
+        	nodes = solrKeywordService.findKeywords(keywords);
+        } else { // fall back to old keyword service
+        	nodes = (medicalTaxonomyService.findKeywords(namespaceIds, keywords, sourceIds));
+        }
         log.debug(MessageFormat.format(
                 "Keywords extracted from AnalysisService: {0}. Nodes from TaxonomyService: {1}",
                 keywords.length, nodes.size()));
@@ -566,5 +577,9 @@ public class KeyWordService {
      */
     public void setUserProfileService(UserProfileService userProfileService) {
         this.userProfileService = userProfileService;
+    }
+
+    public void setSolrKeywordService(SolrKeywordService solrKeywordService) {
+        this.solrKeywordService = solrKeywordService;
     }
 }
