@@ -117,7 +117,7 @@
         <property name="port" value="${taxonomyservice.port}" />
         <property name="username" value="${taxonomyservice.username}" />
         <property name="password" value="${taxonomyservice.password}" />
-        <property name="namespaceName" value="SweMESH" />
+        <property name="namespaceName" value="SweMeSH" />
         <property name="resultKeywordsLimit" value="10" />
         <property name="sourceIdPropertyKey" value="MN" />
     </bean>

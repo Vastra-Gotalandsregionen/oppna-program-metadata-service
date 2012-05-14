@@ -44,6 +44,7 @@
                 <ref bean="searchProfile.vgr_regcal" />
                 <ref bean="searchProfile.vgr_barium" />
                 <ref bean="searchProfile.vgr_alfresco" />
+                <ref bean="searchProfile.vgr_openpipeline" />
             </list>
         </property>
     </bean>
