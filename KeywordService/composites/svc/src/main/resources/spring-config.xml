@@ -15,7 +15,7 @@
     <property name="port" value="${taxonomyservice.port}" />
     <property name="username" value="${taxonomyservice.username}" />
     <property name="password" value="${taxonomyservice.password}" />
-    <property name="namespaceName" value="SweMESH" />
+    <property name="namespaceName" value="SweMeSH" />
     <property name="resultKeywordsLimit" value="10" />
     <property name="sourceIdPropertyKey" value="MN" />
   </bean>
@@ -34,6 +34,7 @@
         <ref bean="searchProfile.vgr_regcal" />
         <ref bean="searchProfile.vgr_barium" />
         <ref bean="searchProfile.vgr_alfresco" />
+        <ref bean="searchProfile.vgr_openpipeline" />
       </list>
     </property>
     <property name="solrKeywordService" ref="solrKeywordService"/>

@@ -41,7 +41,7 @@
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
             </set>
         </property>
         <property name="writeableNamespaces">
@@ -71,7 +71,7 @@
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
             </set>
         </property>
         <property name="blackList">
@@ -124,7 +124,7 @@
             <set>
                 <value>VGR</value>
                 <value>Regionarkivet</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
 				<value>Dokumenttyp VGR</value>
 				<value>Handlingstyp</value>
 				<value>Språk</value>
@@ -148,7 +148,7 @@
             <set>
                 <value>VGR</value>
                 <value>Regionarkivet</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
 				<value>Dokumenttyp VGR</value>
 				<value>Handlingstyp</value>
 				<value>Språk</value>

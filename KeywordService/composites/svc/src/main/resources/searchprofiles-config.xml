@@ -13,7 +13,7 @@
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
             </set>
         </property>
         <property name="writeableNamespaces">
@@ -28,7 +28,21 @@
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
+            </set>
+        </property>
+        <property name="writeableNamespaces">
+            <set>
+                <value>VGR</value>
+            </set>
+        </property>
+    </bean>
+    <bean id="searchProfile.vgr_openpipeline" class="se.vgregion.metaservice.keywordservice.domain.SearchProfile">
+        <property name="profileId" value="${vgr_openpipeline.profileid}" />
+        <property name="searchableNamespaces">
+            <set>
+                <value>VGR</value>
+                <value>SweMeSH</value>
             </set>
         </property>
         <property name="writeableNamespaces">
@@ -42,7 +56,7 @@
         <property name="searchableNamespaces">
             <set>
                 <value>MeSH R</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
             </set>
         </property>
         <property name="writeableNamespaces">
@@ -56,7 +70,7 @@
         <property name="searchableNamespaces">
             <set>
                 <value>VGR</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
             </set>
         </property>
         <property name="writeableNamespaces">
@@ -72,7 +86,7 @@
             <set>
                 <value>VGR</value>
                 <value>Regionarkivet</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
                 <value>Dokumenttyp VGR</value>
                 <value>Handlingstyp</value>
                 <value>Språk</value>
@@ -96,7 +110,7 @@
             <set>
                 <value>VGR</value>
                 <value>Regionarkivet</value>
-                <value>SweMESH</value>
+                <value>SweMeSH</value>
                 <value>Dokumenttyp VGR</value>
                 <value>Handlingstyp</value>
                 <value>Språk</value>

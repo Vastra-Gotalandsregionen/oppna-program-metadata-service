@@ -2,6 +2,7 @@ package se.vgregion.metaservice.keywordservice;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,8 @@ public class SolrKeywordService {
 
 	private static final int MAX_NUM_RESULTS = 10;
 
+	private static final String CODE_PREFIX = "C";
+
 	private String solrConnection = null;
 	private SolrServer server;
 	private static Logger log = Logger.getLogger(SolrKeywordService.class);
@@ -57,7 +60,6 @@ public class SolrKeywordService {
 	 *         Keyword (the {@link String} key)
 	 */
 	public Map<String, List<MedicalNode>> findKeywords(String[] words) {
-
 		if (words == null) {
 			throw new IllegalArgumentException("Argument words can't be null");
 		}
@@ -75,7 +77,7 @@ public class SolrKeywordService {
 				SolrDocumentList results = response.getResults();
 
 				log.debug("found "+results.getNumFound()+" matches for keyword " + word);
-				
+
 				for (SolrDocument solrDocument : results) {
 					MedicalNode node = new MedicalNode();
 					try {
@@ -105,14 +107,14 @@ public class SolrKeywordService {
 		Object field_Name = solrDocument.getFieldValue(SOLR_NAME);
 		Object field_ID = solrDocument.getFieldValue(SOLR_ID);
 		Object field_NamespaceID = solrDocument.getFieldValue(SOLR_NAMESPACE_ID);
-		Object field_SourceID = solrDocument.getFieldValue(SOLR_SOURCE_ID);
+//		Object field_SourceID = solrDocument.getFieldValue(SOLR_SOURCE_ID);
 		Object field_Code = solrDocument.getFieldValue(SOLR_PROP_CODE);
 		Object field_MN = solrDocument.getFieldValue(SOLR_PROP_MN);
 		Object field_ScopeNoteEng = solrDocument.getFieldValue(SOLR_PROP_SCOPE_NOTE_ENG);
 		Object field_ScopeNoteSwe = solrDocument.getFieldValue(SOLR_PROP_SCOPE_NOTE_SWE);
 
 		log.debug("Creating node with name " + field_Name);
-
+		
 		if (field_Name != null) {
 			node.setName(field_Name.toString());
 		}
@@ -120,10 +122,14 @@ public class SolrKeywordService {
 			node.setInternalId(field_ID.toString());
 		}
 		if(field_NamespaceID != null) {
+			if(field_NamespaceID instanceof Collection<?> ) {
+				//FIXME isEmpty?
+				field_NamespaceID = ((Collection<?>)field_NamespaceID).iterator().next();
+			}
 			node.setNamespaceId(field_NamespaceID.toString());
 		}
-		if(field_SourceID != null) {
-			node.setSourceId(field_SourceID.toString());
+		if(field_Code != null) {
+			node.setSourceId(field_Code.toString());
 		}
 		
 		node.setSynonyms(getSynonyms(solrDocument));
@@ -131,10 +137,15 @@ public class SolrKeywordService {
 		List<NodeProperty> properties = new ArrayList<NodeProperty>();
 
 		if(field_Code != null) {
-			properties.add(new NodeProperty(SOLR_PROP_CODE, field_Code.toString()));
+			properties.add(new NodeProperty(SOLR_PROP_CODE, CODE_PREFIX + field_Code.toString()));
+			properties.add(new NodeProperty("Code in Source", field_Code.toString()));
 		}
 		if(field_MN != null) {
-			properties.add(new NodeProperty(SOLR_PROP_MN, field_MN.toString()));
+			if(field_MN instanceof Collection<?> ) {
+				//FIXME isEmpty?
+				field_MN = ((Collection<?>)field_MN).iterator().next();
+			}
+			properties.add(new NodeProperty(SOLR_PROP_MN.toUpperCase(), field_MN.toString()));
 		}
 		if (field_ScopeNoteEng != null) {
 			properties.add(new NodeProperty(SOLR_PROP_SCOPE_NOTE_ENG, field_ScopeNoteEng.toString()));
@@ -145,6 +156,7 @@ public class SolrKeywordService {
 
 		node.setProperties(properties);
 	}
+
 
 	@SuppressWarnings("unchecked")
 	private List<String> getSynonyms(SolrDocument solrDocument) {
@@ -171,6 +183,8 @@ public class SolrKeywordService {
 		query.addField(SOLR_PROP_SCOPE_NOTE_SWE);
 		query.addField(SOLR_SOURCE_ID);
 		query.addField(SOLR_SYNONYMS);
+		query.set("qf"," "+SOLR_ID+" "+SOLR_NAME+" "+" "+SOLR_NAMESPACE_ID+" "+SOLR_PROP_CODE+" "+SOLR_PROP_MN+" "+
+				           SOLR_PROP_SCOPE_NOTE_ENG+" "+SOLR_PROP_SCOPE_NOTE_SWE+" "+SOLR_SOURCE_ID+" "+SOLR_SYNONYMS);
 		query.setRows(MAX_NUM_RESULTS);
 		query.setStart(0);
 		return query;
