@@ -78,7 +78,8 @@ public class SolrKeywordServiceTest {
 		assertEquals(document.getFieldValue(SOLR_NAME), node.getName());
 		assertEquals(document.getFieldValue(SOLR_NAMESPACE_ID), node.getNamespaceId());
 		// node.getParents();
-		assertEquals(document.getFieldValue(SOLR_SOURCE_ID), node.getSourceId());
+
+		assertEquals(document.getFieldValue(SOLR_PROP_CODE), node.getSourceId());
 		assertEquals(document.getFieldValue(SOLR_SYNONYMS), node.getSynonyms());
 
 		List<NodeProperty> properties = node.getProperties();
@@ -90,7 +91,8 @@ public class SolrKeywordServiceTest {
 			} else if (SOLR_PROP_SCOPE_NOTE_SWE.equals(nodeProperty.getName())) {
 				assertEquals(document.getFieldValue(SOLR_PROP_SCOPE_NOTE_SWE), nodeProperty.getValue());
 			} else if (SOLR_PROP_CODE.equals(nodeProperty.getName())) {
-				assertEquals(document.getFieldValue(SOLR_PROP_CODE), nodeProperty.getValue());
+				// Code should be prefixed by a 'C'
+				assertEquals("C"+document.getFieldValue(SOLR_PROP_CODE), nodeProperty.getValue());
 			}
 		}
 	}
