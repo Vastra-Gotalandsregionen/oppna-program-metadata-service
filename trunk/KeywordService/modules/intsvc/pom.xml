@@ -32,6 +32,48 @@ Generation time : 2008-04-23 12:41:48 CEST
       <!-- version IS DEFINED BY PARENT -->
             <version>${pom.version}</version>
             <scope>compile</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+               </exclusion>
+                              <exclusion>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+               </exclusion>
+		<exclusion>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<!--:jar:1.6.1:compile-->
+		</exclusion>
+               
+             </exclusions>
+        </dependency>
+
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>3.8.1</version>
+          <scope>test</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+               </exclusion>
+               <exclusion>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+               </exclusion>
+               
+             </exclusions>
         </dependency>
     
         <dependency>
@@ -42,13 +84,47 @@ Generation time : 2008-04-23 12:41:48 CEST
       <!-- version IS DEFINED BY PARENT -->
             <version>${pom.version}</version>
             <scope>compile</scope>
+            <exclusions>
+              <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+              </exclusion>
+              <exclusion>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-jdk14</artifactId>
+               </exclusion>
+               <exclusion>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+               </exclusion>
+               
+             </exclusions>
         </dependency>
-    
+
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>1.6.4</version>
+        </dependency>
+        
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-jdk14</artifactId>
+          <version>1.6.4</version>
+        </dependency> 
+
+        <dependency>
+	  <groupId>org.slf4j</groupId>
+	  <artifactId>jcl-over-slf4j</artifactId>
+	  <version>1.6.4</version><!--:jar:1.6.1:compile-->
+	</dependency>
+          
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
             <version>3.0.0.RELEASE</version>
         </dependency>
+        
     </dependencies>
 
     <profiles>
@@ -60,6 +136,11 @@ Generation time : 2008-04-23 12:41:48 CEST
             <properties>
                 <env>empty</env>
             </properties>
+            <build>
+              <filters>
+                <filter>src/main/resources/empty/services-config.xml</filter>
+              </filters>
+            </build>
         </profile>
         <profile>
             <id>database</id>

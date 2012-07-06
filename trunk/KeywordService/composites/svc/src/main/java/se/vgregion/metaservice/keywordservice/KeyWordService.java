@@ -214,13 +214,13 @@ public class KeyWordService {
         
         Map<String, List<MedicalNode>> nodes = new HashMap<String,List<MedicalNode>>();
         if(solrKeywordService != null) {
-        	nodes = solrKeywordService.findKeywords(keywords);
+        	nodes = solrKeywordService.findKeywords(keywords, sourceIds);
         } else { // fall back to old keyword service
         	nodes = (medicalTaxonomyService.findKeywords(namespaceIds, keywords, sourceIds));
         }
         log.debug(MessageFormat.format(
                 "Keywords extracted from AnalysisService: {0}. Nodes from TaxonomyService: {1}",
-                keywords.length, nodes.size()));
+                keywords.length, getNumKeywords(nodes)));
 
         /** ********************* */
 
@@ -259,7 +259,15 @@ public class KeyWordService {
 
     }
 
-    /**
+    private Integer getNumKeywords(Map<String, List<MedicalNode>> nodes) {
+    	int i = 0;
+    	for (List<MedicalNode> nodeList : nodes.values()) {
+			i++;
+		}
+		return i;
+	}
+
+	/**
      * Finds a specific medical node in MedicalTaxonomyService given its internal id
      * @param id  The identification of the person who looks for the node
      * @param requestId The unique id that is to be associated with this request

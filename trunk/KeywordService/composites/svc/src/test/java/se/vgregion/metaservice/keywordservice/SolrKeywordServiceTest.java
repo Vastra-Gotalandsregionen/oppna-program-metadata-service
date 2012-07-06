@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 import static se.vgregion.metaservice.keywordservice.SolrKeywordService.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,10 @@ import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
 
 public class SolrKeywordServiceTest {
 
+	private static final int NAMESPACE_ID = 32769;
+
+	private static final String PREFERRED_TERM_VALUE = "termen";
+
 	private static final String KEYWORD_QUERY = "diabetes";
 	
 	@Mock
@@ -32,6 +37,8 @@ public class SolrKeywordServiceTest {
 	private SolrKeywordService testee;
 
 	private SolrDocument document;
+
+	private Map<Integer, String[]> defaultSourceIds = new HashMap<Integer, String[]>();
 
 	@Before
 	public void setup() throws Exception {
@@ -45,6 +52,7 @@ public class SolrKeywordServiceTest {
 		when(server.query(any(SolrParams.class))).thenReturn(response);
 
 		testee = new SolrKeywordService();
+		defaultSourceIds.put(NAMESPACE_ID, new String[]{"A", "B", "C"});
 	}
 	
 	@Test
@@ -53,7 +61,7 @@ public class SolrKeywordServiceTest {
 
 		// TEST
 		String[] words = { KEYWORD_QUERY };
-		Map<String, List<MedicalNode>> keywords = testee.findKeywords(words);
+		Map<String, List<MedicalNode>> keywords = testee.findKeywords(words, defaultSourceIds);
 
 		// VERIFY
 		assertEquals(1, keywords.size());
@@ -66,17 +74,33 @@ public class SolrKeywordServiceTest {
 	public void testSolrConnectionIsNullShouldThrowRuntimeException() throws Exception {
 		String[] words = { KEYWORD_QUERY };
 		try {
-			testee.findKeywords(words);
+			testee.findKeywords(words, defaultSourceIds);
 			fail();
 		} catch(RuntimeException e) {
 			assertEquals(MISSING_CONNECTION_STRING_ERR_MSG, e.getMessage());
 		}
 	}
+
+	@Test
+	public void testDocumentNotInIncludeSourceIds() throws Exception {
+		testee.setSolrServer(server);
+
+		// TEST
+		String[] words = { KEYWORD_QUERY };
+		Map<Integer, String[]> sourceIds = new HashMap<Integer, String[]>();
+		sourceIds.put(32769, new String[]{"A"});
+		Map<String, List<MedicalNode>> keywords = testee.findKeywords(words, sourceIds);
+
+		// VERIFY no keywords since document is outside of scope (C vs A)
+		assertEquals(1, keywords.size());
+		List<MedicalNode> nodeList = keywords.get(KEYWORD_QUERY);
+		assertEquals(0, nodeList.size());
+	}
 	
 	protected void verifyNode(MedicalNode node, SolrDocument document) {
 		assertEquals(document.getFieldValue(SOLR_ID), node.getInternalId());
 		assertEquals(document.getFieldValue(SOLR_NAME), node.getName());
-		assertEquals(document.getFieldValue(SOLR_NAMESPACE_ID), node.getNamespaceId());
+		assertEquals(Integer.toString((Integer) document.getFieldValue(SOLR_NAMESPACE_ID)), node.getNamespaceId());
 		// node.getParents();
 
 		assertEquals(document.getFieldValue(SOLR_PROP_CODE), node.getSourceId());
@@ -93,7 +117,10 @@ public class SolrKeywordServiceTest {
 			} else if (SOLR_PROP_CODE.equals(nodeProperty.getName())) {
 				// Code should be prefixed by a 'C'
 				assertEquals("C"+document.getFieldValue(SOLR_PROP_CODE), nodeProperty.getValue());
+			} else if (NODE_PREFERRED_TERM.equals(nodeProperty.getName())) {
+				assertEquals(PREFERRED_TERM_VALUE, nodeProperty.getValue());
 			}
+			
 		}
 	}
 
@@ -105,9 +132,10 @@ public class SolrKeywordServiceTest {
 		List<String> synList = new ArrayList<String>();
 		synList.add("synonym");
 		when(document.getFieldValue(SOLR_SYNONYMS)).thenReturn(synList);
-		when(document.getFieldValue(SOLR_NAMESPACE_ID)).thenReturn("nsid");
+		when(document.getFieldValue(SOLR_NAMESPACE_ID)).thenReturn(NAMESPACE_ID);
 		when(document.getFieldValue(SOLR_PROP_CODE)).thenReturn("code");
-		when(document.getFieldValue(SOLR_PROP_MN)).thenReturn("mn");
+		when(document.getFieldValue(SOLR_PROP_MN)).thenReturn("C19.246.099.875");
+		when(document.getFieldValue(SOLR_PREFERRED_TERM)).thenReturn(PREFERRED_TERM_VALUE);
 		return document;
 	}
 
@@ -120,7 +148,7 @@ public class SolrKeywordServiceTest {
 		SolrKeywordService testee = new SolrKeywordService();
 		testee.setSolrConnection("http://localhost:8081/solr/swemeshCore/");
 		String[] words = { KEYWORD_QUERY };
-		Map<String, List<MedicalNode>> keywords = testee.findKeywords(words);
+		Map<String, List<MedicalNode>> keywords = testee.findKeywords(words, defaultSourceIds);
 		assertEquals(1, keywords.size());
 		List<MedicalNode> nodes = keywords.get(KEYWORD_QUERY);
 		assertTrue(nodes.size() > 0);

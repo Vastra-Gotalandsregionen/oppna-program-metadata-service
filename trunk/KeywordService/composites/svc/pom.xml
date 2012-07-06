@@ -67,14 +67,13 @@
             <artifactId>tika-parsers</artifactId>
             <version>0.7</version>
         </dependency>
-
-		<dependency>
-			<groupId>se.findwise.vgr</groupId>
-			<artifactId>keyword-extraction</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
-
+        
+        <dependency>
+          <groupId>com.findwise.linguistics</groupId>
+          <artifactId>keyword-extraction</artifactId>
+          <version>0.2.0-SNAPSHOT</version>
+        </dependency>
+		
         <dependency>
             <groupId>MetaService</groupId>
             <artifactId>
