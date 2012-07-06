@@ -1,12 +1,15 @@
 package se.vgregion.metaservice.keywordservice.processing.text;
 
-import se.findwise.thesis.keywordextraction.KeyEx;
-import se.findwise.thesis.keywordextraction.candidateselection.SelectionMethods;
-import se.findwise.thesis.keywordextraction.common.Document;
-import se.findwise.thesis.keywordextraction.common.KeyexException;
-import se.findwise.thesis.keywordextraction.common.Languages;
-import se.findwise.thesis.keywordextraction.keywordselection.Algorithms;
+import java.util.List;
+
 import se.vgregion.metaservice.keywordservice.BaseSpringDependencyInjectionTest;
+
+import com.findwise.linguistics.keywordextraction.KeyEx;
+import com.findwise.linguistics.keywordextraction.documents.Document;
+import com.findwise.linguistics.keywordextraction.enums.ClassificationMethods;
+import com.findwise.linguistics.keywordextraction.enums.ExtractionMethods;
+import com.findwise.linguistics.keywordextraction.enums.Languages;
+import com.findwise.linguistics.keywordextraction.exceptions.KeyexException;
 
 /**
  * Tests basic functionality of the keyword extraction module.
@@ -23,16 +26,15 @@ public class TextProcessorKeywordExtractorTest extends BaseSpringDependencyInjec
 	public void testModule()
 	{
 		String text = "Röd bil";
-		KeyEx kx = new KeyEx();
+		KeyEx kx = applicationContext.getBean(KeyEx.class);
 
 		try
 		{
-			kx.init();
+//			Document doc = new Document(text, Languages.SWEDISH);
+//			List<String> kws = kx.classify(doc, ClassificationMethods.NBC, ExtractionMethods.NPCHUNK, 1);
+			List<String> kws = kx.classify(text, "", Languages.SWEDISH, 1, ExtractionMethods.NPCHUNK, ClassificationMethods.NBC);
 
-			Document doc = new Document(text, Languages.SWEDISH);
-			String[] kws = kx.classify(1, doc, Algorithms.NBC, SelectionMethods.NPCHUNK, true);
-
-			assert(kws.length == 1 && kws[0].equals(text));
+			assert(kws.size() == 1 && kws.get(0).equals(text));
 		}
 		catch(KeyexException e)
 		{

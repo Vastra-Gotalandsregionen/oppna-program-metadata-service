@@ -23,7 +23,7 @@ import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
  *
  */
 public class MedicalTaxonomyServiceMock extends MedicalTaxonomyService {
-        public String[] noHitWords = new String[] {"abab", "bullulu", "mumumu"};
+        public String[] noHitWords = new String[] {"abab", "bullulu", "mumumu", "abab bullulu mumumu"};
 	
 	public String[] sourceIds = new String[] {"A", "C"}; 
 	

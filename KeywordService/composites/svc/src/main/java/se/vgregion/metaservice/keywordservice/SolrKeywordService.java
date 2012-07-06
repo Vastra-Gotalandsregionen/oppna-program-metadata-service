@@ -25,6 +25,7 @@ import se.vgregion.metaservice.keywordservice.domain.NodeProperty;
  */
 public class SolrKeywordService {
 
+
 	static final String MISSING_CONNECTION_STRING_ERR_MSG = "No connection string given for Keyword Solr server";
 
 	static final String SOLR_ID = "id";
@@ -37,14 +38,21 @@ public class SolrKeywordService {
 	static final String SOLR_SYNONYMS = "synonyms"; // TODO Use synonyms or
 													// synonyms_org?
 	static final String SOLR_NAMESPACE_ID = "namespace_id";
+	static final String SOLR_PREFERRED_TERM = "preferred_term";
+	static final String SOLR_ENTRY_TERM = "entry_term";
+	
+	static final String NODE_PREFERRED_TERM = "preferredSynonym";
+	static final String NODE_CODE_IN_SOURCE = "Code in Source";
 
-	private static final int MAX_NUM_RESULTS = 10;
+	private static final int MAX_NUM_RESULTS = 7; // QUES: Changeable?
 
 	private static final String CODE_PREFIX = "C";
 
 	private String solrConnection = null;
 	private SolrServer server;
 	private static Logger log = Logger.getLogger(SolrKeywordService.class);
+
+	private Map<Integer, String[]> sourceIds;
 
 	public void setSolrConnection(String connection) {
 		solrConnection = connection;
@@ -56,14 +64,16 @@ public class SolrKeywordService {
 	 * 
 	 * @param words
 	 *            Array of keywords to look for. Must not be null
+	 * @param sourceIds 
 	 * @return A Map with a {@link List} of {@link MedicalNode}s for each
 	 *         Keyword (the {@link String} key)
 	 */
-	public Map<String, List<MedicalNode>> findKeywords(String[] words) {
+	public Map<String, List<MedicalNode>> findKeywords(String[] words, Map<Integer, String[]> sourceIds) {
 		if (words == null) {
 			throw new IllegalArgumentException("Argument words can't be null");
 		}
 
+		this.sourceIds = sourceIds;
 		Map<String, List<MedicalNode>> resultMap = new HashMap<String, List<MedicalNode>>();
 		
 		try {
@@ -82,7 +92,9 @@ public class SolrKeywordService {
 					MedicalNode node = new MedicalNode();
 					try {
 						populateNode(solrDocument, node);
-						medicalNodes.add(node);
+						if(nodeMatchesSourceIds(node)) {
+							medicalNodes.add(node);
+						}
 					} catch (Exception e) {
 						log.error("Could not copy solr document to medical node", e);
 					}
@@ -99,6 +111,27 @@ public class SolrKeywordService {
 		return resultMap;
 	}
 
+	private boolean nodeMatchesSourceIds(MedicalNode node) {
+		String namespaceId = node.getNamespaceId();
+		String[] ids = sourceIds.get(Integer.parseInt(namespaceId));
+		if (ids == null) {
+			System.out.println("no source ids to match on, returning true");
+            return true;
+        }
+		for (NodeProperty property : node.getProperties()) {
+			if(property.getName().equals(SOLR_PROP_MN.toUpperCase())) {
+				String prop_mn = property.getValue();
+				for (String id : ids) {
+					System.out.println("comparing "+id+" to "+prop_mn);
+					if(prop_mn.startsWith(id)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * Populates given node with data from the SolrDocument
 	 * TODO: add parents?
@@ -112,6 +145,7 @@ public class SolrKeywordService {
 		Object field_MN = solrDocument.getFieldValue(SOLR_PROP_MN);
 		Object field_ScopeNoteEng = solrDocument.getFieldValue(SOLR_PROP_SCOPE_NOTE_ENG);
 		Object field_ScopeNoteSwe = solrDocument.getFieldValue(SOLR_PROP_SCOPE_NOTE_SWE);
+		Object field_PreferredTerm = solrDocument.getFieldValue(SOLR_PREFERRED_TERM);
 
 		log.debug("Creating node with name " + field_Name);
 		
@@ -122,10 +156,7 @@ public class SolrKeywordService {
 			node.setInternalId(field_ID.toString());
 		}
 		if(field_NamespaceID != null) {
-			if(field_NamespaceID instanceof Collection<?> ) {
-				//FIXME isEmpty?
-				field_NamespaceID = ((Collection<?>)field_NamespaceID).iterator().next();
-			}
+			field_NamespaceID = checkForCollection(field_NamespaceID, true);
 			node.setNamespaceId(field_NamespaceID.toString());
 		}
 		if(field_Code != null) {
@@ -136,25 +167,45 @@ public class SolrKeywordService {
 
 		List<NodeProperty> properties = new ArrayList<NodeProperty>();
 
+		if(field_PreferredTerm != null) {
+			field_PreferredTerm = checkForCollection(field_PreferredTerm, true);
+			properties.add(new NodeProperty(NODE_PREFERRED_TERM, field_PreferredTerm.toString()));
+		}
+		
 		if(field_Code != null) {
 			properties.add(new NodeProperty(SOLR_PROP_CODE, CODE_PREFIX + field_Code.toString()));
-			properties.add(new NodeProperty("Code in Source", field_Code.toString()));
+			properties.add(new NodeProperty(NODE_CODE_IN_SOURCE, field_Code.toString()));
 		}
 		if(field_MN != null) {
-			if(field_MN instanceof Collection<?> ) {
-				//FIXME isEmpty?
-				field_MN = ((Collection<?>)field_MN).iterator().next();
-			}
+			field_MN = checkForCollection(field_MN, true);
 			properties.add(new NodeProperty(SOLR_PROP_MN.toUpperCase(), field_MN.toString()));
 		}
 		if (field_ScopeNoteEng != null) {
+			field_ScopeNoteEng = checkForCollection(field_ScopeNoteEng, true);
 			properties.add(new NodeProperty(SOLR_PROP_SCOPE_NOTE_ENG, field_ScopeNoteEng.toString()));
 		}
 		if (field_ScopeNoteSwe != null) {
+			field_ScopeNoteSwe = checkForCollection(field_ScopeNoteSwe, true);
 			properties.add(new NodeProperty(SOLR_PROP_SCOPE_NOTE_SWE, field_ScopeNoteSwe.toString()));
 		}
 
 		node.setProperties(properties);
+	}
+
+	private Object checkForCollection(Object object, boolean returnFirst) {
+		if(object instanceof Collection<?> ) {
+			Collection<?> collection = ((Collection<?>)object);
+			if(returnFirst) {
+				if(collection.isEmpty()) {
+					object = null;
+				} else {
+					object = collection.iterator().next();
+				}
+			} else {
+				object = new ArrayList<Object>(collection);
+			}
+		}
+		return object;
 	}
 
 
@@ -183,8 +234,12 @@ public class SolrKeywordService {
 		query.addField(SOLR_PROP_SCOPE_NOTE_SWE);
 		query.addField(SOLR_SOURCE_ID);
 		query.addField(SOLR_SYNONYMS);
+		query.addField(SOLR_PREFERRED_TERM);
+		query.addField(SOLR_ENTRY_TERM);
 		query.set("qf"," "+SOLR_ID+" "+SOLR_NAME+" "+" "+SOLR_NAMESPACE_ID+" "+SOLR_PROP_CODE+" "+SOLR_PROP_MN+" "+
-				           SOLR_PROP_SCOPE_NOTE_ENG+" "+SOLR_PROP_SCOPE_NOTE_SWE+" "+SOLR_SOURCE_ID+" "+SOLR_SYNONYMS);
+				           /*SOLR_PROP_SCOPE_NOTE_ENG+" "+SOLR_PROP_SCOPE_NOTE_SWE+" "+*/
+				           SOLR_SOURCE_ID+" "+SOLR_SYNONYMS+" "+
+				           SOLR_PREFERRED_TERM+" "+SOLR_ENTRY_TERM);
 		query.setRows(MAX_NUM_RESULTS);
 		query.setStart(0);
 		return query;

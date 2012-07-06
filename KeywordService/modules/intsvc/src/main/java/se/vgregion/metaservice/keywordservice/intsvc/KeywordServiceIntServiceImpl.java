@@ -1,7 +1,5 @@
 package se.vgregion.metaservice.keywordservice.intsvc;
 
-import org.apache.log4j.Logger;
-
 import se.vgregion.metaservice.keywordservice.KeyWordService;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
@@ -32,7 +30,6 @@ public class KeywordServiceIntServiceImpl implements
      */
     public NodeListResponseObjectType getKeywords(GetKeywordsRequest parameters) {
 
-        Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
         NodeListResponseObject responseObject = keywordService.getKeywords(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),
@@ -49,7 +46,6 @@ public class KeywordServiceIntServiceImpl implements
      */
     public NodeListResponseObjectType getNodeByInternalId(GetNodeByInternalIdRequest parameters) {
 
-        Logger log = Logger.getLogger(KeywordServiceIntServiceImpl.class);
         NodeListResponseObject responseObject = keywordService.getNodeByInternalId(
                 IdentificationSdoHelper.fromIdentificationType(parameters.getIdentification()),
                 parameters.getRequestId(),

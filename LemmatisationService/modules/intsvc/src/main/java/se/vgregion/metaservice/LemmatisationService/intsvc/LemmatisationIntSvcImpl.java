@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.Writer;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Controller;
@@ -24,7 +23,6 @@ import se.vgregion.metaservice.LemmatisationService.domain.LemmatisedResponse;
  */
 @Controller
 public class LemmatisationIntSvcImpl implements LemmatisationIntSvc {
-    private static Logger log = Logger.getLogger(LemmatisationIntSvc.class);
     private LemmatisationSvc lemmationsationSvc;
     private Resource xsdResource;
 

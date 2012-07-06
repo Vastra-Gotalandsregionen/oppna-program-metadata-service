@@ -69,6 +69,7 @@
 		<property name="language"			value="SWEDISH" />
 		<property name="candidates"			value="NPCHUNK" />
 		<property name="algorithm"			value="NBC" />
+        <property name="kx"                 ref="keyex" />
 	</bean>
 
     <!-- FORMAT PROCESSORS -->
@@ -260,6 +261,170 @@
 			ref="entityManagerFactory" />
             <property name="dataSource" ref="dataSource" />
         </bean>
+
+
+    <!-- Keyword Extraction -->
+    <bean id="keyex" class="com.findwise.linguistics.keywordextraction.KeyEx">
+        <property name="candidateExtractor" ref="candidates"/>
+        <property name="keywordClassifier"   ref="classifier"/>
+        <property name="lemmatizer" ref="lemmatizer"/>
+        <property name="posTagger" ref="posTagger"/>
+<!--         <property name="maxExecutionTime" value="600000"/> -->
+<!--        <property name="maxNumberOfWordsInBody" value="10000"/>
+        <property name="maxSentenceLength" value="40"/>
+        <property name="minSentenceLength" value="1"/> --> 
+    </bean>
+    
+    <!-- Candidate extraction -->
+    <bean id="candidates" class="com.findwise.linguistics.keywordextraction.candidates.CandidateExtractor">
+        <property name="filterNumbers" value="true"/>
+        <property name="extractors">
+            <map>
+                <entry key="NGRAMS"                                                    value-ref="ngram"/>
+                <entry key="POS"                                  value-ref="posMatcher"/>
+                <entry key="NPCHUNK"                     value-ref="npChunker"/>
+            </map>
+        </property>
+    </bean>
+    
+    <!-- Ngram -->
+    <bean id="ngram" class="com.findwise.linguistics.keywordextraction.candidates.ngrams.Ngrams">
+        <property name="stopwords" ref="stopwords"/>
+    </bean>
+    
+    <!--PosMatcher -->
+    <bean id="posMatcher" class="com.findwise.linguistics.keywordextraction.candidates.pos.PosMatcher" init-method="init">
+        <property name="patternFiles">
+            <map>
+                <entry key="SWEDISH" value="src/test/resources/pos_patterns/swedish.txt"/>
+                <entry key="ENGLISH" value="src/test/resources/pos_patterns/english.txt"/>
+            </map>
+        </property>
+    </bean>
+    
+    <!-- Chunkers -->
+    <bean id="npChunker" class="com.findwise.linguistics.keywordextraction.candidates.npchunk.NPChunker">
+        <property name="chunkers">
+            <map>
+                <entry key="SWEDISH" value-ref="sweChunker"/>
+                <entry key="ENGLISH" value-ref="engChunker"/>
+            </map>
+        </property>
+    </bean>
+    
+    <bean id="sweChunker" class="com.findwise.linguistics.keywordextraction.candidates.npchunk.SweChunker" init-method="init">
+        <property name="mappingsFilePath" value="src/test/resources/npchunk/english/postags"/>
+    </bean>
+    
+    <bean id="engChunker" class="com.findwise.linguistics.keywordextraction.candidates.npchunk.EngChunker" init-method="init">
+        <property name="dictPath" value="src/test/resources/npchunk/english/chunk_dict"/>
+        <property name="rulesPath" value="src/test/resources/npchunk/english/chunk_rules"/>
+    </bean>
+    
+    <!-- Stopwords -->
+    <bean id="stopwords" class="com.findwise.linguistics.keywordextraction.candidates.Stopwords" init-method="init">
+        <property name="resources">
+            <map>
+                <entry key="SWEDISH" value="src/test/resources/stopwords/swedish.txt"/>
+                <entry key="ENGLISH" value="src/test/resources/stopwords/english.txt"/>
+                
+            </map>
+        </property>
+    </bean>
+    
+    <!-- Classification algorithms -->
+    <bean id="classifier" class="com.findwise.linguistics.keywordextraction.classification.KeywordClassifier">
+        <property name="postProcessor" ref="postprocessor"/>
+        <property name="classifiers">
+            <list>
+                <ref bean="tf"/>
+                <ref bean="tfidfClassifier"/>
+                <ref bean="nbc"/>
+                <ref bean="kbann"/>
+                <ref bean="svm"/>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- PostProcessor -->
+    <bean id="postprocessor" class="com.findwise.linguistics.keywordextraction.processing.PostProcessor">
+        <property name="diff"   value="1"/>
+        <property name="factor"                           value="1.5"/>
+    </bean>
+    
+    <!-- Term frequency -->
+    <bean id="tf" class="com.findwise.linguistics.keywordextraction.classification.tf.TermFrequency"/>
+
+    <!-- TFIDFClassifier -->
+    <bean id="tfidfClassifier" class="com.findwise.linguistics.keywordextraction.classification.tfidf.TFIDFClassifier">
+        <property name="tfidf" ref="tfidf"/>
+    </bean>
+    
+    <bean id="tfidf" class="com.findwise.linguistics.keywordextraction.tools.TFIDF" init-method="init" >
+        <property name="idfPaths">
+            <map>
+<!--                 <entry key="SWEDISH" value="src/test/resources/idf/swedish.idf"/> -->
+                <entry key="SWEDISH" value="src/test/resources/idf/vgr.idf"/>
+                <entry key="ENGLISH" value="src/test/resources/idf/english.idf"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- NBC -->
+    <bean id="nbc" class="com.findwise.linguistics.keywordextraction.classification.nbc.NBC" init-method="init" >
+        <property name="cachePath" value="src/test/resources/models/nbc/"/>
+        <property name="candidateExtractor" ref="candidates"/>
+        <property name="tfidf" ref="tfidf"/>
+    </bean>
+    
+    <!-- KBANN -->
+    <bean id="kbann" class="com.findwise.linguistics.keywordextraction.classification.kbann.KBANN" init-method="init" >
+        <property name="cachePath" value="src/test/resources/models/kbann/"/>
+        <property name="candidateExtractor" ref="candidates"/>
+        <property name="tfidf" ref="tfidf"/>
+        <property name="nbc" ref="nbc"/>
+        <property name="pso" >
+            <bean class="com.findwise.linguistics.keywordextraction.classification.kbann.PSO" />
+        </property>
+        <property name="backPropagation" >
+            <bean class="com.findwise.linguistics.keywordextraction.classification.kbann.BackPropagation" />
+        </property>
+    </bean>
+    
+    <!-- SVM -->
+    <bean id="svm" class="com.findwise.linguistics.keywordextraction.classification.svm.SVM" init-method="init" >
+        <property name="cachePath" value="src/test/resources/models/svm/"/>
+        <property name="candidateExtractor" ref="candidates"/>
+        <property name="tfidf" ref="tfidf"/>
+        <property name="pso" >
+            <bean class="com.findwise.linguistics.keywordextraction.classification.kbann.PSO" />
+        </property>
+    </bean>
+    
+    <!-- Lemmatizer -->
+    <bean id="lemmatizer" class="com.findwise.linguistics.keywordextraction.tools.Lemmatizer" init-method="init">
+        <property name="engFilePath" value="src/test/resources/lemmatization/english.txt"/>
+        <property name="sweFilePath" value="src/test/resources/lemmatization/saldo.txt"/>
+    </bean>
+    
+    <!-- PsTagger -->
+    <bean id="posTagger" class="com.findwise.linguistics.keywordextraction.tools.PosTagger" init-method="init" >
+        <property name="resources">
+            <map>
+                <entry key="SWEDISH" value="src/test/resources/pos_taggers/se-pos-maxent0412.bin"/>
+                <entry key="ENGLISH" value="src/test/resources/pos_taggers/en-pos-maxent.bin"/>
+            </map>
+        </property>
+    </bean>
+
+                             <!-- Global tools -->
+    <bean id="corpusHandler" class="com.findwise.linguistics.keywordextraction.tools.CorpusHandler"
+                                                                                       init-method="init" lazy-init="false">
+        <property name="autoLoad"                    value="false"/>
+        <property name="lemmatizer" ref="lemmatizer"/>
+        <property name="posTagger" ref="posTagger"/>
+    </bean>
+    
 
 
     </beans>
