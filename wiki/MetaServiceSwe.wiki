@@ -1,4 +1,4 @@
-#summary Nyckelordstjänsten och Vokabulärtjänsten
+#summary Nyckelordstjänst och Vokabulärtjänst
 = Introduction =
 
 Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
