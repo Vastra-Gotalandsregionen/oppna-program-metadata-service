@@ -1,38 +1,40 @@
 package se.vgregion.metaservice.keywordservice;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.common.SolrDocument;
 
 import se.vgregion.metaservice.keywordservice.dao.BlacklistedWordDao;
 import se.vgregion.metaservice.keywordservice.domain.Identification;
-import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.domain.MedicalNode;
-import se.vgregion.metaservice.keywordservice.domain.Options;
-import se.vgregion.metaservice.keywordservice.domain.MedicalNode.UserStatus;
 import se.vgregion.metaservice.keywordservice.domain.NodeListResponseObject;
+import se.vgregion.metaservice.keywordservice.domain.Options;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject;
 import se.vgregion.metaservice.keywordservice.domain.ResponseObject.StatusCode;
 import se.vgregion.metaservice.keywordservice.domain.SearchProfile;
+import se.vgregion.metaservice.keywordservice.domain.document.AnalysisDocument;
 import se.vgregion.metaservice.keywordservice.domain.document.Document;
 import se.vgregion.metaservice.keywordservice.domain.document.FileDocument;
 import se.vgregion.metaservice.keywordservice.domain.document.TextDocument;
-import se.vgregion.metaservice.keywordservice.entity.BlacklistedWord;
-import se.vgregion.metaservice.keywordservice.entity.UserKeyword;
 import se.vgregion.metaservice.keywordservice.exception.FormattingException;
 import se.vgregion.metaservice.keywordservice.exception.KeywordsException;
 import se.vgregion.metaservice.keywordservice.exception.NodeNotFoundException;
-import se.vgregion.metaservice.keywordservice.exception.ProcessingException;
 import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatException;
 import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessor;
 import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorFactory;
+
+import com.findwise.vgr.keywordmatcher.Dictionary;
+import com.findwise.vgr.keywordmatcher.KeywordMatcher;
+import com.findwise.vgr.keywordmatcher.Term;
+import com.findwise.vgr.keywordmatcher.mesh.MeshDictionary;
+import com.findwise.vgr.keywordmatcher.mesh.MeshTerm;
 
 /**
  * Service for finding keywords in text content. Uses several helper classes to
@@ -43,19 +45,14 @@ import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorF
  */
 public class KeyWordService {
 
-    //TODO: put this enum somewhere more apropriate?
-    public enum ListType {blackList,whiteList,none};
-    private AnalysisService analysisService;
+    //TODO: put this enum somewhere more appropriate?
+    public enum ListType {blackList,whiteList,none}
     private MedicalTaxonomyService medicalTaxonomyService;
     private UserProfileService userProfileService;
     private BlacklistedWordDao bwd;
     private SolrKeywordService solrKeywordService;
     private static Logger log = Logger.getLogger(KeyWordService.class);
     
-    /** If an input word to apelon results in more hits than the
-     * blacklistLimit, the word should be blacklisted. Defaults to 20 */
-    private int blacklistLimit = 20;
-
     /** Caches namespaceId to namespace-name and namespace-name to namespaceId resolutions. */
     private Map<String, String> namespaceCache = new HashMap<String, String>();
 
@@ -72,17 +69,6 @@ public class KeyWordService {
     public void setMedicalTaxonomyService(
             MedicalTaxonomyService medicalTaxonomyService) {
         this.medicalTaxonomyService = medicalTaxonomyService;
-    }
-
-    /**
-     * Sets the analysisService that is used to extract representative words
-     * from the provided text content. The extracted words are later used as
-     * input parameters to the medicalTaxonomyService
-     *
-     * @param analysisService
-     */
-    public void setAnalysisService(AnalysisService analysisService) {
-        this.analysisService = analysisService;
     }
 
     /**
@@ -105,9 +91,13 @@ public class KeyWordService {
      * Check the responseObjects statusCode to see if the operation
      * was successful.
      */
-    public NodeListResponseObject getKeywords(Identification id, String requestId, Document document, Options options) {
-        if(options == null)
+    public NodeListResponseObject getKeywords(Identification id, String requestId, Document document, Options options_) {
+    	Options options;
+    	if(options_ == null) {
             options = new Options();
+    	} else {
+    		options = options_;
+    	}
 
         try {
             /** * Determine format ** */
@@ -131,15 +121,16 @@ public class KeyWordService {
 
             /** * Extract keywords ** */
             log.debug(MessageFormat.format("{0}:Getting keywords",requestId));
-            String[] keywords = analysisService.extractWords(analysisDocument, options.getInputWords());
 
-            /** * Find medical keywords ** */
-            log.debug(MessageFormat.format("{0}:Translating keywords to medicalNodes",requestId));
+			/** * Find medical keywords ** */
 
-            List<MedicalNode> allNodes = new LinkedList<MedicalNode>();
-            if(keywords != null) {
-            	allNodes = findMedicalNodes(keywords, id, options.getIncludeSourceIds());
-            }
+            MeshDictionary dictionary = new MeshDictionary();
+			KeywordMatcher matcher = new KeywordMatcher(dictionary);
+			List<Term> keywords = matcher.findKeywords(analysisDocument.getTextContent());
+			log.info(MessageFormat.format("{0}: found {1} keywords", requestId, keywords.size()));
+			log.debug(keywords);
+			
+            List<MedicalNode> allNodes = convertKeywordsToMedicalNodes(keywords);
             
             List<MedicalNode> nodes = new LinkedList<MedicalNode>();
             // create a new list with the X first nodes
@@ -148,7 +139,7 @@ public class KeyWordService {
                 nodes.add(allNodes.get(i));
             }
 
-            System.out.println("wtr:" + options.getWordsToReturn() + ", iw:" + options.getInputWords());
+//            System.out.println("wtr:" + options.getWordsToReturn() + ", iw:" + options.getInputWords());
 
 
             /** * Ensure user has read access to the namespace ** */
@@ -176,95 +167,32 @@ public class KeyWordService {
                     requestId,StatusCode.error_formatting_content.code()),ex);
             return new NodeListResponseObject(requestId, StatusCode.error_formatting_content,
                     "The formatting of the file or text failed");
-        } catch (ProcessingException ex) {
-            log.error(MessageFormat.format("{0}:{1}:The processing (generation of keywords) of the file or text failed",
-                    requestId, StatusCode.error_processing_content.code()),ex);
-            return new NodeListResponseObject(requestId, StatusCode.error_processing_content,
-                    "The processing (generation of keywords) of the file or text failed");
         } catch (KeywordsException ex) {
             log.error(MessageFormat.format("{0}:{1}:The translation of keywords for the file or text failed",
                     requestId + ":" + StatusCode.error_getting_keywords_from_taxonomy.code()),ex);
             return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy,
                     "The translation of keywords for the file or text failed");
-        }
-    }
-
-    /**
-     * Helper method to find medical nodes in MedicalTaxonomyService
-     * @param keywords The extracted keywords from Analysis service
-     * @param Identification Identification for the request
-     * @param sourceIds the sourceIds of the concepts to be included
-     * @return List of Medical Nodes that were found in the MedicalTaxonomyService. The nodes has been enhanced with userstatus data
-     */
-    private List<MedicalNode> findMedicalNodes(String[] keywords, Identification identification, Map<Integer, String[]> sourceIds) throws KeywordsException {
-
-        //TODO:Make so this method actualy throws a KeywordsException!
-
-        List<Map<String, List<MedicalNode>>> allNodes = new ArrayList<Map<String, List<MedicalNode>>>();
-        SearchProfile profile = searchProfiles.get(identification.getProfileId());
-        if(profile == null) {
-            throw new KeywordsException("Specified profile "+identification.getProfileId()+" does not exist");
-        }
-        List<String> namespaceIds = new ArrayList<String>();
-        for(String namespaceName : profile.getSearchableNamespaces()) {
-            String namespaceId = getNamespaceIdByName(namespaceName);
-            if(namespaceId != null)
-                namespaceIds.add(namespaceId);
-        }
-        
-        Map<String, List<MedicalNode>> nodes = new HashMap<String,List<MedicalNode>>();
-        if(solrKeywordService != null) {
-        	nodes = solrKeywordService.findKeywords(keywords, sourceIds);
-        } else { // fall back to old keyword service
-        	nodes = (medicalTaxonomyService.findKeywords(namespaceIds, keywords, sourceIds));
-        }
-        log.debug(MessageFormat.format(
-                "Keywords extracted from AnalysisService: {0}. Nodes from TaxonomyService: {1}",
-                keywords.length, getNumKeywords(nodes)));
-
-        /** ********************* */
-
-        // Examine results from TaxonomyService and blacklist
-        // words and mark their user status
-        Set<Map.Entry<String, List<MedicalNode>>> nodesSet = nodes.entrySet();
-        Map.Entry<String, List<MedicalNode>> nodeEntry;
-        Set<MedicalNode> addedNodes = new HashSet<MedicalNode>();
-        List<MedicalNode> nodesList = new ArrayList<MedicalNode>();
-
-        for (String keyword : keywords) {
-            List<MedicalNode> nodeHits = nodes.get(keyword);
-            setUserStatus(identification.getUserId(), nodeHits);
-
-            // Add the word to the blacklist database if it has no hits or to many hits.
-            log.debug(MessageFormat.format("Hits for keyword {0} is {1}", keyword, nodeHits.size()));
-            if (nodeHits.size() == 0 || nodeHits.size() > blacklistLimit) {
-                log.debug(MessageFormat.format("Blacklisting word {0}", keyword));
-                bwd.saveBlacklistedWord(new BlacklistedWord(keyword));
-            } else {
-                for (MedicalNode node : nodeHits) {
-                    if (!addedNodes.contains(node)) {
-                        nodesList.add(node);
-                        addedNodes.add(node);
-                    }
-
-                }
-                log.debug(MessageFormat.format("Added {0} of {1} hits for keyword {2}. (Duplicates removed) ", nodesList.size(), nodeHits.size(), keyword));
-
-            }
-
-        }
-
-        /** *********************************** */
-        return nodesList;
-
-    }
-
-    private Integer getNumKeywords(Map<String, List<MedicalNode>> nodes) {
-    	int i = 0;
-    	for (List<MedicalNode> nodeList : nodes.values()) {
-			i++;
+        } catch (IOException e) {
+        	//FIXME!
+        	log.error(e.getLocalizedMessage());
+        	return new NodeListResponseObject(requestId, StatusCode.error_getting_keywords_from_taxonomy, e.getMessage());
 		}
-		return i;
+    }
+
+	private List<MedicalNode> convertKeywordsToMedicalNodes(List<Term> keywords)
+			throws KeywordsException {
+		List<MedicalNode> allNodes = new LinkedList<MedicalNode>();
+		for (Term term : keywords) {
+			MeshTerm t = (MeshTerm) term; // FIXME  
+			SolrDocument solrDocument = t.getDoc();
+			if(solrDocument == null) {
+				throw new KeywordsException("no solr data found");
+			}
+			MedicalNode node = new MedicalNode();
+			solrKeywordService.populateNode(solrDocument, node);
+			allNodes.add(node);
+		}
+		return allNodes;
 	}
 
 	/**
@@ -387,32 +315,6 @@ public class KeyWordService {
 
     }
 
-    private void setUserStatus(String userId, List<MedicalNode> nodes) {
-        for (MedicalNode node : nodes) {
-            UserKeyword keyword = userProfileService.getKeywordForUser(userId, node.getInternalId());
-            List<UserStatus> statusList = new ArrayList<UserStatus>();
-
-            if (keyword != null) {
-                if (keyword.isTagged()) {
-
-                    statusList.add(UserStatus.TAGGED);
-                    node.setUserStatus(statusList);
-                    log.debug(MessageFormat.format(
-                            "Setting status tagged to node with internalId {0}", node.getInternalId()));
-                }
-
-                if (keyword.isBookmarked()) {
-                    statusList.add(UserStatus.BOOKMARKED);
-                    node.setUserStatus(statusList);
-                    log.debug(MessageFormat.format(
-                            "Setting status bookmarked to node with internalId {0}",
-                            node.getInternalId()));
-                }
-            }
-        }
-    }
-
-
    /**
      * Check if a used has read access to the given namespace. This routine
      * makes use of the namespace cache and updates it where neccessary.
@@ -433,10 +335,9 @@ public class KeyWordService {
                     System.out.println("namespace ok");
                     return true;
 
-                } else {
-                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
-                        requestId, StatusCode.insufficient_namespace_privileges.code(), profileId, namespace));
                 }
+				log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
+				    requestId, StatusCode.insufficient_namespace_privileges.code(), profileId, namespace));
             } else {
                 log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
                         requestId, StatusCode.insufficient_namespace_privileges.code(), profileId));
@@ -459,7 +360,8 @@ public class KeyWordService {
      * @param requestId The request identifier
      * @return True if the profile has write access to the namespace
      */
-    private boolean hasNamespaceWriteAccess(String namespaceId, String profileId, String requestId) {
+    @SuppressWarnings("unused")
+	private boolean hasNamespaceWriteAccess(String namespaceId, String profileId, String requestId) {
         String namespace = getNamespaceById(namespaceId, requestId);
         if (namespace != null) {
             SearchProfile profile = searchProfiles.get(profileId);
@@ -468,10 +370,9 @@ public class KeyWordService {
                 if (profile.getWriteableNamespaces().contains(namespace)) {
                     return true;
 
-                } else {
-                    log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
-                        requestId, StatusCode.insufficient_namespace_privileges.code(), profileId, namespace));
                 }
+				log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not have read privileges to namespace {3}",
+				    requestId, StatusCode.insufficient_namespace_privileges.code(), profileId, namespace));
             } else {
                 log.warn(MessageFormat.format("{0}:{1}: Submitted profileId {2} does not match any predefined search profile",
                         requestId, StatusCode.insufficient_namespace_privileges.code(), profileId));
@@ -564,18 +465,6 @@ public class KeyWordService {
      */
     public void setBlacklistedWordDao(BlacklistedWordDao bwd) {
         this.bwd = bwd;
-    }
-
-    /**
-     * Sets the minimum limit of responses from the medicalTaxonomyService to
-     * consider the word as blacklisted I.e if an extracted word gets more than
-     * hits in the taxonomy than the limit specifies, the word is considered
-     * ambiguous and is blacklisted. Default limit is 20.
-     *
-     * @param limit  the limit
-     */
-    public void setBlacklistLimit(int limit) {
-        this.blacklistLimit = limit;
     }
 
     /**

@@ -30,7 +30,7 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 		.getBean("metaservice.keywordService");
 	}
 	
-	
+	/* FIXME new test
 	public void testGetKeywords() throws UnsupportedFormatException{
         TextDocument doc = new TextDocument();
         doc.setTitle(DOCUMENT_TITLE);
@@ -58,11 +58,11 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 				//for (MedicalNode parent : node.getParents())
 					//System.out.println(parent.getName().toUpperCase());
 				//System.out.println("   " + node.getName());
-			}*/
+			}* /
 			//size += nodes.size();
 		}
 		System.out.println("Total hits: " + keywords.size());
-	}
+	}*/
 
 	public void testGetKeywordsWithNoContent() throws UnsupportedFormatException{
         TextDocument doc = new TextDocument();
@@ -89,7 +89,7 @@ public class KeywordServiceTest extends BaseOpenJpaTest {
 	}
 
 	public void testFindNodeByInternalId() throws UnsupportedFormatException {
-            NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "vgr"), REQUEST_ID,"2149","123");
+            NodeListResponseObject response = keywordService.getNodeByInternalId(new Identification("123", "vgr"), REQUEST_ID,"2149","VGR");
             System.out.println(response.getErrorMessage());
             assertEquals(StatusCode.ok,response.getStatusCode());
             MedicalNode node = response.getNodeList().get(0);
