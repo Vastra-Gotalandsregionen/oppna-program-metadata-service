@@ -58,6 +58,10 @@ public class SolrKeywordService {
 		solrConnection = connection;
 	}
 
+	public String getSolrConnection() {
+		return solrConnection;
+	}
+
 	/**
 	 * Look up given keywords in a Solr instance that hold mesh information and
 	 * return matching nodes. 
@@ -136,7 +140,7 @@ public class SolrKeywordService {
 	 * Populates given node with data from the SolrDocument
 	 * TODO: add parents?
 	 */
-	private void populateNode(SolrDocument solrDocument, MedicalNode node) {
+	public void populateNode(SolrDocument solrDocument, MedicalNode node) {
 		Object field_Name = solrDocument.getFieldValue(SOLR_NAME);
 		Object field_ID = solrDocument.getFieldValue(SOLR_ID);
 		Object field_NamespaceID = solrDocument.getFieldValue(SOLR_NAMESPACE_ID);
@@ -147,7 +151,7 @@ public class SolrKeywordService {
 		Object field_ScopeNoteSwe = solrDocument.getFieldValue(SOLR_PROP_SCOPE_NOTE_SWE);
 		Object field_PreferredTerm = solrDocument.getFieldValue(SOLR_PREFERRED_TERM);
 
-		log.debug("Creating node with name " + field_Name);
+		//log.debug("Creating node with name " + field_Name);
 		
 		if (field_Name != null) {
 			node.setName(field_Name.toString());

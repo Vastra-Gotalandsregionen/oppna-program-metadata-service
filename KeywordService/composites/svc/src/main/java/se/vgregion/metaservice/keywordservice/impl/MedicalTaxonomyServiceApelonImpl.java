@@ -80,48 +80,54 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
     /**
      * @see MedicalTaxonomyService
      */
-    public boolean initConnection() throws ApelonException, ClassNotFoundException, DTSException{
+    public boolean initConnection() throws ClassNotFoundException, DTSException{
         log.info("Initiating connection to server " + host + ":" + port);
         boolean retval = true;
-
-        ServerConnection serverConnection = new ServerConnectionSecureSocket(
-                host, port, username, password);
-        serverConnection.setQueryServer(Class.forName("com.apelon.dts.server.SearchQueryServer"),
-                DTSHeader.SEARCHSERVER_HEADER);
-        serverConnection.setQueryServer(
-                com.apelon.dts.server.OntylogConceptServer.class,
-                DTSHeader.ONTYLOGCONCEPTSERVER_HEADER);
-        serverConnection.setQueryServer(
-                com.apelon.dts.server.NamespaceServer.class,
-                DTSHeader.NAMESPACESERVER_HEADER);
-
-        searchQuery = (SearchQuery) SearchQuery.createInstance(serverConnection);
-
-        nameQuery = NamespaceQuery.createInstance(serverConnection);
-        namespace = nameQuery.findNamespaceByName(namespaceName);
-
-        thesaurusConceptQuery = ThesaurusConceptQuery.createInstance(serverConnection);
-
-        assocQuery = AssociationQuery.createInstance(serverConnection);
-        navQuery = NavQuery.createInstance(serverConnection);
-
-        termQuery = TermQuery.createInstance(serverConnection);
-
-        subsetQuery = SubsetQuery.createInstance(serverConnection);
-
-        ca = new ConceptAttributeSetDescriptor("Defined View ASD",
-                resultKeywordsLimit);
-        ca.setAllSynonymTypes(true);
-        ca.setAllPropertyTypes(true);
-
-        DTSConceptQuery conceptQuery = DTSConceptQuery.createInstance(serverConnection);
-        DTSPropertyType propertyType = conceptQuery.findPropertyTypeByName(
-                getSourceIdPropertyKey(), namespace.getId());
-        if (propertyType != null) {
-            ca.addPropertyType(propertyType);
-        } else {
-            log.warn(MessageFormat.format("Specified property {0} could not be found in taxonomy", getSourceIdPropertyKey()));
-        }
+        ServerConnection serverConnection;
+		try {
+			serverConnection = new ServerConnectionSecureSocket(
+			        host, port, username, password);
+	        serverConnection.setQueryServer(Class.forName("com.apelon.dts.server.SearchQueryServer"),
+	                DTSHeader.SEARCHSERVER_HEADER);
+	        serverConnection.setQueryServer(
+	                com.apelon.dts.server.OntylogConceptServer.class,
+	                DTSHeader.ONTYLOGCONCEPTSERVER_HEADER);
+	        serverConnection.setQueryServer(
+	                com.apelon.dts.server.NamespaceServer.class,
+	                DTSHeader.NAMESPACESERVER_HEADER);
+	        log.debug(serverConnection);
+	        
+	        searchQuery = (SearchQuery) SearchQuery.createInstance(serverConnection);
+	
+	        nameQuery = NamespaceQuery.createInstance(serverConnection);
+	        namespace = nameQuery.findNamespaceByName(namespaceName);
+	
+	        thesaurusConceptQuery = ThesaurusConceptQuery.createInstance(serverConnection);
+	
+	        assocQuery = AssociationQuery.createInstance(serverConnection);
+	        navQuery = NavQuery.createInstance(serverConnection);
+	
+	        termQuery = TermQuery.createInstance(serverConnection);
+	
+	        subsetQuery = SubsetQuery.createInstance(serverConnection);
+	
+	        ca = new ConceptAttributeSetDescriptor("Defined View ASD",
+	                resultKeywordsLimit);
+	        ca.setAllSynonymTypes(true);
+	        ca.setAllPropertyTypes(true);
+	
+	        DTSConceptQuery conceptQuery = DTSConceptQuery.createInstance(serverConnection);
+	        DTSPropertyType propertyType = conceptQuery.findPropertyTypeByName(
+	                getSourceIdPropertyKey(), namespace.getId());
+	        if (propertyType != null) {
+	            ca.addPropertyType(propertyType);
+	        } else {
+	            log.warn(MessageFormat.format("Specified property {0} could not be found in taxonomy", getSourceIdPropertyKey()));
+	        }
+		} catch (ApelonException e) {
+			log.error(e.getLocalizedMessage());
+			retval = false;
+		}
 
         return retval;
 
@@ -477,9 +483,12 @@ public class MedicalTaxonomyServiceApelonImpl extends MedicalTaxonomyService {
 
             if (node.getProperties() != null) {
                 for (NodeProperty prop : node.getProperties()) {
+                	log.debug("findPropertyTypeByName name:"+prop.getName()+" namespaceId:"+node.getNamespaceId());
                     DTSPropertyType pType = thesaurusConceptQuery.findPropertyTypeByName(prop.getName(), Integer.parseInt(node.getNamespaceId()));
                     if (pType == null) {
-                        throw new InvalidPropertyTypeException("No property type with name " + prop.getName() + " found in taxonomy");
+                    	String message = "No property type with name " + prop.getName() + " found in taxonomy";
+                    	log.error(message+". name:"+prop.getName()+" namespaceId:"+node.getNamespaceId());
+						throw new InvalidPropertyTypeException(message);
                     }
 
                     if (prop.getValue() == null || prop.getValue().trim().isEmpty()) {
