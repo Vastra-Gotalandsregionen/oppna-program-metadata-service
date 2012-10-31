@@ -1,7 +1,7 @@
 #summary Nyckelordstjänst och Vokabulärtjänst
 = Introduction =
 
-Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. Id dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
+Metadatatjänsten är en samling av tjänster som hanterar metadata baserade på en taxonomi. I dagsläget tillhandahåller Metadatatjänsten två tjänster: Nyckelordstjänsten och Vokabulärtjänsten.
 
 Nyckelordstjänsten används för att föreslå nyckelord till medicinska artiklar. Publiceringssystem kan anropa tjänsten för att få nyckelordsförslag till artiklar baserat på deras innehåll. Nyckelorden kommer från en medicinsk taxonomi (MeSH), samt en svensk version av denna med namn SweMeSH.
 
@@ -9,13 +9,36 @@ Vokabulärtjänsten används för att hämta information om noder i en existeran
 
 = Nyckelordstjänst =
 
-Nyckelordstjänsten (Keyword Service) är uppbyggd av fyra moduler, vilka kan ses i figur 1. En artikel som skickas till tjänsten behandlas först av Format Stripper som tar bort formateringsinformation från artikeln. Stödda format är text och html. 
+Nyckelordstjänsten (Keyword Service) är uppbyggd av tre moduler, vilka kan ses i figur 1. En artikel som skickas till tjänsten behandlas först av Format Stripper som tar bort formateringsinformation från artikeln. Stödda format är text, html, pdf och office. 
 
 ==== Figure 1 ====
 http://oppna-program-metadata-service.googlecode.com/svn/wiki/images/overview.jpg
 
-Den rena texten skickas sedan vidare i en kedja; Analsyis Service extraherar representativa ord från texten med hjälp av ett antal inre moduler. Analysis Service beskrivs i detalj i avsnittet Analysis Service. De extraherade orden används som indata till Taxonomy Service som gör en sökning i den medicinska taxonomin för varje ord. Resultatet blir en lista av medicinska termer som är kopplade till den inmatade texten. User Profile Service jämför de funna medicinska termerna mot användarens tidigare aktivitet. Om en medicinsk term använts som bokmärke, märks termen som “bokmärkt”. Om användaren tidigare har använt termen för att beskriva en artikel märks termen som “taggad”. Slutresultatet, en lista med märkta medicinska termer skickas tillbaka till användargränssnittet.
+Den rena texten skickas sedan vidare i en kedja; Keyword Matcher extraherar ord från texten som matcher en given ordlista (just nu SweMeSH) med hjälp av ett antal inre moduler. Keyword Matcher beskrivs i ett eget avsnitt nedan. Resultatet blir en lista av medicinska termer som är kopplade till den inmatade texten. User Profile Service jämför de funna medicinska termerna mot användarens tidigare aktivitet. 
 
+Om en medicinsk term använts som bokmärke, märks termen som “bokmärkt”. Om användaren tidigare har använt termen för att beskriva en artikel märks termen som “taggad”. Slutresultatet, en lista med märkta medicinska termer skickas tillbaka till användargränssnittet.
+
+
+== Keyword Matcher ==
+
+==== Figure 2 ====
+http://oppna-program-metadata-service.googlecode.com/svn/wiki/images/KeywordMatcher.png
+
+*Tokenize* : Splittrar upp dokumentet i ord genom att dela vid speciella tecken så som mellanslag, parenteser etc.
+
+*Build N-grams* : Skapar termer genom att kombinera flera ord till större begrepp.
+
+*Dictionary Intersection* : Tar fram snittet mellan mängden med termer i dokumentet och mängden med termer i ordlistan (SweMeSH) och resultatet är alla termer i dokumentet som även finns i ordlistan.
+
+*Normalize and Count* : Normaliserar så att man i fortsättningen använder den föredragna termen från ordlistan, räknar även förekomsten av varje term.
+
+*Filter* : Filtrerar bort resultat från vissa givna kategorier i ordlistan
+
+*Sort by frequency* : Sorterar så att termer som förekommer oftast ligger högst upp
+
+*Sort by category* : Sorterar på en bestämd prioritering av kategorier i ordlistan.
+
+Resultatet är en lista med nyckelord som finns i dokumentet sorterad efter en relevans som bygger på frekvens och kategori.
 
 == Analysis Service ==
 
