@@ -27,7 +27,7 @@ Generation time : 2008-04-23 12:41:48 CEST
     <module>composites/types</module>
     <module>composites/svc</module>
     <module>composites/schema</module>
-    <module>composites/webcomp</module> 
+<!--    <module>composites/webcomp</module> --> 
     <module>modules/intsvc</module>
     <module>modules/web</module>
   <!--  <module>applications/KeywordService</module> -->

@@ -21,7 +21,7 @@
   </bean>
 
   <bean id="metaservice.keywordService" class="se.vgregion.metaservice.keywordservice.KeyWordService">
-    <property name="analysisService" ref="metaservice.analysisService" />
+<!--    <property name="analysisService" ref="metaservice.analysisService" />-->
     <property name="medicalTaxonomyService" ref="metaservice.medicalTaxonomyService" />
     <property name="userProfileService" ref="metaservice.userProfileService" />
     <property name="blacklistedWordDao" ref="blacklistedWordDao" />
