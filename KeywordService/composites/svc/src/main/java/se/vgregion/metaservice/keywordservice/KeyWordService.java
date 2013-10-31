@@ -30,7 +30,6 @@ import se.vgregion.metaservice.keywordservice.exception.UnsupportedFormatExcepti
 import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessor;
 import se.vgregion.metaservice.keywordservice.processing.format.FormatProcessorFactory;
 
-import com.findwise.vgr.keywordmatcher.Dictionary;
 import com.findwise.vgr.keywordmatcher.KeywordMatcher;
 import com.findwise.vgr.keywordmatcher.Term;
 import com.findwise.vgr.keywordmatcher.mesh.MeshDictionary;
@@ -326,6 +325,11 @@ public class KeyWordService {
      */
     private boolean hasNamespaceReadAccess(String namespaceId, String profileId, String requestId) {
         log.debug("Checking if profile "+profileId+" has access to namespace "+namespaceId);
+        
+        if(System.getProperties().getProperty("disable.namespace.security", "false").equals("true")){
+            return true;
+        }
+        
         String namespace = getNamespaceById(namespaceId, requestId);
         if (namespace != null) {
             SearchProfile profile = searchProfiles.get(profileId);

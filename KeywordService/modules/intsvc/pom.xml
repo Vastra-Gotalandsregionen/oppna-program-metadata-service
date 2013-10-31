@@ -180,6 +180,11 @@ Generation time : 2008-04-23 12:41:48 CEST
                     </execution>
                 </executions>
             </plugin>
+        	<plugin>
+			 	<groupId>org.apache.maven.plugins</groupId>
+            	<artifactId>maven-war-plugin</artifactId>
+            	<version>2.1.1</version>
+            </plugin>
         </plugins>
         <pluginManagement>
         	<plugins>
