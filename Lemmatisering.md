@@ -1,0 +1,66 @@
+Tjänsten är konstruerad för att från ett ord ta fram dess grundform och alla dess böjningar.
+
+# REST #
+
+Lemmatiseringstjänsten bygger på ett REST-interface och kan därför testas enkelt via t.ex. en webbläsare:
+
+http://{host}:{port}/{projektnamn}/lemmatisation/{ord}
+
+Där {ord} är det ord som ska lemmatiseras. Ett exempelsvar kan se ut enligt följande:
+
+```
+<lemmatisedResponse>
+  <list>
+    <lemma>apa</lemma>
+    <paradigms>apas</paradigms>
+    <paradigms>apan</paradigms>
+    <paradigms>apans</paradigms>
+    <paradigms>apor</paradigms>
+    <paradigms>apors</paradigms>
+    <paradigms>aporna</paradigms>
+    <paradigms>apornas</paradigms>
+    <paradigms>ape</paradigms>
+    <paradigms>ap</paradigms>
+  </list>
+  <originalWord>apa</originalWord>
+  <statusCode>ok</statusCode>
+</lemmatisedResponse>
+
+```
+
+
+Schemat för ovanstående XML-svar ser ut enligt följande:
+```
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="lemmatisedObject" type="lemmatisedObject"/>
+  <xs:element name="lemmatisedResponse" type="lemmatisedResponse"/>
+  <xs:complexType name="lemmatisedObject">
+    <xs:sequence>
+      <xs:element name="lemma" type="xs:string" minOccurs="0"/>
+      <xs:element name="paradigms" type="xs:string" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="lemmatisedResponse">
+    <xs:sequence>
+      <xs:element name="errorMessage" type="xs:string" minOccurs="0"/>
+      <xs:element name="list" type="lemmatisedObject" nillable="true" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element name="originalWord" type="xs:string" minOccurs="0"/>
+      <xs:element name="statusCode" type="statusCode" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="statusCode">
+    <xs:restriction base="xs:string">
+    <xs:enumeration value="error"/>
+    <xs:enumeration value="no_word_found"/>
+    <xs:enumeration value="ok"/>
+  </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+```
+
+
+
+# Klient #
+
+En klient-implementation finns tillgänlig via VocabularyService projektet, där den används för att berika ord med synonymer när de läggs till eller flyttas i Apelon.

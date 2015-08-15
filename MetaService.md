@@ -1,0 +1,60 @@
+# Introduction #
+
+The metadata service is a collection of web services for managing metadata based on a taxonomy. Currently, three services are available within the metadata service scope; Keyword service, Vocabulary service and Lemmatisation service.
+
+# Keyword service #
+
+The keyword service suggests keywords to a text based on its content. Input to the service can be ordinary text asa well as pdf and office documents. It's used by publishing systems to aid content creators to tag their information with relevant keywords. Simply put, the keyword extraction process first extract uncontrolled keywords from the text. The extracted keywords are looked up against a taxonomy and only keywords represented in the taxonomy is returned from the service. This enforces a controlled vocabulary for the keyword tagging.
+
+The taxonomy used for lookups can be altered, as well as the functionality of the keyword extraction process.
+
+## Modules ##
+
+The keyword service consists of four modules which can be configured and turned on/off to alter the behaviour of the keyword extraction process. An overview of the modules is shown in figure 1.
+
+#### Figure 1 ####
+![http://oppna-program-metadata-service.googlecode.com/svn/wiki/images/metadataservice_overview.png](http://oppna-program-metadata-service.googlecode.com/svn/wiki/images/metadataservice_overview.png)
+
+Figure 1 shows how the keyword service receives a text, represented as plain text or in a document, is processed and
+> returns keywords for the text.
+
+### Format stripper ###
+
+The format stripper strips formatting information from the incoming text. The output from this stage is plain text which is processed by the other modules.
+
+The format stripper supports the following formats:
+  * Text
+  * HTML
+  * PDF
+  * Office file format
+
+### Analysis service ###
+
+The analysis service processes the text and extracts uncontrolled keywords from the text. Keywords can consists of either a single or multiple words. The analysis service consists of a set of modules that performs different processing on the text. The modules can be configured to alter the keyword extraction process. The deployed configuration at VGR is using a module called KeywordExtractor which is a module that extracts keywords based on sophisticated algorithms.
+
+#### Keyword extractor ####
+
+The keyword extractor is performing a set of tasks to extract keywords from text content. The process consists of the following steps:
+  1. Sentence and word extractor. The incoming text is split into sentences and words. In this process, the content is also normalised (punctuation, diactrics, etc are removed)
+  1. Lemmatisation. The words in the text are reduced to their base form by performing lemmatisation. If no base form is found, stemming is performed.
+  1. Candidate extraction. Keyword candidates are extracted based on different algorithtms. Available algorithms are n-grams, word class patterns, np-chunks. The deployed installation at VGR uses np-chunks, which means that nouns are extracted together with their modifiers like adjectives. I.e in the text **The quick brown fox jumps over the lazy dog**, candidates would be **fox**, **brown fox**, **quick brown fox**, **dog**, **lazy dog**. In this process, stop words are removed.
+  1. Keyword selection. From the candidates, keywords are selected. The selection is performed using statistical models and probability. In this process, the selection can take advantage of a corpus that's been pre-processed to extract statistics about the content. Using this statistics, the selection process uses tf/idf to determine if a candidate is a keyword. I.e if a candidate is common in the incoming text, but rare in the complete corpus it is a good candidate for a keyword.
+  1. De-lemmatisation. As a last step, the extracted keywords are brought back to it's inflicted form and the most common form is returned as a keyword.
+
+### Taxonomy service ###
+
+The extracted keywords are looked up against a taxonomy to get the controlled version of the keywords. Extracted keywords that does not exist in the taxonomy are also discarded.
+
+In the installation deployed at VGR, SweMeSH is the taxonomy used when looking up keywords.
+
+### Profile service ###
+
+The profile service can be used to personalize the result from the keyword service. At the current deployed installation at VGR, this service is disabled.
+
+# Vocabulary Service #
+
+The vocabulary service is a web service interface to a taxonomy server. At VGR, the taxonomy server is Apelon DTS. The web service contains method for retrieving data from the stored taxonomies as well as manipulating the data (renaming, updating, adding and moving nodes). An overview of the available taxonomies deployed at VGR are found at http://apelon.vgregion.se/dtstreebrowser . Documentation of the web service methods are available at [WebService](WebService.md)
+
+# Lemmatisation service #
+
+The lemmatisation service is a service that returns the base form and all inflicted form for an input word. It can be used as a library from java code and as a rest service.
