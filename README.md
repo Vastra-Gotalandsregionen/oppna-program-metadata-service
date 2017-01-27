@@ -11,7 +11,7 @@
     Metadataservicen tillhandahåller kontrollerade vokabulär för andra system. Den innehåller också en nyckelordstjänst. 
   </p>
   <p>
-    <a href="https://github.com/Vastra-Gotalandsregionen//oppna-program-metadata-service/w/list" rel="nofollow">
+    <a href="https://github.com/Vastra-Gotalandsregionen/oppna-program-metadata-service/wiki" rel="nofollow">
       Läs mer
     </a>
   </p>
@@ -24,6 +24,6 @@
      är en del i Västra Götalandsregionens satsning på öppen källkod inom ramen för 
     <a href="https://github.com/Vastra-Gotalandsregionen//oppna-program">
       Öppna Program
-    </a>
-    . 
+    </a>. 
+    
   </p>
